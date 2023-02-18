@@ -779,6 +779,32 @@ function GoToWorkZero()
     --mc.mcCntlMdiExecute(inst, "G00 G53 Z0\nG00 X0 Y0 A0\nG00 Z0")--With Z moves
 end
 
+
+
+-- return true if we can start; false if we aren't on line 1 and the user doesn't want to start.
+-- I kept starting the machine at a line I didn't want to after doing a manual Stop or eStop.
+function VerifyCanStart()
+	local inst = mc.mcGetInstance()
+
+	lineNumber, rc = mc.mcCntlGetGcodeLineNbr(inst)
+	if rc == mc.MERROR_NOERROR then
+		mc.mcCntlSetLastError(inst, "line:"..lineNumber)
+		if lineNumber > 1 then
+			rc = wx.wxMessageBox("GCode Line is not at the start!\nAre you sure you want to start?", 
+				"GCode not at line 1", wx.wxYES_NO)
+			if (rc == wx.wxYES) then
+				return true
+			end
+		else
+			return true
+		end
+	else
+		mc.mcCntlSetLastError(inst, "Failed to get current gcode line number.")
+	end
+	return false
+end
+
+
 ---------------------------------------------------------------
 -- Cycle Start() function.
 ---------------------------------------------------------------
@@ -819,9 +845,13 @@ function CycleStart()
             mc.mcCntlSetLastError(inst, "Do MDI 1");
         end
     else
-        --Do CycleStart
-        mc.mcCntlSetLastError(inst, "Do Cycle Start");
-        mc.mcCntlCycleStart(inst);
+		if VerifyCanStart() then		
+			--Do CycleStart
+			mc.mcCntlSetLastError(inst, "Do Cycle Start");
+			mc.mcCntlCycleStart(inst);
+		else
+			mc.mcCntlSetLastError(inst, "Cycle start aborted by user.");
+		end
     end
 end
 
