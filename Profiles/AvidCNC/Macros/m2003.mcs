@@ -1,0 +1,43 @@
+--    This will pass the Laser VECTOR Command parameters in through the (comment)
+function  m2003()
+    local inst = mc.mcGetInstance('Script m2003 ') -- Pass in the script number, so we can see the commands called by this script in the log
+
+	--Get the existing GCode comment lines if any
+	local hLVCommand = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/Command"))  
+
+	local CurrentStr = mc.mcRegGetValueString(hLVCommand)
+	--Get the current line number, and read in the line
+    local LineNumber = mc.mcCntlGetGcodeLineNbr(inst)
+    local LineNumberStr = mc.mcCntlGetGcodeLine(inst, LineNumber)
+
+    i = string.find(LineNumberStr, "%)" )
+    if i == nil then
+        --
+    else
+        LineNumberStr = LineNumberStr:sub(1, i)    -- This will remove the end of the string after the closing ')'
+    end
+	
+
+    i = string.find(LineNumberStr, "%(" )
+    if i == nil then
+        --
+    else
+        LineNumberStr = LineNumberStr:sub(i)    -- This will remove the beginning of the string before the comment starts '('
+    end
+    CurrentStr = string.format("%s %s",CurrentStr, LineNumberStr) 
+	
+
+	--Paste the GCode Line comment into the Laser_Vector_Command register (for processing)
+	mc.mcRegSetValueString(hLVCommand, CurrentStr)   -- This will populate the GCode line data into the register
+
+	
+    mc.mcCntlLog(inst, '~~~~m2003() Loaded Laser Vector Command Parameter from Comment', "", -1) -- This will send a message to the log window
+    mc.mcCntlLog(inst, LineNumberStr, "", -1) -- This will send a message to the log window
+    --mc.mcCntlLog(inst, "", "", -1) -- This will send a BLANK LINE to the log window
+end
+
+if(mc.mcInEditor() == 1) then
+    -- If you are in the mcLua editor, this will cause your script to execute if you Run or Debug 
+    -- Make sure your Capitalization and numbers match that of the function you are calling 
+    m2003()
+end

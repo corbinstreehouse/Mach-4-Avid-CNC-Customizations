@@ -1,0 +1,49 @@
+-----------------------------------------
+-- Zero Z axis for ohmic touch-off
+-----------------------------------------
+-- Requires Offsets module that is
+-- loaded in load_modules.mcs.
+-----------------------------------------
+
+function  m3002()
+    local inst = mc.mcGetInstance('m3002 macro script')
+
+	local function Log(msg)
+		mc.mcCntlLog(inst, string.format("----->> m3002() %s", msg), "", -1)
+	end
+	
+	-- Get probe position for Z axis
+    local probe_z_position, rc = mc.mcCntlGetPoundVar(inst, mc.SV_PROBE_MACH_POS_Z)
+    if (rc ~= mc.MERROR_NOERROR) then
+        Log(string.format("Failure to get probe position, rc = %s", rc))
+        return
+    else
+        Log(string.format("Current probe position in machine coordinates: %.4f", probe_z_position))
+    end
+
+    -- Get current fixture offset.
+    local fix, p_val, rc = Offsets:GetFixtureOffset()
+    if (rc ~= mc.MERROR_NOERROR) then
+        Log(string.format("Failure to get current fixture offset, rc = %s", rc))
+        return
+    else
+        Log(string.format("Current fixture offset: %s, P val: %s", fix, p_val))
+
+        local pound_vars, cur_fix, rc = Offsets:GetFixtureOffsetPoundVars(fix, p_val)
+        if (rc ~= mc.MERROR_NOERROR) then
+            Log(string.format("Failure to get fixture offset pound vars, rc = %s", rc))
+        else
+            rc = mc.mcCntlSetPoundVar(inst, pound_vars.Z, probe_z_position)
+            if (rc ~= mc.MERROR_NOERROR) then
+                Log(string.format("Failed to set new fixture offset, rc = %s", rc))
+                return
+            else
+                Log(string.format("Z offset set for %s to probe position of %.4f", cur_fix, probe_z_position))
+            end
+        end
+    end
+end
+
+if(mc.mcInEditor() == 1) then
+    m3002()
+end

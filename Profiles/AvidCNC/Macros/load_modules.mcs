@@ -1,0 +1,18 @@
+local inst = mc.mcGetInstance("load_modules.mcs")
+
+local installPath = mc.mcCntlGetMachDir(inst)
+package.path = string.format(
+	"%s;%s\\Modules\\?.lua;%s\\Modules\\AvidCNC\\?.luac;",
+	package.path,
+	installPath,
+	installPath
+)
+
+-- Offsets module
+package.loaded.Offsets = nil
+require "Offsets"
+
+package.loaded.CorbinExtra = nil
+CorbinExtra = require "CorbinExtra"
+
+

@@ -1,0 +1,36 @@
+---------------------------------
+-- Clear Work Shift
+---------------------------------
+
+function  m3001()
+    local inst = mc.mcGetInstance('m3001 macro script')
+    local reset_position = 0
+
+	local function Log(msg)
+		mc.mcCntlLog(inst, string.format("----->> m3001() %s", msg), "", -1)
+	end
+	
+	-- Clear work shift.
+	rc = mc.mcCntlSetPoundVar(inst, mc.SV_WORK_SHIFT_Z, reset_position)
+    if (rc ~= mc.MERROR_NOERROR) then
+        Log("Failure to reset SV_WORK_SHIFT_Z")
+        return
+    else
+        Log(string.format(
+            "SV_WORK_SHIFT_Z set to %s",
+            reset_position
+        ))
+    end
+
+    -- Now that we have cleared out the work shift that
+    -- accounted for HC movement, we can use the aux pos
+    -- DRO again that will correctly show HC movement
+    -- in the next cut.
+	rc = mc.mcCntlDroSetUseAuxPosAxis(inst, 2, 1)
+    Log("Set the Z DRO to use Aux position (THC distance)")
+	
+end
+
+if(mc.mcInEditor() == 1) then
+    m3001()
+end

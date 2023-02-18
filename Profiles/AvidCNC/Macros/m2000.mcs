@@ -1,0 +1,28 @@
+--    This will pass in the filepath and filename of the image...
+function  m2000()
+    local inst = mc.mcGetInstance('Script m2000 ') -- Pass in the script number, so we can see the commands called by this script in the log
+  
+  
+  
+	--Get the current line number, and read in the line
+    local LineNumber = mc.mcCntlGetGcodeLineNbr(inst)
+    local LineNumberStr = mc.mcCntlGetGcodeLine(inst, LineNumber)
+	
+	
+	
+	--Paste the GCode Line into the File Path and Name register (for processing)
+	local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/File_Path_And_Name"))  
+	mc.mcRegSetValueString(hreg, LineNumberStr)   -- This will populate the GCode line data into the register
+
+		
+    mc.mcCntlLog(inst, "", "", -1) -- This will send a BLANK LINE to the log window
+    mc.mcCntlLog(inst, '~~~~m2000() Loaded the Laser Raster File Path and Name', "", -1) -- This will send a message to the log window
+end
+
+if(mc.mcInEditor() == 1) then
+    -- If you are in the mcLua editor, this will cause your script to execute if you Run or Debug 
+    -- Make sure your Capitalization and numbers match that of the function you are calling 
+    m2000()
+end
+
+

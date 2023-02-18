@@ -1,0 +1,21 @@
+--    This will ENABLE Laser Vector mode
+function  m2004()
+    local inst = mc.mcGetInstance('Script m2004 ') -- Pass in the script number, so we can see the commands called by this script in the log
+
+
+	local hregLaserVector = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/Enable"))  
+	mc.mcRegSetValue(hregLaserVector, 1)   -- This will tell the SmoothStepper to ENABLE Laser Vector Mode
+	
+	
+	
+    mc.mcCntlLog(inst, '~~~~m2004() Telling SmoothStepper to ENABLE Laser Verctor Mode', "", -1) -- This will send a message to the log window
+    mc.mcCntlLog(inst, "", "", -1) -- This will send a BLANK LINE to the log window
+end
+
+if(mc.mcInEditor() == 1) then
+    -- If you are in the mcLua editor, this will cause your script to execute if you Run or Debug 
+    -- Make sure your Capitalization and numbers match that of the function you are calling 
+    m2004()
+end
+
+

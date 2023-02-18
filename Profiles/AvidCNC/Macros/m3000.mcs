@@ -1,0 +1,54 @@
+-----------------------------------------
+-- Apply Work Shift
+-----------------------------------------
+-- Work shift is only applied when there
+-- has been negative HC movement.
+-----------------------------------------
+
+function  m3000()
+    local inst = mc.mcGetInstance('m3000 macro script')
+	local thc_distance = 0
+
+	local function Log(msg)
+		mc.mcCntlLog(inst, string.format("----->> m3000() %s", msg), "", -1)
+	end
+    
+	-- Get the current HC distance.
+	local hreg, rc = mc.mcRegGetHandle(inst, "ESS/HC/Z DRO THC Distance")
+	if (rc ~= mc.MERROR_NOERROR) then
+		Log('Failure to acquire register handle for "ESS/HC/Z DRO THC Distance"')
+		return
+	else
+		thc_distance, rc = mc.mcRegGetValue(hreg)
+		if (rc ~= mc.MERROR_NOERROR) then
+			Log('Failure to get register value for "ESS/HC/Z DRO THC Distance"')
+			return			
+		end
+	end
+
+	-- Positive THC distance does not need a work shift applied.
+	if (thc_distance >= 0) then
+		Log(string.format("NOT setting a work shift (HC distance = %.4f)", thc_distance))
+		return
+	end
+	
+	-- Set work shift based on HC distance.
+	rc = mc.mcCntlSetPoundVar(inst, mc.SV_WORK_SHIFT_Z, thc_distance * -1)
+	if (rc ~= mc.MERROR_NOERROR) then
+		Log("Failure to set SV_WORK_SHIFT_Z")
+		return
+	else
+		Log(string.format("SV_WORK_SHIFT_Z set to %s", thc_distance))
+
+		-- After setting a work shift that accounts for HC movement,
+		-- we no longer want to use the Aux pos DRO. If we did, the
+		-- aux pos DRO would include the HC movement twice. 
+		rc = mc.mcCntlDroSetUseAuxPosAxis(inst, 2, 0)
+		Log("Set the Z DRO to NOT USE Aux position (THC distance)")
+	end
+	
+end
+
+if(mc.mcInEditor() == 1) then
+    m3000()
+end

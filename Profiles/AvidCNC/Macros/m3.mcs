@@ -1,0 +1,70 @@
+-- Custom spindle control for HITECO ATC
+-- Starting process
+
+if CorbinExtra == nil then 
+	CorbinExtra = require "CorbinExtra"
+end
+
+function IsSpindleOn() 
+	local inst = mc.mcGetInstance()
+
+	local sigh = mc.mcSignalGetHandle(inst, mc.OSIG_SPINDLEON);
+	local sigState = mc.mcSignalGetState(sigh);
+
+	if (sigState == 1) then
+		return true;
+	else 
+		return false;
+	end
+
+
+end
+
+
+function m3()
+	local inst = mc.mcGetInstance()
+
+	dir, rc = mc.mcSpindleGetDirection(inst)
+	-- only do something if it isn't running..or else we have to stop and change the dirction
+	if dir == mc.MC_SPINDLE_OFF then 
+	--	mc.mcCntlSetLastError(inst, "Spindle Clockwise/Forward")
+		CorbinExtra.SetAirPressure(1)
+		--mc.mcCntlSetLastError(inst, "air on..waiting 5 seconds")
+		CorbinExtra.Sleep(5)
+		--	mc.mcCntlSetLastError(inst, "done waiting, turning on the spindle")
+
+-- the setDirectionWait version does not ever return for me...i wonder what it is waiting on?
+-- The bit is set..but i guess the RPM sensor is not available or hooked up
+		result = mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_FWD)
+		if result == mc.MERROR_NOERROR then
+--			mc.mcCntlSetLastError(inst, "Spindle now on, rc:"..result)
+		elseif result == mc.MERROR_TIMED_OUT then
+			mc.mcCntlSetLastError(inst, "ERROR: spindle timed out.")
+		else 
+			mc.mcCntlSetLastError(inst, "ERROR: got an error turning on the spindle: "..result)
+		end
+		-- check the state
+		if IsSpindleOn() then
+
+			--RPM, rc = mc.mcSpindleGetSensorRPM(inst)
+			--	mc.mcCntlSetLastError(inst, "spindle is on, rpm:"..RPM.." rc:"..rc)
+		else
+			mc.mcCntlSetLastError(inst, "ERROR: spindle is OFF");
+		end
+		CorbinExtra.Sleep(3)-- spindle needs time to come to speed
+
+
+	else
+		mc.mcCntlSetLastError("Spindle already on, doing nothing")
+	end
+
+
+end
+
+
+-- testing
+if (mc.mcInEditor() == 1) then
+	m3()
+
+end
+

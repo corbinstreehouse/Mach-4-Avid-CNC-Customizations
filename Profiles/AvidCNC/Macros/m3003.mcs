@@ -1,0 +1,54 @@
+-----------------------------------------
+-- Zero Z axis for mechanical touch-off
+-----------------------------------------
+-- Requires Offsets module that is
+-- loaded in load_modules.mcs.
+-----------------------------------------
+
+function  m3003()
+    local inst = mc.mcGetInstance('m3003 macro script')
+    local units = mc.mcCntlGetUnitsDefault(inst)
+    local switch_offset = units == 200 and 0.0886 or 2.25
+
+	local function Log(msg)
+		mc.mcCntlLog(inst, string.format("----->> m3003() %s", msg), "", -1)
+	end
+
+    Log(string.format("Mechanical switch offset: %s", switch_offset))
+	
+	-- Get probe position for Z axis.
+    local probe_z_position, rc = mc.mcCntlGetPoundVar(inst, mc.SV_PROBE_MACH_POS_Z)
+    if (rc ~= mc.MERROR_NOERROR) then
+        Log("Failure to get probe position")
+        return
+    else
+        Log(string.format("Current probe position in machine coordinates: %.4f", probe_z_position))
+    end
+
+    -- Get current fixture offset.
+    local fix, p_val, rc = Offsets:GetFixtureOffset()
+    if (rc ~= mc.MERROR_NOERROR) then
+        Log(string.format("Failure to get current fixture offset, rc = %s", rc))
+        return
+    else
+        Log(string.format("Fixture offset: %s, P val: %s", fix, p_val))
+        
+        local pound_vars, cur_fix, rc = Offsets:GetFixtureOffsetPoundVars(fix, p_val)
+        if (rc ~= mc.MERROR_NOERROR) then
+            Log(string.format("Failure to get fixture offset pound vars, rc = %s", rc))
+        else
+            local z_offset = probe_z_position + switch_offset
+            rc = mc.mcCntlSetPoundVar(inst, pound_vars.Z, z_offset)
+            if (rc ~= mc.MERROR_NOERROR) then
+                Log(string.format("Failed to set new fixture offset, rc = %s", rc))
+                return
+            else
+                Log(string.format("Z offset set for %s to probe position of %.4f", cur_fix, z_offset))
+            end
+        end
+    end
+end
+
+if(mc.mcInEditor() == 1) then
+    m3003()
+end

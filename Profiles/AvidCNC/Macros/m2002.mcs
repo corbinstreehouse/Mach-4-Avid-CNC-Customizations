@@ -1,0 +1,23 @@
+--    This will START Laser Raster Initialization
+function  m2002()
+    local inst = mc.mcGetInstance('Script m2002 ') -- Pass in the script number, so we can see the commands called by this script in the log
+
+	--Make sure that the "Laser/Raster/Start" is the last line of lua script that you run! 
+	local hregStartLaser = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/Start"))  
+    mc.mcCntlGcodeExecuteWait(inst, "G04 P0.25\n")
+	mc.mcRegSetValue(hregStartLaser, 1)   -- This will tell the SmoothStepper to start the Laser Raster process
+    mc.mcCntlGcodeExecuteWait(inst, "G04 P0.5\n")
+	
+	
+	
+    mc.mcCntlLog(inst, '~~~~m2002() Telling the SmoothStepper to START Laser Raster Initialization', "", -1) -- This will send a message to the log window
+    mc.mcCntlLog(inst, "", "", -1) -- This will send a BLANK LINE to the log window
+end
+
+if(mc.mcInEditor() == 1) then
+    -- If you are in the mcLua editor, this will cause your script to execute if you Run or Debug 
+    -- Make sure your Capitalization and numbers match that of the function you are calling 
+    m2002()
+end
+
+

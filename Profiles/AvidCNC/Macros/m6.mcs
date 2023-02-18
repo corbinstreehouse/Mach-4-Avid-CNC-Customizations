@@ -1,0 +1,50 @@
+function m6()
+
+	local inst = mc.mcGetInstance("m6()");
+	local selectedtool = mc.mcToolGetSelected(inst);
+	local currenttool = mc.mcToolGetCurrent(inst);
+	local ignore = nil;
+	local rc = mc.MERROR_NOERROR;
+	local hreg_ignore = 0;
+	local hreg_inProgress = 0;
+
+	-- Ignore tool changes register
+	hreg_ignore, rc = mc.mcRegGetHandle(inst, "iRegs0/AvidCNC/ToolChange/Ignore_Tool_Changes")
+	if (rc ~= mc.MERROR_NOERROR) then
+		-- Failure to acquire register handle
+		mc.mcCntlLog(inst, "Avid: Manual tool change, failure to acquire register handle. rc="..rc, "", -1);
+		ignore = 0;
+	else
+		ignore = mc.mcRegGetValue(hreg_ignore);
+	end
+
+	-- Skip remaining tool change steps if ignoring tool changes
+	if (ignore == 1) then
+		mc.mcCntlLog(inst, "Avid: Manual tool change, ignoring tool change", "", -1);
+		mc.mcCntlSetLastError(inst, string.format("Ignoring tool change to tool #%0.0f", selectedtool));
+		return;
+	end
+
+	-- Check if tool change is necessary
+	if selectedtool == currenttool then
+		mc.mcCntlSetLastError(inst, "Current and selected tool numbers are the same, no tool change required")
+		return;
+	end
+
+	-- Stop program so touch plate is operational
+	mc.mcCntlCycleStop(inst)
+
+	-- Set state for tool change output signal
+	hreg_inProgress, rc = mc.mcRegGetHandle(inst, "iRegs0/AvidCNC/ToolChange/MTC/In_Progress");
+	if (rc ~= mc.MERROR_NOERROR) then
+		-- Failure to acquire register handle
+		mc.mcCntlLog(inst, "Avid: Manual tool change, failure to acquire register handle. rc="..rc, "", -1);
+	else
+		mc.mcRegSetValue(hreg_inProgress, 1);
+	end
+
+end
+
+if (mc.mcInEditor() == 1) then
+ m6()
+end

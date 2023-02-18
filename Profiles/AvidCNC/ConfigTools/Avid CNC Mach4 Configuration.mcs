@@ -1,0 +1,21 @@
+local inst = mc.mcGetInstance("Avid CNC Machine Configuration")
+local path = mc.mcCntlGetMachDir(inst)
+local iRegKbEnable = mc.mcIoGetHandle (inst, "Keyboard/Enable")
+local iRegKbEnableJog = mc.mcIoGetHandle (inst, "Keyboard/EnableKeyboardJog")
+kbJogWasEnabled = nil
+
+-- Current state of keyboard jog.
+if (iRegKbEnable ~= 0) and (iRegKbEnableJog ~= 0) then
+    local kbEnable = mc.mcIoGetState(iRegKbEnable)
+    local kbEnableJog = mc.mcIoGetState(iRegKbEnableJog)
+    kbJogWasEnabled = (kbEnable == 1 and kbEnableJog ==1) and true or false
+end
+
+-- Disable keyboard jog.
+mc.mcIoSetState(iRegKbEnable, 0)
+mc.mcIoSetState(iRegKbEnableJog, 0)
+
+package.path = package.path .. ";" .. path .. "\\Modules\\AvidCNC\\?.luac"
+
+package.loaded.AvidMachineConfig = nil
+MachineConfiguration = require "AvidMachineConfig"

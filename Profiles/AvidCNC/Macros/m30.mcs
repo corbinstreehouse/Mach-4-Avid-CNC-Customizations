@@ -1,0 +1,60 @@
+if CorbinExtra == nil then 
+	CorbinExtra = require "CorbinExtra"
+end
+
+
+function m30()
+	local inst = mc.mcGetInstance();
+
+	local msg = "Avid: m30()";
+	local rc = mc.MERROR_NOERROR;
+
+	-- Set Part Finish output signal
+	local hsig, rc = mc.mcSignalGetHandle(inst, mc.OSIG_PRTSF);
+	if (rc ~= mc.MERROR_NOERROR) then
+		mc.mcCntlLog(
+			inst,
+			string.format("%s failure to get signal handle, rc=%s", msg, rc),
+			"",
+			-1
+		);
+	else
+		mc.mcSignalSetState(hsig, 1);
+	end
+
+	--[[ Additional items that need to be included so
+  our custom M30 macro perfrorms all the functions
+  of the stock M30 macro.
+  --]]
+
+	-- Cutter comp, coolant, mist, and spindle OFF
+	rc = mc.mcCntlGcodeExecute(inst, "G40");
+
+-- TODO m9?
+
+	--rc = mc.mcCntlGcodeExecute(inst, "M05");
+	-- above line deadlocks for some reason due to myt custom script
+	rc = mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_OFF)
+
+	--mc.mcCntlSetLastError(inst, "M30 gcode all done..")  
+
+	mc.mcCntlSetLastError(inst, "M30: Spindle now off, waiting for spin down 5 seconds")
+	CorbinExtra.Sleep(5)
+	mc.mcCntlSetLastError(inst, "M30: Sleep done, turning off the air and fan")
+	CorbinExtra.SetAirPressure(0)
+	mc.mcCntlSetLastError(inst, "M30 done, air is now off")
+	
+--	if (rc ~= mc.MERROR_NOERROR) then
+--		mc.mcCntlLog(
+--			inst,
+--			string.format("%s failure to execute gcode, rc=%s", msg, rc),
+--			"",
+--			-1
+--		);
+--	end
+
+end
+
+if (mc.mcInEditor() == 1) then
+	m30()
+end
