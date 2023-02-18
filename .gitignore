@@ -6,7 +6,6 @@ Modules/socket
 Modules/ssl
 Subroutines
 *.dat
-ScreenScript.lua
 Docs/*.*
 *.dll
 *.exe
