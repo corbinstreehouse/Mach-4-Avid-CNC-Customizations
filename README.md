@@ -15,6 +15,6 @@ This is a basic check that ensures the Gcode file is on line 1. If it isn't, the
 ## Resources
 
 
-Blog: [https://www.corbinstreehouse.com](https://www.corbinstreehouse.com)
+Corbin's Blog: [https://www.corbinstreehouse.com](https://www.corbinstreehouse.com)
 
 CNC Files: [https://www.corbinsworkshop.com](https://www.corbinstreehouse.com)
