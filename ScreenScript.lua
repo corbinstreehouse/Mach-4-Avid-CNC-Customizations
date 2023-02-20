@@ -431,27 +431,40 @@ end,
 ---------------------------------------------------------------
 -- Keyboard Inputs Toggle() function. Updated 5-16-16
 ---------------------------------------------------------------
-function KeyboardInputsToggle()
+
+-- corbin - use this function in other places so it is enabled only when the machine is enabled. 
+-- It was driving me crazy that it was taking over the keyboard when I had the machine disabled.
+function SetKeyboardInputsEnabled(enabled)
 	local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable")
     local iReg2 = mc.mcIoGetHandle (inst, "Keyboard/EnableKeyboardJog")
-	--local iReg3 = mc.mcRegGetHandle (inst, "KeyboardControl/Enabled")
-	
 	if (iReg ~= nil) and (iReg2 ~= nil) then
-	--if (iReg3 ~= nil) then
-        local val = mc.mcIoGetState(iReg);
-		--local val3 = mc.mcRegGetValueString(iReg3)
-		--if (val2 == 1) or (val3 == "1") then
-		if (val == 1) then
-            mc.mcIoSetState(iReg, 0);
-            mc.mcIoSetState(iReg2, 0);
-			--mc.mcRegSetValueString(iReg3, "0")
-			scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_OFF.png')
-		else
-            mc.mcIoSetState(iReg, 1);
-            mc.mcIoSetState(iReg2, 1);
-			--mc.mcRegSetValueString(iReg3, "1")
-			scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_ON.png')
-        end
+		mc.mcIoSetState(iReg, enabled)
+		mc.mcIoSetState(iReg2, enabled);
+	end
+end
+
+function GetKeyboardInputsEnabled() 
+	local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable")
+    local iReg2 = mc.mcIoGetHandle (inst, "Keyboard/EnableKeyboardJog")
+	if (iReg ~= nil) and (iReg2 ~= nil) then
+		return mc.mcIoGetState(iReg);
+	else
+		return 0
+	end
+end
+
+
+
+function KeyboardInputsToggle()
+	local isEnabled = GetKeyboardInputsEnabled()
+
+	if (isEnabled == 1) then
+		SetKeyboardInputsEnabled(0)
+		scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_OFF.png')
+	else
+		SetKeyboardInputsEnabled(1)		
+		scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_ON.png')
+		
 	end
 end
 
