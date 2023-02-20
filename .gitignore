@@ -51,3 +51,4 @@ Modules/int18n.lua
 Modules/crc32.lua
 Profiles/AvidCNC/Backups/Machine.ini.avid_default_bak
 Profiles/AvidCNC/Backups/SettingsBackup_V2.3.8.txt
+Profiles/AvidCNC/Macros/macroTests.mcs
