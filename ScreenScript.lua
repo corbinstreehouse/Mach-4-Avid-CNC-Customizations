@@ -165,7 +165,7 @@ SigLib = {
 		if (cuttingTool == "Plasma") then ResetSoftLimitEnabledStates() end;
 			
 		-- Kill spindle warm-up coroutine
-    warmUpRunning = false
+		warmUpRunning = false
 			
     end
 end,
@@ -459,12 +459,9 @@ function KeyboardInputsToggle()
 	local isEnabled = GetKeyboardInputsEnabled()
 
 	if (isEnabled == 1) then
-		SetKeyboardInputsEnabled(0)
-		scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_OFF.png')
+		DisableKeyboard()
 	else
-		SetKeyboardInputsEnabled(1)		
-		scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_ON.png')
-		
+		EnableKeyboard()
 	end
 end
 
@@ -1027,38 +1024,23 @@ SetRetractCode();
 -- Enable KeyboardJog on startup
 ----------------------------------------
 function StartupEnableKeyboardJog()
-	local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable");
-	local iReg2 = mc.mcIoGetHandle (inst, "Keyboard/EnableKeyboardJog");
-	mc.mcIoSetState(iReg, 1);
-	mc.mcIoSetState(iReg2, 1);
+	SetKeyboardInputsEnabled(1)
 end
 
 ----------------------------------------
 -- Enable Keyboard
 ----------------------------------------
 function EnableKeyboard()
-	local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable");
-	local iReg2 = mc.mcIoGetHandle (inst, "Keyboard/EnableKeyboardJog");
-	
-	if (iReg ~= nil) and (iReg2 ~= nil) then
-		mc.mcIoSetState(iReg, 1);
-		mc.mcIoSetState(iReg2, 1);
-		scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_ON.png')
-	end
+	SetKeyboardInputsEnabled(1)
+	scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_ON.png')
 end
 
 ----------------------------------------
 -- Disable Keyboard
 ----------------------------------------
 function DisableKeyboard()
-	local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable");
-	local iReg2 = mc.mcIoGetHandle (inst, "Keyboard/EnableKeyboardJog");
-	
-	if (iReg ~= nil) and (iReg2 ~= nil) then
-		mc.mcIoSetState(iReg, 0);
-		mc.mcIoSetState(iReg2, 0);
-		scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_OFF.png')
-	end
+	SetKeyboardInputsEnabled(0)
+	scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_OFF.png')
 end
 
 ---------------------------------------------------------------
