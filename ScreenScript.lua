@@ -181,22 +181,28 @@ end,
 
 [mc.ISIG_INPUT0] = function (state)
     if (state == 1) then 
---		mc.mcJogSetInc(inst, mc.X_AXIS, .0001);		
---		mc.mcJogSetInc(inst, mc.Y_AXIS, .0001);
---		mc.mcJogSetInc(inst, mc.Z_AXIS, .0001);
-
-
+		SetJogIncToValue(.0001)
     end
 end,
 
 [mc.ISIG_INPUT1] = function (state)
-   -- if (state == 1) then   
---        CycleStart()
---    --else
---        --mc.mcCntlFeedHold (0)
---    end
-
+    if (state == 1) then 
+		SetJogIncToValue(.001)
+    end
 end,
+
+[mc.ISIG_INPUT2] = function (state)
+    if (state == 1) then 
+		SetJogIncToValue(.01)
+    end
+end,
+
+[mc.ISIG_INPUT3] = function (state)
+    if (state == 1) then 
+		SetJogIncToValue(.1)
+    end
+end,
+
 
 [mc.ISIG_INPUT10] = function (state)
 	if ( state == 1 ) then
@@ -440,10 +446,17 @@ end,
 -- Keyboard Inputs Toggle() function. Updated 5-16-16
 ---------------------------------------------------------------
 
+function SetJogIncToValue(value)
+	mc.mcJogSetInc(inst, mc.X_AXIS, value);		
+	mc.mcJogSetInc(inst, mc.Y_AXIS, value);
+	mc.mcJogSetInc(inst, mc.Z_AXIS, value);
+end
+
+
 -- corbin - use this function in other places so it is enabled only when the machine is enabled. 
 -- It was driving me crazy that it was taking over the keyboard when I had the machine disabled.
 function SetKeyboardInputsEnabled(enabled)
-	local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable")
+		local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable")
     local iReg2 = mc.mcIoGetHandle (inst, "Keyboard/EnableKeyboardJog")
 	if (iReg ~= nil) and (iReg2 ~= nil) then
 		mc.mcIoSetState(iReg, enabled)
