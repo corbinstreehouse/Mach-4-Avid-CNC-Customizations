@@ -118,6 +118,7 @@ SigLib = {
 	scr.SetProperty('luaSelectTool', 'Enabled', tostring(stateReverse))
    
 	if (state == 1) then
+		EnableKeyboard()
         ButtonEnable()
 		-- Set enabled states for 4th axis specific buttons --
 		rc = mc.mcAxisIsEnabled(inst,3)
@@ -129,6 +130,7 @@ SigLib = {
 		scr.SetProperty("droPierceLimit", "Bg Color", "")	-- no bg color
 			
 	elseif ( state == 0 ) then
+		DisableKeyboard()
 		local hsig_CoolantOn, hsig_MistOn, rc
 		
 		--Disable COOLANT with machine disable
@@ -178,7 +180,13 @@ end,
 end,
 
 [mc.ISIG_INPUT0] = function (state)
-    
+    if (state == 1) then 
+--		mc.mcJogSetInc(inst, mc.X_AXIS, .0001);		
+--		mc.mcJogSetInc(inst, mc.Y_AXIS, .0001);
+--		mc.mcJogSetInc(inst, mc.Z_AXIS, .0001);
+
+
+    end
 end,
 
 [mc.ISIG_INPUT1] = function (state)
@@ -1024,7 +1032,7 @@ SetRetractCode();
 -- Enable KeyboardJog on startup
 ----------------------------------------
 function StartupEnableKeyboardJog()
-	SetKeyboardInputsEnabled(1)
+	SetKeyboardInputsEnabled(0) -- start disbled.
 end
 
 ----------------------------------------
