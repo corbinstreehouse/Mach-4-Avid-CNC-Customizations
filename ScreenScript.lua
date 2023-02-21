@@ -3361,6 +3361,7 @@ function btnRefX_1__Left_Up_Script(...)
     --mc.mcCntlGcodeExecuteWait(inst, 'M09')
     
 end
+-- tabATC-GlobalScript
 -- grpSpindle-GlobalScript
 function droSpindleOverride_On_Update_Script(...)
     local inst = mc.mcGetInstance()
