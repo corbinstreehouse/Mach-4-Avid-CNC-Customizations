@@ -2553,7 +2553,7 @@ end
 function btnToggleJogMode_Left_Up_Script(...)
     ButtonJogModeToggle()
 end
--- tabDiagnostics-GlobalScript
+-- tabDiagnosticsSmall-GlobalScript
 -- grpTHCLogging-GlobalScript
 function btnTMC3in1MarkLogFile_Clicked_Script(...)
     local inst = mc.mcGetInstance('Screenset Mark Log File button') -- Pass in the script number, so we can see the commands called by this script in the log
@@ -3126,6 +3126,240 @@ function luaSelectTool_Script(...)
     touST = require "SelectTool"
     
     STframe = touST.MachineSetup()
+end
+-- tabOffsetsCopy-GlobalScript
+function tabOffsetsCopy_On_Enter_Script(...)
+    local FixOffset = mc.mcCntlGetPoundVar(inst, 4014)
+    FixOffset = 53 + (FixOffset * 10)
+    local Fixture = 54
+    
+    while (Fixture <= 59) do
+        local state = "0"
+        if (Fixture == FixOffset) then
+            state = "1"
+        end
+        scr.SetProperty(string.format("tbtnG%.0f", Fixture), "Button State", state)
+        Fixture = Fixture + 1
+    end
+    
+end
+-- grpEdgeFinding-GlobalScript
+function droEdgeFinder_On_Modify_Script(...)
+    local inst = mc.mcGetInstance()
+    local val = scr.GetProperty("droEdgeFinder", "Value")
+    mc.mcProfileWriteString(inst, "PersistentDROs", "droEdgeFinder", string.format (val)) --Create a register and write to it
+end
+function btnYTop_Clicked_Script(...)
+    -- Touch Y positive button
+    local inst = mc.mcGetInstance()
+    local EdgeFinder = scr.GetProperty("droEdgeFinder", "Value")
+    EdgeFinder = tonumber(EdgeFinder)
+    local YPos = mc.mcAxisGetMachinePos(inst, mc.Y_AXIS)
+    XVar, YVar, ZVar = GetFixOffsetVars()
+    local OffsetVal = YPos - (EdgeFinder/2)
+    mc.mcCntlSetPoundVar(inst, YVar, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("Y Offset Set: %.4f", OffsetVal))
+end
+function btnXLeft_Clicked_Script(...)
+    --Touch X negative button
+    local inst = mc.mcGetInstance()
+    local EdgeFinder = scr.GetProperty("droEdgeFinder", "Value")
+    EdgeFinder = tonumber(EdgeFinder)
+    local XPos = mc.mcAxisGetMachinePos(inst, mc.X_AXIS)
+    XVar, YVar, ZVar = GetFixOffsetVars()
+    local OffsetVal = XPos + (EdgeFinder/2)
+    mc.mcCntlSetPoundVar(inst, XVar, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("X Offset Set: %.4f", OffsetVal))
+end
+function btnYBottom_Clicked_Script(...)
+    -- Touch Y negative button
+    local inst = mc.mcGetInstance()
+    local EdgeFinder = scr.GetProperty("droEdgeFinder", "Value")
+    EdgeFinder = tonumber(EdgeFinder)
+    local YPos = mc.mcAxisGetMachinePos(inst, mc.Y_AXIS)
+    XVar, YVar, ZVar = GetFixOffsetVars()
+    local OffsetVal = YPos + (EdgeFinder/2)
+    mc.mcCntlSetPoundVar(inst, YVar, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("Y Offset Set: %.4f", OffsetVal))
+end
+function btnXRight_Clicked_Script(...)
+    --Touch X positive button
+    local inst = mc.mcGetInstance()
+    local EdgeFinder = scr.GetProperty("droEdgeFinder", "Value")
+    EdgeFinder = tonumber(EdgeFinder)
+    local XPos = mc.mcAxisGetMachinePos(inst, mc.X_AXIS)
+    XVar, YVar, ZVar = GetFixOffsetVars()
+    local OffsetVal = XPos - (EdgeFinder/2)
+    mc.mcCntlSetPoundVar(inst, XVar, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("X Offset Set: %.4f", OffsetVal))
+end
+function btnSetCenter_Clicked_Script(...)
+    --Set Center button
+    local XPos = mc.mcAxisGetMachinePos(inst, mc.X_AXIS)
+    local YPos = mc.mcAxisGetMachinePos(inst, mc.Y_AXIS)
+    XVar, YVar, ZVar = GetFixOffsetVars()
+    mc.mcCntlSetPoundVar(inst, XVar, XPos)
+    mc.mcCntlSetPoundVar(inst, YVar, YPos)
+    mc.mcCntlSetLastError(inst, string.format("X Offset Set: %.4f | Y Offset Set: %.4f", XPos, YPos))
+end
+function tbtnG59_Down_Script(...)
+    local set = 59
+    mc.mcCntlMdiExecute(inst, string.format("G%.0f", set))
+    local button = 54
+    while (button <= 59) do
+        if (button ~= set) then
+            scr.SetProperty(string.format("tbtnG%.0f", button), "Button State", "0")
+        end
+        button = button + 1
+    end
+    mc.mcCntlSetLastError(inst, string.format("Fixture Offset Set: G%.0f", set))
+end
+function tbtnG54_Down_Script(...)
+    local set = 54
+    mc.mcCntlMdiExecute(inst, string.format("G%.0f", set))
+    local button = 54
+    while (button <= 59) do
+        if (button ~= set) then
+            scr.SetProperty(string.format("tbtnG%.0f", button), "Button State", "0")
+        end
+        button = button + 1
+    end
+    mc.mcCntlSetLastError(inst, string.format("Fixture Offset Set: G%.0f", set))
+end
+function tbtnG55_Down_Script(...)
+    local set = 55
+    mc.mcCntlMdiExecute(inst, string.format("G%.0f", set))
+    local button = 54
+    while (button <= 59) do
+        if (button ~= set) then
+            scr.SetProperty(string.format("tbtnG%.0f", button), "Button State", "0")
+        end
+        button = button + 1
+    end
+    mc.mcCntlSetLastError(inst, string.format("Fixture Offset Set: G%.0f", set))
+end
+function tbtnG56_Down_Script(...)
+    local set = 56
+    mc.mcCntlMdiExecute(inst, string.format("G%.0f", set))
+    local button = 54
+    while (button <= 59) do
+        if (button ~= set) then
+            scr.SetProperty(string.format("tbtnG%.0f", button), "Button State", "0")
+        end
+        button = button + 1
+    end
+    mc.mcCntlSetLastError(inst, string.format("Fixture Offset Set: G%.0f", set))
+end
+function tbtnG57_Down_Script(...)
+    local set = 57
+    mc.mcCntlMdiExecute(inst, string.format("G%.0f", set))
+    local button = 54
+    while (button <= 59) do
+        if (button ~= set) then
+            scr.SetProperty(string.format("tbtnG%.0f", button), "Button State", "0")
+        end
+        button = button + 1
+    end
+    mc.mcCntlSetLastError(inst, string.format("Fixture Offset Set: G%.0f", set))
+end
+function tbtnG58_Down_Script(...)
+    local set = 58
+    mc.mcCntlMdiExecute(inst, string.format("G%.0f", set))
+    local button = 54
+    while (button <= 59) do
+        if (button ~= set) then
+            scr.SetProperty(string.format("tbtnG%.0f", button), "Button State", "0")
+        end
+        button = button + 1
+    end
+    mc.mcCntlSetLastError(inst, string.format("Fixture Offset Set: G%.0f", set))
+end
+-- grpZOffset-GlobalScript
+function droGageBlock_On_Modify_Script(...)
+    local inst = mc.mcGetInstance()
+    local val = scr.GetProperty("droGageBlock", "Value")
+    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlock", string.format (val)) --Create a register and write to it
+end
+function btnSetZ_Clicked_Script(...)
+    -- Set Z button
+    local inst = mc.mcGetInstance()			  
+    local GageBlock = scr.GetProperty("droGageBlock", "Value")
+    local CurTool = mc.mcToolGetCurrent(inst) --Current Tool Num
+    local CurH = mc.mcCntlGetPoundVar(inst, 2032) --Current Selected H Offset
+    local CurHVal = mc.mcCntlGetPoundVar(inst, 2035) --Value of Current H Offset
+    local OffsetState = mc.mcCntlGetPoundVar(inst, 4008) --Current Height Offset State
+    if (OffsetState == 49) then
+        CurHVal = 0
+    end
+    GageBlock = tonumber(GageBlock)
+    local ZPos = mc.mcAxisGetMachinePos(inst, mc.Z_AXIS)
+    XVar, YVar, ZVar = GetFixOffsetVars()
+    local OffsetVal = ZPos - GageBlock - CurHVal
+    mc.mcCntlSetPoundVar(inst, ZVar, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("Z Offset Set: %.4f", OffsetVal))
+end
+function btnHOActivate_Clicked_Script(...)
+    --Toggle height offset button
+    local HOState = mc.mcCntlGetPoundVar(inst, 4008)
+    if (HOState == 49) then
+        mc.mcCntlMdiExecute(inst, "G43")
+    else
+        mc.mcCntlMdiExecute(inst, "G49")
+    end
+    
+end
+-- grpToolOffset-GlobalScript
+function btnSetZ_1__Clicked_Script(...)
+    --Set Tool button
+    local inst = mc.mcGetInstance()			  
+    local GageBlock = scr.GetProperty("droGageBlockT", "Value")
+    local CurTool = mc.mcToolGetCurrent(inst) --Current Tool Num
+    local OffsetState = mc.mcCntlGetPoundVar(inst, 4008) --Current Height Offset State
+    mc.mcCntlGcodeExecuteWait(inst, "G49")
+    GageBlock = tonumber(GageBlock)
+    local ZPos = mc.mcAxisGetPos(inst, mc.Z_AXIS)
+    local OffsetVal = ZPos - GageBlock
+    mc.mcToolSetData(inst, mc.MTOOL_MILL_HEIGHT, CurTool, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("Tool %.0f Height Offset Set: %.4f", CurTool, OffsetVal))
+    if (OffsetState ~= 49) then
+        mc.mcCntlMdiExecute(inst, string.format("G%.1f", OffsetState))
+    end
+    
+end
+function droGageBlockT_On_Modify_Script(...)
+    local inst = mc.mcGetInstance()
+    local val = scr.GetProperty("droGageBlockT", "Value")
+    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlockT", string.format (val)) --Create a register and write to it
+end
+-- tabDiagnosticsBig-GlobalScript
+-- TP 2-GlobalScript
+-- nbGCodeInput2-GlobalScript
+function nbGCodeInput2_On_Enter_Script(...)
+     scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
+end
+-- nbMDIInput2-GlobalScript
+function nbMDIInput2_On_Enter_Script(...)
+    scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nMDI');
+end
+-- Input Signals-GlobalScript
+-- Digital Readouts-GlobalScript
+-- Output Signals-GlobalScript
+-- grpHoming-GlobalScript
+function btnRefAllDiag_Left_Up_Script(...)
+    --RefAllHome()
+    wait = coroutine.create (RefAllHome) --Run the RefAllHome function as a coroutine named wait.
+    --See RefAllHome function in screen load script for coroutine.yield and PLC script for coroutine.resume
+end
+function btnRefX_1__Left_Up_Script(...)
+    --local inst = mc.mcGetInstance ()
+    --mc.mcCntlGcodeExecuteWait(inst, 'M07')
+    --mc.mcAxisHome(inst, 0)
+    --repeat
+    --wx.wxMilliSleep(200)
+    --local homing, rc= mc.mcAxisIsHoming(inst, 0)
+    --until homing == 0
+    --mc.mcCntlGcodeExecuteWait(inst, 'M09')
+    
 end
 -- grpSpindle-GlobalScript
 function droSpindleOverride_On_Update_Script(...)
