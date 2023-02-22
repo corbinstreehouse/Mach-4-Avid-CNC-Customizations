@@ -246,6 +246,12 @@ function ToolChange.GetToolForkNumberForTool(toolNumber)
     end
 end
 
+function ToolChange.SaveTools()
+	local rc = mc.mcToolSaveFile(inst)
+	CheckForNoError(rc, "SaveTools")
+end
+
+
 function ToolChange.SetToolForkNumberForTool(toolNumber, toolFork)
     local rc = mc.mcToolSetDataExInt(inst, toolNumber, TOOL_FORK_FIELD_NAME, toolFork)
     return CheckForNoError(rc, "SetToolForkNumberForTool")
@@ -316,6 +322,7 @@ if (mc.mcInEditor() == 1) then
 
         ToolChange.SetToolForkNumberForTool(5, 0)
         ToolChange.SetToolForkNumberForTool(6, 0)
+		ToolChange.SaveTools()
     else
         -- pick a real setup to test..
     end
