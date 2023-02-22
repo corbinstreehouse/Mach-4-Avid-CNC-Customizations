@@ -312,7 +312,7 @@ if (mc.mcInEditor() == 1) then
         local tf2 = ToolForks.AddToolForkPosition()
         ToolChange.SetToolForkNumberForTool(5, 1)  -- this might write stuff out...so i'll ahve to reset it after debugging
         ToolChange.SetToolForkNumberForTool(6, 2)
-        DoToolChangeFromTo(24, 32)
+        DoToolChangeFromTo(5, 6)
 
         ToolChange.SetToolForkNumberForTool(5, 0)
         ToolChange.SetToolForkNumberForTool(6, 0)
