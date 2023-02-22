@@ -235,13 +235,14 @@ end
 
 local TOOL_FORK_FIELD_NAME = "ToolFork"
 
+-- returns 0 if it isn't set
 function ToolChange.GetToolForkNumberForTool(toolNumber)
     -- Map the tool number to its tool fork
     local toolFork, rc = mc.mcToolGetDataExInt(inst, toolNumber, TOOL_FORK_FIELD_NAME)
     if rc == mc.MERROR_NOERROR then
         return toolFork
     else
-        return -1
+        return 0
     end
 end
 
@@ -253,9 +254,10 @@ end
 function ToolChange.DoToolChange()
     local selectedTool = mc.mcToolGetSelected(inst)
     local currentTool = mc.mcToolGetCurrent(inst)
-	
-	-- hack debugging
---	selectedTool = 1 -- corbin
+end
+
+function DoToolChangeFromTo(currentTool, selectedTool)
+
     if (selectedTool == currentTool) then
         -- not really an error..but useful to see
         ToolForks.Error(string.format("Tool %d already selected. Skipping tool change.", selectedTool))        
@@ -269,9 +271,9 @@ function ToolChange.DoToolChange()
 --    end
 
     local currentPosition = ToolChange.GetToolForkNumberForTool(currentTool)
-    if currentPosition == nil then
+    if currentPosition == 0 then
         -- Current tool has to be manually removed. The user has to remove it and then insert the next tool..which might be in a fork. We could make this better by checking that ..but continuing after a stop requires more logic that I'm not sure how to handle, especially if the user has to measure the tool height.
-        local message = "Current Tool #"..currentTool.." has no Tool Fork Position.\nRemove it and manually install tool "..selectedTool.." and continue"
+        local message = string.format("Current tool T%d has no tool fork holder to go back to.\nRemove it and manually install tool T%d and continue", currentTool, selectedTool)
         DoManualToolChangeWithMessage(message)
         do return end
     end
@@ -283,8 +285,8 @@ function ToolChange.DoToolChange()
         PutToolBackInForkAtPosition(currentPosition, currentTool)
 
         local selectedPosition = ToolChange.GetToolForkNumberForTool(selectedTool)
-        -- If the next selected tool is nil, then the user has to insert it. At least we dropped off the current tool before doing this.
-        if selectedPosition ~= nil then
+        -- If the next selected tool does not have a position, then the user has to insert it. At least we dropped off the current tool before doing this.
+        if selectedPosition > 0 then
             if LoadToolAtForkPosition(selectedPosition, selectedTool) then
                 -- set the new tool on success    
                 mc.mcToolSetCurrent(inst, selectedTool)
@@ -301,14 +303,12 @@ function ToolChange.DoToolChange()
     end
 
     RestoreState(state)
-
 end
-
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-
-	ToolChange.DoToolChange()
+    ToolForks.
+	DoToolChangeFromTo(1, 2)
 
 end
 

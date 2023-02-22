@@ -16,6 +16,14 @@ local ToolForks = {}
 local ToolForkPositions = {}
 local ToolForkCount = 0
 
+function ToolForks.GetToolForkCount()
+	return ToolForkCount
+end
+
+function ToolForks.GetToolForkPositions() 
+	return ToolForkPositions
+end
+
 ToolForks.ToolForkOrientation = { X_Plus = 0, X_Neg = 1, Y_Plus = 2, Y_Neg = 3}
 
 local inst = mc.mcGetInstance()
@@ -116,7 +124,7 @@ ToolForks.LoadToolForkPositions() -- Load the toolfork positions on startup
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-	ToolForks.AddToolForkPosition()
+--	ToolForks.AddToolForkPosition()
 --	SaveToolForkPositions()
 
 end
