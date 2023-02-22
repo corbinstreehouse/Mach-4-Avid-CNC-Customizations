@@ -42,7 +42,15 @@ end
 function LoadToolForkPositions()
 	local path = GetToolForkFilePath()
 	Log("Loading: "..path)
-	ToolForkPositions = inifile.parse(path)
+	-- make sure it exists..otherwise an exception is thrown
+	local file = io.open(path, "r") 
+	if file ~= nil then
+		file.close()
+		ToolForkPositions = inifile.parse(path)
+	else 
+		ToolForkPositions = nil
+	end
+
 	if ToolForkPositions ~= nil then
 		-- count them ; table.getn? deprecated. #? I need to learn Lua
 		ToolForkCount = 0
@@ -108,7 +116,7 @@ LoadToolForkPositions() -- Load the toolfork positions on startup
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-	
+
 
 else
 
