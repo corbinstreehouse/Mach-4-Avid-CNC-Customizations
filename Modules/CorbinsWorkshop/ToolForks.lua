@@ -41,7 +41,6 @@ end
 
 function LoadToolForkPositions()
 	local path = GetToolForkFilePath()
-	Log("Loading: "..path)
 	-- make sure it exists..otherwise an exception is thrown
 	local file = io.open(path, "r") 
 	if file ~= nil then
@@ -84,6 +83,7 @@ function AddToolForkPosition()
 	if ToolForkCount > 0 then
 		local lastToolForkIndex = ToolForkCount -- 1 based, not 0 based
 		lastToolFork = ToolForkPositions["ToolFork"..lastToolForkIndex] -- coult be nil on error
+		Log("copying last tool fork")
 	end
 	if lastToolFork == nil then
 		Log("No tool forks; adding a new basic one at 0000")
@@ -98,6 +98,7 @@ function AddToolForkPosition()
 	local toolFork = "ToolFork"..ToolForkCount -- 1 based, not 0 based
 	-- Initialize a new one with the last one's data; usually you will vary the x or y but nothing else
 	ToolForkPositions[ToolForkCount] = lastToolFork
+	Log("added a tool fork"..ToolForkPositions[ToolForkCount].." totalcount: "..ToolForkCount)
 end
 
 function DeleteLastToolForkPosition()
@@ -119,6 +120,7 @@ if (mc.mcInEditor() == 1) then
 	AddToolForkPosition()
 	
 	SaveToolForkPositions()
+
 else
 
 end
