@@ -30,11 +30,13 @@ local inst = mc.mcGetInstance()
 
 function ToolForks.Log(message)
 	-- Comment out for speed; uncomment for more logging
+	print(message)
 	mc.mcCntlLog(inst, message, "", -1)
 end
 
 function ToolForks.Error(message)
 	-- Log and set the error for better tracing of problems
+	print(message)
 	mc.mcCntlLog(inst, message, "", -1)
 	mc.mcCntlSetLastError(inst, message)
 end
