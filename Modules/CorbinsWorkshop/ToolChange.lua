@@ -307,8 +307,19 @@ end
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-    ToolForks.
-	DoToolChangeFromTo(1, 2)
+    if ToolForks.GetToolForkCount() == 0 then
+        local tf1 = ToolForks.AddToolForkPosition()
+        local tf2 = ToolForks.AddToolForkPosition()
+        ToolChange.SetToolForkNumberForTool(5, 1)  -- this might write stuff out...so i'll ahve to reset it after debugging
+        ToolChange.SetToolForkNumberForTool(6, 2)
+        DoToolChangeFromTo(24, 32)
+
+        ToolChange.SetToolForkNumberForTool(5, 0)
+        ToolChange.SetToolForkNumberForTool(6, 0)
+    else
+        -- pick a real setup to test..
+    end
+
 
 end
 

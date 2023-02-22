@@ -20,7 +20,7 @@ function ToolForks.GetToolForkCount()
 	return ToolForkCount
 end
 
-function ToolForks.GetToolForkPositions() 
+function ToolForks.GetToolForkPositions()
 	return ToolForkPositions
 end
 
@@ -107,6 +107,7 @@ function ToolForks.AddToolForkPosition()
 	-- Initialize a new one with the last one's data; usually you will vary the x or y but nothing else
 	ToolForkPositions[ToolForkCount] = lastToolFork
 	ToolForks.Log("added a tool fork; totalcount: "..ToolForkCount)
+	return lastToolFork
 end
 
 function ToolForks.DeleteLastToolForkPosition()
