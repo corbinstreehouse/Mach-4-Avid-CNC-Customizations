@@ -6,6 +6,9 @@
 -- (c) 2023 Corbin Dunn
 -- Software provided as-is. For redistribution rights, please contact me.
 
+package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+local inifile = require 'inifile'
+
 local ToolForks = {}
 
 -- ToolForkPositions has: ToolIndex, X, Y, Z, Orientation
@@ -20,8 +23,6 @@ DwellTime = 5.0 -- seconds
 
 ToolForkOrientation = { X_Plus = 0, X_Neg = 1, Y_Plus = 2, Y_Neg = 3}
 
-local inifile = require 'inifile'
-
 local inst = mc.mcGetInstance()
 
 function Log(message) 
@@ -32,6 +33,7 @@ end
 function GetToolForkFilePath() 
 	local profile = mc.mcProfileGetName(inst)
 	local machDirPath = mc.mcCntlGetMachDir(inst)
+	Log(machDirPath)
 	-- not sure why tls extension is used, but the tool table does it..so I'm doing it
 	local toolForkFilePath = machDirPath .. "\\Profiles\\" .. profile .. "\\ToolTables\\ToolForks.tls" 
 	return toolForkFilePath
