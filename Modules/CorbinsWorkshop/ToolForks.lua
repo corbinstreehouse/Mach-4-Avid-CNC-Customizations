@@ -1,5 +1,6 @@
 -- ToolForks.lua
 -- by Corbin Dunn
+-- Feb 21, 2023
 -- corbin@corbinstreehouse.com or corbin@corbinsworkshop.com
 -- Blog: https://www.corbinstreehouse.com
 -- Files/Prodcuts: https://www.corbinsworkshop.com
@@ -17,17 +18,22 @@ ToolForkCount = 0
 
 -- Default global values that the user can modify
 -- TODO: Load/set these
-SlideAmount = 2.0 -- inches
-DwellTime = 5.0 -- seconds
-
+SlideDistance = 2.5 -- inches
+DwellTime = 5.0 -- seconds, wait time for spindle to stop
 
 ToolForkOrientation = { X_Plus = 0, X_Neg = 1, Y_Plus = 2, Y_Neg = 3}
 
 local inst = mc.mcGetInstance()
 
-function Log(message) 
-	-- Uncomment to have some debug traces
+function Log(message)
+	-- Comment out for speed; uncomment for more logging
 	mc.mcCntlLog(inst, message, "", -1)
+end
+
+function Error(message)
+	-- Log and set the error for better tracing of problems
+	mc.mcCntlLog(inst, message, "", -1)
+	mc.mcCntlSetLastError(inst, message)
 end
 
 function GetToolForkFilePath() 
@@ -82,7 +88,7 @@ function AddToolForkPosition()
 	local lastToolFork = nil
 	if ToolForkCount > 0 then
 		local lastToolForkIndex = ToolForkCount -- 1 based, not 0 based
-		lastToolFork = ToolForkPositions["ToolFork"..lastToolForkIndex] -- coult be nil on error
+		lastToolFork = ToolForkPositions[lastToolForkIndex] -- coult be nil on error
 		Log("copying last tool fork")
 	end
 	if lastToolFork == nil then
@@ -95,7 +101,6 @@ function AddToolForkPosition()
 	end
 
 	ToolForkCount = ToolForkCount + 1
-	local toolFork = "ToolFork"..ToolForkCount -- 1 based, not 0 based
 	-- Initialize a new one with the last one's data; usually you will vary the x or y but nothing else
 	ToolForkPositions[ToolForkCount] = lastToolFork
 	Log("added a tool fork"..ToolForkPositions[ToolForkCount].." totalcount: "..ToolForkCount)
@@ -110,7 +115,6 @@ function DeleteLastToolForkPosition()
 	else 
 		Log("Not deleting anything, because we have no items")
 	end
-
 end
 
 LoadToolForkPositions() -- Load the toolfork positions on startup
@@ -118,9 +122,7 @@ LoadToolForkPositions() -- Load the toolfork positions on startup
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
 	AddToolForkPosition()
-	
 	SaveToolForkPositions()
-
 else
 
 end
