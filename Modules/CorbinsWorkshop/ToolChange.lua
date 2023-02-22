@@ -13,6 +13,12 @@ local ToolChange = {}
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 local ToolForks = require 'ToolForks'
 
+-- Default global values that the user can modify
+-- TODO: Load/set these
+ToolChange.SlideDistance = 2.5 -- inches
+ToolChange.DwellTime = 5.0 -- seconds, wait time for spindle to stop
+
+
 local TEST_AT_Z_0 = true -- set to true to debug the slide at z 0...don't have any tools in, otherwise they will get dropped!
 local USE_SLOW_FEED_RATES = true -- if true, G01 at F25. if false, G0.
 
@@ -76,16 +82,16 @@ function GetSlideValuesForOrientation(orientation)
     local y = 0.0
     if orientation == ToolForks.ToolForkOrientation.X_Plus then
         -- Facing right, slide left (negative)
-        x = -1.0 * ToolForks.SlideDistance
+        x = -1.0 * ToolChange.SlideDistance
     elseif orientation == ToolForks.ToolForkOrientation.X_Neg then
         -- Facing left, slide right
-        x = ToolForks.SlideDistance
+        x = ToolChange.SlideDistance
     elseif orientation == ToolForks.ToolForkOrientation.Y_Plus then
         -- facing back, slide forward (negative)
-        y = -1.0 *ToolForks.SlideDistance
+        y = -1.0 *ToolChange.SlideDistance
     elseif orientation == ToolForks.ToolForkOrientation.Y_Neg then
         -- fadcing forward, slide back (positive)
-        y = ToolForks.SlideDistance
+        y = ToolChange.SlideDistance
     else
         assert("Unknown orientation: "..orientation)
     end
@@ -222,14 +228,14 @@ function TurnOffSpindleAndWait()
     -- TODO: start x/y movement while this is happening..do a time to make sure it lasts at least the dwell time, and if it hasn't..dwell for a while
     local GCode = ""
     GCode = GCode .. "M5\n"
-    GCode = GCode .. string.format("G04 P%.4f\n", ToolForks.DwellTime)
+    GCode = GCode .. string.format("G04 P%.4f\n", ToolChange.DwellTime)
     local rc = mc.mcCntlGcodeExecuteWait(inst, GCode)
     return CheckForNoError(rc, "TurnOffSpindleAndWait")
 end
 
 local TOOL_FORK_FIELD_NAME = "ToolFork"
 
-function GetToolForkNumberForTool(toolNumber)
+function ToolChange.GetToolForkNumberForTool(toolNumber)
     -- Map the tool number to its tool fork
     local toolFork, rc = mc.mcToolGetDataExInt(inst, toolNumber, TOOL_FORK_FIELD_NAME)
     if rc == mc.MERROR_NOERROR then
@@ -239,27 +245,30 @@ function GetToolForkNumberForTool(toolNumber)
     end
 end
 
-function SetToolForkNumberForTool(toolNumber, toolFork)
+function ToolChange.SetToolForkNumberForTool(toolNumber, toolFork)
     local rc = mc.mcToolSetDataExInt(inst, toolNumber, TOOL_FORK_FIELD_NAME, toolFork)
     return CheckForNoError(rc, "SetToolForkNumberForTool")
 end
 
-function DoToolChange()
+function ToolChange.DoToolChange()
     local selectedTool = mc.mcToolGetSelected(inst)
     local currentTool = mc.mcToolGetCurrent(inst)
+	
+	-- hack debugging
+--	selectedTool = 1 -- corbin
     if (selectedTool == currentTool) then
         -- not really an error..but useful to see
-        ToolForks.Error("Tool "..selectedTool.." already selected. Skipping tool change.")        
+        ToolForks.Error(string.format("Tool %d already selected. Skipping tool change.", selectedTool))        
         do return end
     end
 
-    if ToolForkPositions == nil then
-        wx.wxMessageBox("ToolChange: Invalid setup; nil ToolForkPositions! This is a coding error.\nPerforming Cycle Stop")
-        mc.mcCntlCycleStop(inst)
-        do return end
-    end
+--    if ToolForkPositions == nil then
+--        wx.wxMessageBox("ToolChange: Invalid setup; nil ToolForkPositions! This is a coding error.\nPerforming Cycle Stop")
+--        mc.mcCntlCycleStop(inst)
+--        do return end
+--    end
 
-    local currentPosition = GetToolForkNumberForTool(currentTool)
+    local currentPosition = ToolChange.GetToolForkNumberForTool(currentTool)
     if currentPosition == nil then
         -- Current tool has to be manually removed. The user has to remove it and then insert the next tool..which might be in a fork. We could make this better by checking that ..but continuing after a stop requires more logic that I'm not sure how to handle, especially if the user has to measure the tool height.
         local message = "Current Tool #"..currentTool.." has no Tool Fork Position.\nRemove it and manually install tool "..selectedTool.." and continue"
@@ -273,7 +282,7 @@ function DoToolChange()
     if TurnOffSpindleAndWait() then 
         PutToolBackInForkAtPosition(currentPosition, currentTool)
 
-        local selectedPosition = GetToolForkNumberForTool(selectedTool)
+        local selectedPosition = ToolChange.GetToolForkNumberForTool(selectedTool)
         -- If the next selected tool is nil, then the user has to insert it. At least we dropped off the current tool before doing this.
         if selectedPosition ~= nil then
             if LoadToolAtForkPosition(selectedPosition, selectedTool) then
@@ -288,12 +297,19 @@ function DoToolChange()
             DoManualToolChangeWithMessage(message)
         end
     else
-        Log("Failed to turn off spindle!")
+        ToolForks.Log("Failed to turn off spindle!")
     end
 
     RestoreState(state)
 
 end
 
+
+if (mc.mcInEditor() == 1) then
+	-- Easier testing.. to do stuff here
+
+	ToolChange.DoToolChange()
+
+end
 
 return ToolChange
