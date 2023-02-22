@@ -1,66 +1,116 @@
+-- ToolForks.lua
+-- by Corbin Dunn
+-- corbin@corbinstreehouse.com or corbin@corbinsworkshop.com
+-- Blog: https://www.corbinstreehouse.com
+-- Files/Prodcuts: https://www.corbinsworkshop.com
+-- (c) 2023 Corbin Dunn
+-- Software provided as-is. For redistribution rights, please contact me.
+
 local ToolForks = {}
 
+-- ToolForkPositions has: ToolIndex, X, Y, Z, Orientation
+ToolForkPositions = {}
+ToolForkCount = 0
+
+-- Default global values that the user can modify
+-- TODO: Load/set these
+SlideAmount = 2.0 -- inches
+DwellTime = 5.0 -- seconds
 
 
+ToolForkOrientation = { X_Plus = 0, X_Neg = 1, Y_Plus = 2, Y_Neg = 3}
 
--- ToolForkPositions have: index, x, y, z, and orientation
-global ToolForkPositions = {} 
-
-require 'inifile'
+local inifile = require 'inifile'
 
 local inst = mc.mcGetInstance()
 
--- wish there was a better way to do this...like how to get the current profile path?
-local ToolForkFileRelPath = "\\"
+function Log(message) 
+	-- Uncomment to have some debug traces
+	mc.mcCntlLog(inst, message, "", -1)
+end
 
 function GetToolForkFilePath() 
-	machDirPath, rc = mc.mcCntlGetMachDir(inst)
-	
-	
+	local profile = mc.mcProfileGetName(inst)
+	local machDirPath = mc.mcCntlGetMachDir(inst)
+	-- not sure why tls extension is used, but the tool table does it..so I'm doing it
+	local toolForkFilePath = machDirPath .. "\\Profiles\\" .. profile .. "\\ToolTables\\ToolForks.tls" 
+	return toolForkFilePath
 end
-
-
-buf, rc = int mcCntlGetMachDir(
-		number mInst)
-
-
-
-
-inifile.parse('example.ini')
-inifile.save('example.ini', iniTable)
-
-
-
-
-local CSVPath = wx.wxGetCwd() .. "\\Profiles\\YourProfile\\Modules\\ToolChangePositions.csv"
-ToolNum = 0;
---[[
-Open the file and read out the data
---]]
-io.input(io.open(CSVPath,"r"))
-local line;
-for line in io.lines(CSVPath) do
-	tkz = wx.wxStringTokenizer(line, ",");
-	TC_Positions[ToolNum] = {}-- make a blank table in the positions table to hold the tool data 
-	local token = tkz:GetNextToken();
-	TC_Positions[ToolNum] ["Tool_Number"] = token;
-	TC_Positions[ToolNum] ["X_Position"] = tkz:GetNextToken();
-	TC_Positions[ToolNum] ["Y_Position"] = tkz:GetNextToken();
-	TC_Positions[ToolNum] ["Z_Position"] = tkz:GetNextToken();
-	TC_Positions["Max"] = ToolNum --Set the max tool number
-	ToolNum = ToolNum + 1 --Increment the tool number
-end
-io.close()
-
 
 function LoadToolForkPositions()
+	local path = GetToolForkFilePath()
+	Log("Loading: "..path)
+	ToolForkPositions = inifile.parse(path)
+	if ToolForkPositions ~= nil then
+		-- count them ; table.getn? deprecated. #? I need to learn Lua
+		ToolForkCount = 0
+		for toolName, toolValues in ipairs(ToolForkPositions) do 
+			Log(toolName.." "..toolValues)
+			ToolForkCount = ToolForkCount + 1
+		end
+	else
+		ToolForkPositions = {} -- empty
+		ToolForkCount = 0
+	end
+end
 
+function SaveToolForkPositions()
+	if ToolForkPositions ~= nil then
+		local path = GetToolForkFilePath()
+		inifile.save(path, ToolForkPositions)
+		Log("Saved ToolForkPositions to: "..path)
+	else
+		Log("Save: nil ToolForkPositions")
+	end
+end
 
+-- Adds a tool fork; caller should do a SaveToolForkPositions to write it to the file after this.
+function AddToolForkPosition()
+	if ToolForkPositions == nil then
+		ToolForkPositions = {}
+	end
 
+	local lastToolFork = nil
+	if ToolForkCount > 0 then
+		local lastToolForkIndex = ToolForkCount -- 1 based, not 0 based
+		lastToolFork = ToolForkPositions["ToolFork"..lastToolForkIndex] -- coult be nil on error
+	end
+	if lastToolFork == nil then
+		Log("No tool forks; adding a new basic one at 0000")
+		lastToolFork = {}
+		lastToolFork.X = 0.0
+		lastToolFork.Y = 0.0
+		lastToolFork.Z = 0.0
+		lastToolFork.Orientation = ToolForkOrientation.Y_Plus
+	end
+
+	ToolForkCount = ToolForkCount + 1
+	local toolFork = "ToolFork"..ToolForkCount -- 1 based, not 0 based
+	-- Initialize a new one with the last one's data; usually you will vary the x or y but nothing else
+	ToolForkPositions[ToolForkCount] = lastToolFork
+end
+
+function DeleteLastToolForkPosition()
+	Log("Deleting the last tool fork")
+	if ToolForkCount > 0 then
+		Log("Deleting: ToolFork"..ToolForkCount)
+		table.remove(ToolForkPositions, ToolForkCount - 1)
+		ToolForkCount = ToolForkCount - 1
+	else 
+		Log("Not deleting anything, because we have no items")
+	end
 
 end
 
+LoadToolForkPositions() -- Load the toolfork positions on startup
 
+if (mc.mcInEditor() == 1) then
+	-- Easier testing.. to do stuff here
+	
+
+else
+
+end
 
 
 return ToolForks -- Module End
