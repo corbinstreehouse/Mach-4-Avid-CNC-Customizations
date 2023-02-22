@@ -116,8 +116,9 @@ LoadToolForkPositions() -- Load the toolfork positions on startup
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-
-
+	AddToolForkPosition()
+	
+	SaveToolForkPositions()
 else
 
 end
