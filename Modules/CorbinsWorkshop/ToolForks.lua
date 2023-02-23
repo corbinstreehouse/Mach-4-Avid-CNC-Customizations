@@ -12,10 +12,25 @@ local inifile = require 'inifile'
 
 local ToolForks = {}
 
--- ToolForkPositions has: ToolIndex, X, Y, Z, Orientation
+--ToolForkPositions is a table. 
+-- The keys are: "ToolForkCount" and "ToolFork#", where # is replaced with the Tool Fork's Number.
+-- Tool Fork Number is 1-based.
+-- The data is saved to an ini file named "ToolForks.tls in the Profile's ToolTables directory.
 local ToolForkPositions = {}
-local ToolForkCount = 0
 
+-- A ToolFork is a table. They keys:
+-- Number, X, Y, Z, Orientation
+local DummyToolFork = {}
+DummyToolFork.Number = 0
+DummyToolFork.X = 0.0
+DummyToolFork.Y = 0.0
+DummyToolFork.Z = 0.0
+DummyToolFork.Orientation = 0
+
+
+
+-- i'm not fond of having a count exposed, but the Lua table methods only have deprecated things that walk the table.
+--- So, we have to keep it in sync here, which means onoly adding and removing from the list via this file's 'API
 function ToolForks.GetToolForkCount()
 	return ToolForkCount
 end
@@ -61,16 +76,15 @@ function ToolForks.LoadToolForkPositions()
 		ToolForkPositions = nil
 	end
 
+	ToolForkCount = 0
 	if ToolForkPositions ~= nil then
-		-- count them ; table.getn? deprecated. #? I need to learn Lua
-		ToolForkCount = 0
 		for toolForkNumber, toolValues in ipairs(ToolForkPositions) do 
 			ToolForks.Log(string.format("loaded toolForkNumber: %d", toolForkNumber))
+			assert(ToolForkPositions[ToolForkCount] ~= nil) -- TODO: remove this, corbin..just making sure the list is loading with numbers and not strings
 			ToolForkCount = ToolForkCount + 1
 		end
 	else
 		ToolForkPositions = {} -- empty
-		ToolForkCount = 0
 	end
 end
 
@@ -90,26 +104,28 @@ function ToolForks.AddToolForkPosition()
 		ToolForkPositions = {}
 	end
 
-	local lastToolFork = nil
-	if ToolForkCount > 0 then
-		local lastToolForkIndex = ToolForkCount -- 1 based, not 0 based
-		lastToolFork = ToolForkPositions[lastToolForkIndex] -- coult be nil on error
+	local newToolFork = {}
+	if ToolForkCount > 0 then		
+		local lastToolFork = ToolForkPositions[ToolForkCount - 1] -- coult be nil on error
 		ToolForks.Log("copying last tool fork")
-	end
-	if lastToolFork == nil then
+		newToolFork.ToolForkNumber = lastToolFork.ToolForkNumber + 1
+		newToolFork.X = lastToolFork.X
+		newToolFork.Y = lastToolFork.Y
+		newToolFork.Z = lastToolFork.Z
+		newToolFork.Orientation = lastToolFork.Orientation		
+	else 
 		ToolForks.Log("No tool forks; adding a new basic one at 0000")
-		lastToolFork = {}
-		lastToolFork.X = 0.0
-		lastToolFork.Y = 0.0
-		lastToolFork.Z = 0.0
-		lastToolFork.Orientation = ToolForks.ToolForkOrientation.Y_Plus
+		newToolFork.ToolForkNumber = 1
+		newToolFork.X = 0.0
+		newToolFork.Y = 0.0
+		newToolFork.Z = 0.0
+		newToolFork.Orientation = ToolForks.ToolForkOrientation.Y_Plus
 	end
-
-	ToolForkCount = ToolForkCount + 1
 	-- Initialize a new one with the last one's data; usually you will vary the x or y but nothing else
-	ToolForkPositions[ToolForkCount] = lastToolFork
+	ToolForkPositions[ToolForkCount] = newToolFork
+	ToolForkCount = ToolForkCount + 1
 	ToolForks.Log("added a tool fork; totalcount: "..ToolForkCount)
-	return lastToolFork
+	return newToolFork
 end
 
 function ToolForks.DeleteLastToolForkPosition()
