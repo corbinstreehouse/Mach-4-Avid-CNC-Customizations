@@ -81,15 +81,15 @@ function GetSlideValuesForOrientation(orientation)
     local x = 0.0
     local y = 0.0
     if orientation == ToolForks.ToolForkOrientation.X_Plus then
-        -- Facing right, slide left (negative)
+        -- Facing right, slide left (Minuative)
         x = -1.0 * ToolChange.SlideDistance
-    elseif orientation == ToolForks.ToolForkOrientation.X_Neg then
+    elseif orientation == ToolForks.ToolForkOrientation.X_Minus then
         -- Facing left, slide right
         x = ToolChange.SlideDistance
     elseif orientation == ToolForks.ToolForkOrientation.Y_Plus then
         -- facing back, slide forward (negative)
         y = -1.0 *ToolChange.SlideDistance
-    elseif orientation == ToolForks.ToolForkOrientation.Y_Neg then
+    elseif orientation == ToolForks.ToolForkOrientation.Y_Minus then
         -- fadcing forward, slide back (positive)
         y = ToolChange.SlideDistance
     else
@@ -266,7 +266,7 @@ function DoToolChangeFromTo(currentTool, selectedTool)
 
     if (selectedTool == currentTool) then
         -- not really an error..but useful to see
-        ToolForks.Error(string.format("Tool %d already selected. Skipping tool change.", selectedTool))        
+        ToolForks.Error(string.format("Tool %d already selected. Skipping tool change.", selectedTool))
         do return end
     end
 
@@ -313,7 +313,8 @@ end
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-    if ToolForks.GetToolForkCount() == 0 then
+
+    if false and ToolForks.GetToolForkCount() == 0 then
         local tf1 = ToolForks.AddToolForkPosition()
         local tf2 = ToolForks.AddToolForkPosition()
         ToolChange.SetToolForkNumberForTool(5, 1)  -- this might write stuff out...so i'll ahve to reset it after debugging
