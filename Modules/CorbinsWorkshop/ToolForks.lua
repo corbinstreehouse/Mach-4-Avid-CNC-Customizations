@@ -64,8 +64,8 @@ function ToolForks.LoadToolForkPositions()
 	if ToolForkPositions ~= nil then
 		-- count them ; table.getn? deprecated. #? I need to learn Lua
 		ToolForkCount = 0
-		for toolName, toolValues in ipairs(ToolForkPositions) do 
-			ToolForks.Log(toolName.." "..toolValues)
+		for toolForkNumber, toolValues in ipairs(ToolForkPositions) do 
+			ToolForks.Log(string.format("loaded toolForkNumber: %d", toolForkNumber))
 			ToolForkCount = ToolForkCount + 1
 		end
 	else

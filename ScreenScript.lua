@@ -39,6 +39,7 @@ package.path = package.path .. ";" .. path .. "\\Modules\\AvidCNC\\?.lua;"
 package.path = package.path .. ";" .. path .. "\\Modules\\AvidCNC\\?.mcs;"
 package.path = package.path .. ";" .. path .. "\\Modules\\AvidCNC\\?.mcc;"
 package.path = package.path .. ";" .. path .. "\\Modules\\AvidCNC\\?.dll;"
+package.path = package.path .. ";" .. path .. "\\Modules\\CorbinsWorkshop\\?.lua;"
 
 --Master module
 package.loaded.MasterModule = nil
@@ -46,6 +47,12 @@ mm = require "mcMasterModule"
 
 package.loaded.CorbinExtra = nil
 CorbinExtra = require "CorbinExtra"
+
+package.loaded.ToolForks = nil
+ToolForks = require "ToolForks"
+
+package.loaded.ToolChange = nil
+ToolChange = require "ToolChange"
 
 --Probing module
 -- package.loaded.Probing = nil
@@ -3363,7 +3370,39 @@ function btnRefX_1__Left_Up_Script(...)
 end
 -- tabATCToolSetup-GlobalScript
 -- tabATCToolForkSetup-GlobalScript
--- grp(30)-GlobalScript
+function tabATCToolForkSetup_On_Enter_Script(...)
+    -- ATC Tool Fork Setup Tab
+    -- by Corbin Dunn, Feb 22, 2023
+    
+    local ToolForkPositions = ToolForks.GetToolForkPositions()
+    
+    
+    for toolForkNumber, toolValues in ipairs(ToolForkPositions) do 
+    	ToolForks.Log(string.format("UI loaded toolForkNumber: %d", toolForkNumber))
+    	--scr.SetProperty("lstToolForks", "Value", "0")
+    end
+    
+    scr.SetProperty("lstToolForks", "Strings", "0\n1\n\2")
+end
+-- grpToolForkEditor-GlobalScript
+function droMachineX_On_Update_Script(...)
+    local val = select(1,...) -- Get the system value.
+    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
+    DecToFrac(0)
+    return val -- the script MUST return a value, otherwise, the control will not be updated.
+end
+function droMachineY_On_Update_Script(...)
+    local val = select(1,...) -- Get the system value.
+    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
+    DecToFrac(1)
+    return val -- the script MUST return a value, otherwise, the control will not be updated.
+end
+function droMachineZ_On_Update_Script(...)
+    local val = select(1,...) -- Get the system value.
+    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
+    DecToFrac(2)
+    return val -- the script MUST return a value, otherwise, the control will not be updated.
+end
 -- grpSpindle-GlobalScript
 function droSpindleOverride_On_Update_Script(...)
     local inst = mc.mcGetInstance()
