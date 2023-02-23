@@ -13,11 +13,10 @@ local inifile = require 'inifile'
 local ToolForks = {}
 
 --ToolForkPositions is a table. 
--- The keys are: "ToolForkCount" and "ToolFork%d", where %d is replaced with the Tool Fork's Number.
+-- The keys are: "ToolForkData" and "ToolFork%d", where %d is replaced with the Tool Fork's Number.
 -- Tool Fork Number is 1-based.
--- The data is saved to an ini file named "ToolForks.tls in the Profile's ToolTables directory.
-ToolForks.ToolForkPositions = {}
-ToolForks.ToolForkPositions.ToolForkCount = 0
+-- Ot is saved to an ini file named "ToolForks.tls in the Profile's ToolTables directory.
+ToolForks.ToolForkPositions = nil
 
 -- An orientation for a tool fork
 ToolForks.ToolForkOrientation = { X_Plus = 0, X_Minus = 1, Y_Plus = 2, Y_Minus = 3}
@@ -34,6 +33,15 @@ DummyToolFork.Orientation = ToolForks.ToolForkOrientation.X_Plus
 
 local inst = mc.mcGetInstance()
 
+function InitializeToolForkPositions() 
+	local data = {}
+	data.ToolForkCount = 0
+	data.SlideDistance = 2.5
+	data.DwellTime = 5.0
+	ToolForks.ToolForkPositions = {}
+	ToolForks.ToolForkPositions.ToolForkData = data
+end
+
 -- might return nil if not in the table; convenience function
 function ToolForks.GetToolForkNumber(number)
 	local key = string.format("ToolFork%d", number)
@@ -41,14 +49,18 @@ function ToolForks.GetToolForkNumber(number)
 end
 
 -- call with nil to remove it
-function SetToolForkAtNumber(toolFork, number)
+function SetToolForkAtNumber(number, toolFork)
 	local key = string.format("ToolFork%d", number)
 	ToolForks.ToolForkPositions[key] = toolFork
 end
 
+function ToolForks.GetToolForkData()
+	return ToolForks.ToolForkPositions.ToolForkData
+end
+
 -- conveninence function to get the count
 function ToolForks.GetToolForkCount()
-	return ToolForks.ToolForkPositions.ToolForkCount
+	return ToolForks.GetToolForkData().ToolForkCount
 end
 
 function ToolForks.Log(message)
@@ -78,18 +90,24 @@ function ToolForks.LoadToolForkPositions()
 	-- make sure it exists..otherwise an exception is thrown
 	local file = io.open(path, "r")
 	if file ~= nil then
-		file.close()
+		file:close()
 		ToolForks.ToolForkPositions = inifile.parse(path)
 	else 
 		ToolForks.ToolForkPositions = nil
 	end
 
-	ToolForkCount = 0
 	if ToolForks.ToolForkPositions ~= nil then
 		-- TODO: Maybe verify the data we are reading in..like the count and values?
-		ToolForks.log(string.format("Loaded ToolForks. Count: %d", ToolForks.ToolForkPositions.ToolForkCount))
+		if ToolForks.ToolForkPositions.ToolForkData == nil then
+			-- bad file format for now...reset and log
+			ToolForks.Error("Bad ToolForks.tls file!!")
+			-- TODO: Maybe present this error to the user..as it is kind of a big deal..
+			InitializeToolForkPositions()
+		else 
+			ToolForks.Log(string.format("Loaded ToolForks. Count: %d", ToolForks.GetToolForkCount()))
+		end
 	else
-		ToolForks.ToolForkPositions = { ToolForkCount = 0 }
+		InitializeToolForkPositions()
 	end
 end
 
@@ -106,7 +124,7 @@ end
 -- Adds a tool fork; caller should do a SaveToolForkPositions to write it to the file after this.
 function ToolForks.AddToolForkPosition()
 	if ToolForks.ToolForkPositions == nil then
-		ToolForks.ToolForkPositions = { ToolForkCount = 0 }
+		InitializeToolForkPositions()
 	end
 
 	local count = ToolForks.GetToolForkCount()
@@ -126,27 +144,39 @@ function ToolForks.AddToolForkPosition()
 	newToolFork.Orientation = lastToolFork.Orientation
 
 	SetToolForkAtNumber(newToolFork.Number, newToolFork)
-	ToolForks.ToolForkPositions.ToolForkCount = count + 1
-	ToolForks.Log("added a tool fork; totalcount: "..ToolForks.ToolForkPositions.ToolForkCount)
+	ToolForks.GetToolForkData().ToolForkCount = count + 1
+	ToolForks.Log("added a tool fork; totalcount: "..ToolForks.GetToolForkCount())
 	return newToolFork
 end
 
-function ToolForks.DeleteLastToolForkPosition()
+-- return the next last one or nil
+function ToolForks.RemoveLastToolForkPosition()
 	ToolForks.Log("Deleting the last tool fork")
 	local count = ToolForks.GetToolForkCount()
 	if count > 0 then
 		ToolForks.Log("Deleting: ToolFork"..count)
-		SetToolForkAtNumber(nil, count)
-		ToolForks.ToolForkPositions.ToolForkCount = count - 1		
+		SetToolForkAtNumber(count, nil)
+		ToolForks.GetToolForkData().ToolForkCount = count - 1
+		if count > 1 then
+			return ToolForks.GetToolForkNumber(count -1)
+		end
 	else 
 		ToolForks.Log("Not deleting anything, because we have no items")
 	end
+	return nil
 end
 
 -- ToolForks.LoadToolForkPositions() -- Load the toolfork positions on startup?
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
+
+	ToolForks.LoadToolForkPositions()
+	ToolForks.AddToolForkPosition()
+	ToolForks.RemoveLastToolForkPosition()
+	ToolForks.SaveToolForkPositions()
+	print("done")
+
 --	ToolForks.AddToolForkPosition()
 --	SaveToolForkPositions()
 
