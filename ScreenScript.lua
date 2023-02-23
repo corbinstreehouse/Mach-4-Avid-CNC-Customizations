@@ -48,12 +48,6 @@ mm = require "mcMasterModule"
 package.loaded.CorbinExtra = nil
 CorbinExtra = require "CorbinExtra"
 
-package.loaded.ToolForks = nil
-ToolForks = require "ToolForks"
-
-package.loaded.ToolChange = nil
-ToolChange = require "ToolChange"
-
 --Probing module
 -- package.loaded.Probing = nil
 -- prb = require "mcProbing"
@@ -1052,7 +1046,7 @@ SetRetractCode();
 -- Enable KeyboardJog on startup
 ----------------------------------------
 function StartupEnableKeyboardJog()
-	SetKeyboardInputsEnabled(0) -- start disbled.
+	DisableKeyboard()
 end
 
 ----------------------------------------
@@ -1061,6 +1055,9 @@ end
 function EnableKeyboard()
 	SetKeyboardInputsEnabled(1)
 	scr.SetProperty('bmbKeyboardJog', 'Image', 'toggle_ON.png')
+	
+	--        mc.mcCntlSetLastError(inst, debug.traceback)
+
 end
 
 ----------------------------------------
@@ -1909,9 +1906,7 @@ function Mach_PLC_Script()
     --  PLC First Run
     -------------------------------------------------------
     if (testcount == 1) then
-    	local iReg = mc.mcIoGetHandle (inst, "Keyboard/Enable")
-    	mc.mcIoSetState(iReg, 1) --Set register to 1 to ensure KeyboardInputsToggle function will do a disable.
-    	KeyboardInputsToggle()
+    	DisableKeyboard()
     	
         -- prb.LoadSettings()
     
@@ -2202,7 +2197,7 @@ function Mach_PLC_Script()
     		mc.mcSignalSetState(hsig_prtsf, 0);
     	end
     
-      EnableKeyboard()
+      DisableKeyboard()
     
     end
     -------------------------------------------------------
@@ -3370,15 +3365,25 @@ function btnRefX_1__Left_Up_Script(...)
 end
 -- tabATCToolSetup-GlobalScript
 -- tabATCToolForkSetup-GlobalScript
+-- ATC Tool Fork Setup Global Script
+
+package.loaded.ToolForks = nil
+ToolForks = require "ToolForks"
+
+package.loaded.ToolChange = nil
+ToolChange = require "ToolChange"
 function tabATCToolForkSetup_On_Enter_Script(...)
-    -- ATC Tool Fork Setup Tab
+    -- ATC Tool Fork Setup Tab - On Enter Script
     -- by Corbin Dunn, Feb 22, 2023
     
     local ToolForkPositions = ToolForks.GetToolForkPositions()
     
-    
+    local toolForkValues = "";
+    local toolForkCount = 0
     for toolForkNumber, toolValues in ipairs(ToolForkPositions) do 
-    	ToolForks.Log(string.format("UI loaded toolForkNumber: %d", toolForkNumber))
+    	--toolForkCount = toolForCount + 
+    	
+    	--ToolForks.Log(string.format("UI loaded toolForkNumber: %d", toolForkNumber))
     	--scr.SetProperty("lstToolForks", "Value", "0")
     end
     
