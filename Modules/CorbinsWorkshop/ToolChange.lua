@@ -13,12 +13,6 @@ local ToolChange = {}
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 local ToolForks = require 'ToolForks'
 
--- Default global values that the user can modify
--- TODO: Load/set these
-ToolChange.SlideDistance = 2.5 -- inches
-ToolChange.DwellTime = 5.0 -- seconds, wait time for spindle to stop
-
-
 local TEST_AT_Z_0 = true -- set to true to debug the slide at z 0...don't have any tools in, otherwise they will get dropped!
 local USE_SLOW_FEED_RATES = true -- if true, G01 at F25. if false, G0.
 
@@ -80,18 +74,19 @@ function GetSlideValuesForOrientation(orientation)
     -- compute the slide amount
     local x = 0.0
     local y = 0.0
+	local slideDistance = ToolForks.GetSlideDistance()
     if orientation == ToolForks.ToolForkOrientation.X_Plus then
         -- Facing right, slide left (Minuative)
-        x = -1.0 * ToolChange.SlideDistance
+        x = -1.0 * slideDistance
     elseif orientation == ToolForks.ToolForkOrientation.X_Minus then
         -- Facing left, slide right
-        x = ToolChange.SlideDistance
+        x = slideDistance
     elseif orientation == ToolForks.ToolForkOrientation.Y_Plus then
         -- facing back, slide forward (negative)
-        y = -1.0 *ToolChange.SlideDistance
+        y = -1.0 * slideDistance
     elseif orientation == ToolForks.ToolForkOrientation.Y_Minus then
         -- fadcing forward, slide back (positive)
-        y = ToolChange.SlideDistance
+        y = slideDistance
     else
         assert("Unknown orientation: "..orientation)
     end
@@ -228,7 +223,7 @@ function TurnOffSpindleAndWait()
     -- TODO: start x/y movement while this is happening..do a time to make sure it lasts at least the dwell time, and if it hasn't..dwell for a while
     local GCode = ""
     GCode = GCode .. "M5\n"
-    GCode = GCode .. string.format("G04 P%.4f\n", ToolChange.DwellTime)
+    GCode = GCode .. string.format("G04 P%.4f\n", ToolForks.GetDwellTime())
     local rc = mc.mcCntlGcodeExecuteWait(inst, GCode)
     return CheckForNoError(rc, "TurnOffSpindleAndWait")
 end

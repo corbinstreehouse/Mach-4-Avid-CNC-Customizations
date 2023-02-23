@@ -3512,7 +3512,11 @@ end
 function HandleOnEnterToolForkTab()
 	LoadToolForksAndSetSelected()
 	LoadToolForksIntoListBox() 
-	HandleSelectedToolForkChanged() 
+	HandleSelectedToolForkChanged()
+	-- setup the global UI options
+	scr.SetProperty("txtSlideDistance", "Value", string.format("%.4f", ToolForks.GetSlideDistance()))
+	scr.SetProperty("txtWaitTime", "Value", string.format("%.4f", ToolForks.GetDwellTime()))
+
 	ToolForkTabActive = true
 end
 
@@ -3530,12 +3534,27 @@ function ToolForkTabPLC()
 		end
 	end
 end
+
+function HandleSlideDistanceChanged(value)
+	ToolForks.SetSlideDistance(value)
+	ToolForks.SaveToolForkPositions()
+end
+
+function HandleWaitTimeChanged(value)
+	ToolForks.SetDwellTime(value)
+	ToolForks.SaveToolForkPositions()
+end
 function tabATCToolForkSetup_On_Enter_Script(...)
     -- ATC Tool Fork Setup Tab - On Enter Script
     -- by Corbin Dunn, Feb 22, 2023
     HandleOnEnterToolForkTab()
     
     
+end
+function txtSlideDistance_On_Modify_Script(...)
+    val = select(1,...)
+    val = HandleSlideDistanceChanged(val)
+    return val
 end
 -- grpToolForkEditor-GlobalScript
 function btnOrientationYNeg_Clicked_Script(...)
@@ -3598,6 +3617,11 @@ end
 function txtToolForkZ_On_Modify_Script(...)
     val = select(1,...)
     val = HandlePositionSet(val, "Z")
+    return val
+end
+function txtWaitTime_On_Modify_Script(...)
+    val = select(1,...)
+    val = HandleWaitTimeChanged(val)
     return val
 end
 -- grpSpindle-GlobalScript

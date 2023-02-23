@@ -33,7 +33,7 @@ DummyToolFork.Orientation = ToolForks.ToolForkOrientation.X_Plus
 
 local inst = mc.mcGetInstance()
 
-function InitializeToolForkPositions() 
+local function InitializeToolForkPositions() 
 	local data = {}
 	data.ToolForkCount = 0
 	data.SlideDistance = 2.5
@@ -41,6 +41,23 @@ function InitializeToolForkPositions()
 	ToolForks.ToolForkPositions = {}
 	ToolForks.ToolForkPositions.ToolForkData = data
 end
+
+function ToolForks.SetSlideDistance(value) 
+	ToolForks.GetToolForkData().SlideDistance = value
+end
+
+function ToolForks.GetSlideDistance() 
+	return ToolForks.GetToolForkData().SlideDistance
+end
+
+function ToolForks.SetDwellTime(value) 
+	ToolForks.GetToolForkData().DwellTime = value
+end
+
+function ToolForks.GetDwellTime() 
+	return ToolForks.GetToolForkData().DwellTime
+end
+
 
 -- might return nil if not in the table; convenience function
 function ToolForks.GetToolForkNumber(number)
