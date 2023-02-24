@@ -2256,6 +2256,9 @@ function Mach_Screen_Unload_Script()
 end
 
 -- Default-GlobalScript
+-- by Corbin Dunn
+-- corbin@corbinstreehouse.com
+-- https://www.corbinsworkshop.com
 -- ControlGroup-GlobalScript
 function btnCycleStart_Left_Up_Script(...)
     local inst = mc.mcGetInstance("Cycle Start Btn");
@@ -3364,7 +3367,37 @@ function btnRefX_1__Left_Up_Script(...)
     --mc.mcCntlGcodeExecuteWait(inst, 'M09')
     
 end
--- tabATCToolSetup-GlobalScript
+-- tabATCTools-GlobalScript
+-- by corbin dunn
+-- corbin@corbinstreehouse.com
+
+function ACTTools.OnTabShow()
+	
+	ToolForks.LoadToolForkPositions()
+	local lastFork = 0
+	for i=1, ToolForks.GetToolForkCount() do
+		
+		local toolFork = ToolForks.GetToolForkNumber(i)
+		assert(i == toolFork.Number)
+		local s = nil
+		s = string.format("lblToolFork%d", i)
+		scr.SetProperty(s, "Label", tostring(i))
+		
+		s = string.format("droToolForToolFork%d", i)
+		scr.SetProperty(s, "Value", toolFork.tool)
+		
+		
+		lastFork = i
+	end
+	
+	
+
+	
+	
+	
+end
+-- grpToolFork1-GlobalScript
+-- grpToolFork2-GlobalScript
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
 -- PLC Script has to call ToolForkTabPLC()
