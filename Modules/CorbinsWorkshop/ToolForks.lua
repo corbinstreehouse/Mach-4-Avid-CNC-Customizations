@@ -80,17 +80,19 @@ function ToolForks.GetToolForkCount()
 	return ToolForks.GetToolForkData().ToolForkCount
 end
 
-function ToolForks.Log(message)
+function ToolForks.Log(message, ...)
+	local eventMessage = string.format(message, unpack({...}))	
 	-- Comment out for speed; uncomment for more logging
-	print(message)
-	mc.mcCntlLog(inst, message, "", -1)
+	print(eventMessage)
+	mc.mcCntlLog(inst, eventMessage, "", -1)
 end
 
-function ToolForks.Error(message)
+function ToolForks.Error(message, ...)
 	-- Log and set the error for better tracing of problems
-	print(message)
-	mc.mcCntlLog(inst, message, "", -1)
-	mc.mcCntlSetLastError(inst, message)
+	local eventMessage = string.format(message, unpack({...}))	
+	print(eventMessage)
+	mc.mcCntlLog(inst, eventMessage, "", -1)
+	mc.mcCntlSetLastError(inst, eventMessage)
 end
 
 function GetToolForkFilePath() 
