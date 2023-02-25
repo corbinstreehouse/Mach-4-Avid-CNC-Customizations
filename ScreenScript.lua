@@ -41,6 +41,9 @@ package.path = package.path .. ";" .. path .. "\\Modules\\AvidCNC\\?.mcc;"
 package.path = package.path .. ";" .. path .. "\\Modules\\AvidCNC\\?.dll;"
 package.path = package.path .. ";" .. path .. "\\Modules\\CorbinsWorkshop\\?.lua;"
 
+package.loaded.ToolForks = nil
+ToolForks = require 'ToolForks'
+
 --Master module
 package.loaded.MasterModule = nil
 mm = require "mcMasterModule"
@@ -1525,6 +1528,10 @@ function Mach_PLC_Script()
     machState, rc = mc.mcCntlGetState(inst);
     local inCycle = mc.mcCntlIsInCycle(inst);
     
+    if ATCTools ~= nil then
+    	ATCTools.PLCScript() -- corbin, added to update the LED
+    end
+    
     ------------------------------------------
     -- Check for multiple tools in g-code if ignoring tool changes
     ------------------------------------------
@@ -2201,9 +2208,6 @@ function Mach_PLC_Script()
     
     end
     
-    if ATCTools ~= nil then
-    	ATCTools.PLCScript() -- corbin, added to update the LED
-    end
     
     --This is the last thing we do.  So keep it at the end of the script!
     machStateOld = machState;
@@ -3421,6 +3425,44 @@ function btnTouchOffFork2_Clicked_Script(...)
     ATCTools.OnTouchOffClicked(2)
 end
 function txtToolDescForToolFork2_On_Modify_Script(...)
+    value = select(1, ...)
+    ATCTools.OnModifyToolDescription(2, value)
+end
+-- grpToolFork3-GlobalScript
+function droToolForToolFork3_On_Modify_Script(...)
+    val = select(1,...)
+    return ATCTools.OnModifyToolForkForTool(2, val)
+end
+function btnFetchFork2_1__Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(3)
+    
+end
+function btnRemoveFork2_1__Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(3)
+end
+function btnTouchOffFork2_1__Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(3)
+end
+function txtToolDescForToolFork3_On_Modify_Script(...)
+    value = select(1, ...)
+    ATCTools.OnModifyToolDescription(2, value)
+end
+-- grpToolFork4-GlobalScript
+function droToolForToolFork2_1__On_Modify_Script(...)
+    val = select(1,...)
+    return ATCTools.OnModifyToolForkForTool(2, val)
+end
+function btnFetchFork2_2__Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(4)
+    
+end
+function btnRemoveFork2_2__Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(4)
+end
+function btnTouchOffFork2_2__Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(4)
+end
+function txtToolDescForToolFork4_On_Modify_Script(...)
     value = select(1, ...)
     ATCTools.OnModifyToolDescription(2, value)
 end
