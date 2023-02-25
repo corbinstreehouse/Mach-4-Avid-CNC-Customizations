@@ -250,6 +250,9 @@ function ToolForks.RemoveLastToolForkPosition()
 	if count > 0 then
 		local tf = ToolForks.GetToolForkNumber(count)
 		ToolForks.Log("Deleting: ToolFork"..count)
+		local key = string.format("ToolFork%d", count)
+		ToolForks.ToolForkPositions[key] = nil
+		
 		ToolForks.GetToolForkData().ToolForkCount = count - 1
 		if count > 1 then
 			return ToolForks.GetToolForkNumber(count - 1)

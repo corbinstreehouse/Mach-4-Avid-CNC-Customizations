@@ -3396,6 +3396,7 @@ end
 -- grpToolFork1-GlobalScript
 function droToolForToolFork1_On_Modify_Script(...)
     val = select(1,...)
+    ToolForks.Log("second param: %s", select(2,...))
     return ATCTools.OnModifyToolForkForTool(1, val)
 end
 function btnFetchFork1_Clicked_Script(...)
@@ -3434,7 +3435,7 @@ end
 -- grpToolFork3-GlobalScript
 function droToolForToolFork3_On_Modify_Script(...)
     val = select(1,...)
-    return ATCTools.OnModifyToolForkForTool(2, val)
+    return ATCTools.OnModifyToolForkForTool(3, val)
 end
 function btnFetchFork2_1__Clicked_Script(...)
     ATCTools.OnFetchButtonClicked(3)
@@ -3448,12 +3449,12 @@ function btnTouchOffFork2_1__Clicked_Script(...)
 end
 function txtToolDescForToolFork3_On_Modify_Script(...)
     value = select(1, ...)
-    ATCTools.OnModifyToolDescription(2, value)
+    ATCTools.OnModifyToolDescription(3, value)
 end
 -- grpToolFork4-GlobalScript
-function droToolForToolFork2_1__On_Modify_Script(...)
+function droToolForToolFork4_On_Modify_Script(...)
     val = select(1,...)
-    return ATCTools.OnModifyToolForkForTool(2, val)
+    return ATCTools.OnModifyToolForkForTool(4, val)
 end
 function btnFetchFork2_2__Clicked_Script(...)
     ATCTools.OnFetchButtonClicked(4)
@@ -3467,7 +3468,63 @@ function btnTouchOffFork2_2__Clicked_Script(...)
 end
 function txtToolDescForToolFork4_On_Modify_Script(...)
     value = select(1, ...)
-    ATCTools.OnModifyToolDescription(2, value)
+    ATCTools.OnModifyToolDescription(4, value)
+end
+-- grpToolFork5-GlobalScript
+function droToolForToolFork5_On_Modify_Script(...)
+    val = select(1,...)
+    return ATCTools.OnModifyToolForkForTool(2, val)
+end
+function btnFetchFork2_3__Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(5)
+    
+end
+function btnRemoveFork2_3__Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(5)
+end
+function btnTouchOffFork2_3__Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(5)
+end
+function txtToolDescForToolFork5_On_Modify_Script(...)
+    value = select(1, ...)
+    ATCTools.OnModifyToolDescription(5, value)
+end
+-- grpToolFork6-GlobalScript
+function droToolForToolFork6_On_Modify_Script(...)
+    val = select(1,...)
+    return ATCTools.OnModifyToolForkForTool(2, val)
+end
+function btnFetchFork2_4__Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(6)
+end
+function btnRemoveFork2_4__Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(6)
+end
+function btnTouchOffFork2_4__Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(6)
+end
+function txtToolDescForToolFork_On_Modify_Script(...)
+    value = select(1, ...)
+    ATCTools.OnModifyToolDescription(6, value)
+end
+-- grpToolFork7-GlobalScript
+function droToolForToolFork7_On_Modify_Script(...)
+    val = select(1,...)
+    return ATCTools.OnModifyToolForkForTool(7, val)
+end
+function btnFetchFork7_Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked()
+    
+end
+function btnRemoveFork2_5__Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(7)
+end
+function btnTouchOffFork2_5__Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(7)
+end
+function txtToolDescForToolFork_1__On_Modify_Script(...)
+    value = select(1, ...)
+    ATCTools.OnModifyToolDescription(7, value)
 end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
