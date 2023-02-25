@@ -32,7 +32,7 @@ DummyToolFork.Z = 0.0
 DummyToolFork.Orientation = ToolForks.ToolForkOrientation.X_Plus
 DummyToolFork.Tool = 0
 
-local inst = mc.mcGetInstance()
+local inst = mc.mcGetInstance("ToolForks.lua")
 
 function ToolForks.internal.InitializeToolForkPositions() 
 	local data = {}
@@ -151,9 +151,8 @@ function ToolForks.LoadToolForkPositions()
 					count = i - 1
 					ToolForks.ToolForkPositions.ToolForkData.ToolForkCount = count
 				end
-
-				ToolForks.Log("Loaded ToolForks. Count: %d", count)
 			end
+			ToolForks.Log("Loaded ToolForks. Count: %d", count)			
 		end
 	else
 		ToolForks.internal.InitializeToolForkPositions()
@@ -194,8 +193,10 @@ function ToolForks.AddToolForkPosition()
 	local key = string.format("ToolFork%d", newToolFork.Number)
 	ToolForks.ToolForkPositions[key] = newToolFork
 
-	ToolForks.GetToolForkData().ToolForkCount = count + 1
-	ToolForks.Log("added a tool fork; totalcount: "..ToolForks.GetToolForkCount())
+	local newCount = count + 1
+	assert(newToolFork.Number == newCount)
+	ToolForks.GetToolForkData().ToolForkCount = newCount
+	ToolForks.Log("added a tool fork %d, totalcount %d",  newToolFork.Number, newCount)
 	return newToolFork
 end
 
@@ -252,7 +253,7 @@ function ToolForks.RemoveLastToolForkPosition()
 		ToolForks.Log("Deleting: ToolFork"..count)
 		local key = string.format("ToolFork%d", count)
 		ToolForks.ToolForkPositions[key] = nil
-		
+
 		ToolForks.GetToolForkData().ToolForkCount = count - 1
 		if count > 1 then
 			return ToolForks.GetToolForkNumber(count - 1)
@@ -268,11 +269,11 @@ end
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
 	ToolForks.internal.EnsureToolForks()
-	
-	ToolForks.AddToolForkPosition()
-	ToolForks.RemoveLastToolForkPosition()
-	ToolForks.SaveToolForkPositions()
-	print("done")
+
+	--ToolForks.AddToolForkPosition()
+	--ToolForks.RemoveLastToolForkPosition()
+	--ToolForks.SaveToolForkPositions()
+	--print("done")
 
 --	ToolForks.AddToolForkPosition()
 --	SaveToolForkPositions()

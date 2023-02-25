@@ -1,18 +1,31 @@
 
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
 
+if (mc.mcInEditor() == 1) then
+	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+end
+
+
 package.loaded.ToolForks = nil
 ToolForks = require "ToolForks"
 
-local ATCToolForkSetup = {}
-
-local SelectedToolFork = nil
+ATCToolForkSetup = {
+	SelectedToolFork = nil,
+	internal = {},
+	test = {}
+}
 
 function UpdateToolForkListSelection()
-	if SelectedToolFork ~= nil then
-		local zeroBasedIndex = SelectedToolFork.Number - 1
+	if ATCToolForkSetup.SelectedToolFork == nil then
+		if ToolForks.GetToolForkCount() > 0 then
+			ATCToolForkSetup.SelectedToolFork = ToolForks.GetToolForkNumber(1)
+		end
+	end
+	
+	if ATCToolForkSetup.SelectedToolFork ~= nil then
+		local zeroBasedIndex = ATCToolForkSetup.SelectedToolFork.Number - 1
 		scr.SetProperty("lstToolForks", "Selected", tostring(zeroBasedIndex))
-		ToolForks.Log("Selecting: ToolFork"..SelectedToolFork.Number)
+		ToolForks.Log("Selecting: ToolFork"..ATCToolForkSetup.SelectedToolFork.Number)
 	else
 		ToolForks.Log("No selection");
 		scr.SetProperty("lstToolForks", "Selected", "0")		
@@ -44,9 +57,9 @@ function UpdateToolForkImage()
 	imagesMapping[ToolForks.ToolForkOrientation.X_Minus] = "tool_fork_x_minus.png"
 	imagesMapping[ToolForks.ToolForkOrientation.Y_Plus] = "tool_fork_y_plus.png"
 	imagesMapping[ToolForks.ToolForkOrientation.Y_Minus] = "tool_fork_y_minus.png"
-	
-	if SelectedToolFork ~= nil then
-		local o = SelectedToolFork.Orientation
+
+	if ATCToolForkSetup.SelectedToolFork ~= nil then
+		local o = ATCToolForkSetup.SelectedToolFork.Orientation
 		scr.SetProperty("imgToolForkOrientation", "Image", imagesMapping[o])
 	end
 end
@@ -58,7 +71,7 @@ function GetToolForkListBoxSelected()
 end
 
 function ToolForkListBoxChanged()
-	SelectedToolFork = ToolForks.GetToolForkNumber(GetToolForkListBoxSelected())
+	ATCToolForkSetup.SelectedToolFork = ToolForks.GetToolForkNumber(GetToolForkListBoxSelected())
 	HandleSelectedToolForkChanged()
 end
 
@@ -85,12 +98,12 @@ function SetUIEnabled(enabled)
 end
 
 function HandleSelectedToolForkChanged()
-	if SelectedToolFork ~= nil then
-		ToolForks.Log("Selected Tool Fork:"..SelectedToolFork.Number)
+	if ATCToolForkSetup.SelectedToolFork ~= nil then
+		ToolForks.Log("Selected Tool Fork:"..ATCToolForkSetup.SelectedToolFork.Number)
 		SetUIEnabled("1")
-		scr.SetProperty("txtToolForkX", "Value", string.format("%.4f", SelectedToolFork.X))
-		scr.SetProperty("txtToolForkY", "Value", string.format("%.4f", SelectedToolFork.Y))
-		scr.SetProperty("txtToolForkZ", "Value", string.format("%.4f", SelectedToolFork.Z))
+		scr.SetProperty("txtToolForkX", "Value", string.format("%.4f", ATCToolForkSetup.SelectedToolFork.X))
+		scr.SetProperty("txtToolForkY", "Value", string.format("%.4f", ATCToolForkSetup.SelectedToolFork.Y))
+		scr.SetProperty("txtToolForkZ", "Value", string.format("%.4f", ATCToolForkSetup.SelectedToolFork.Z))
 		-- orientation..	
 		UpdateToolForkImage()
 	else
@@ -105,33 +118,29 @@ end
 function ToolForkPositionsListChanged()
 	-- try to and restore the selected one..
 	local selected = ""
-	if SelectedToolFork ~= nil then
-		selected = string.format("ToolFork%d", SelectedToolFork.Number)
+	if ATCToolForkSetup.SelectedToolFork ~= nil then
+		selected = string.format("ToolFork%d", ATCToolForkSetup.SelectedToolFork.Number)
 	end
+
+	ToolForks.Log("ToolForkPositionsListChanged, selected: %s", selected)
 
 	LoadToolForksIntoListBox()
-	SelectedToolFork = ToolForks.ToolForkPositions[selected] -- may be nil
-	if SelectedToolFork == nil and ToolForks.GetToolForkCount() > 0 then
-		SelectedToolFork = ToolForks.GetToolForkNumber(1)
-	end
-
-	HandleSelectedToolForkChanged()
 	ToolForks.SaveToolForkPositions()	
 end
 
 function HandlePositionSet(val, position) 
-	ToolForks.Log(string.format("ToolFork %d position: %s, val %.4f", SelectedToolFork.Number, position, val))
+	ToolForks.Log(string.format("ToolFork %d position: %s, val %.4f", ATCToolForkSetup.SelectedToolFork.Number, position, val))
 	val = tonumber(val) -- The value may be a number or a string. Convert as needed.
-	SelectedToolFork[position] = val
+	ATCToolForkSetup.SelectedToolFork[position] = val
 	ToolForks.SaveToolForkPositions()
 	return val
 end
 
 function ATCToolForkSetup.LoadToolForksAndSetSelected() 
 	if ToolForks.GetToolForkCount() > 0 then
-		SelectedToolFork = ToolForks.GetToolForkNumber(1)
+		ATCToolForkSetup.SelectedToolFork = ToolForks.GetToolForkNumber(1)
 	else
-		SelectedToolFork = nil
+		ATCToolForkSetup.SelectedToolFork = nil
 	end
 end
 
@@ -145,13 +154,13 @@ function HandleOnEnterToolForkTab()
 end
 
 function HandleOnExitToolForkTab()
-	SelectedToolFork = nil
+	ATCToolForkSetup.SelectedToolFork = nil
 end
 
 function HandleToolForkListBoxSelectionChanged()
 	-- no notification for when the list box selection changes, so we have to poll it
-	if SelectedToolFork ~= nil then
-		if SelectedToolFork.Number ~= GetToolForkListBoxSelected() then
+	if ATCToolForkSetup.SelectedToolFork ~= nil then
+		if ATCToolForkSetup.SelectedToolFork.Number ~= GetToolForkListBoxSelected() then
 			ToolForks.Log("Selection changed..updating UI")
 			ToolForkListBoxChanged()
 		end
@@ -167,5 +176,38 @@ function HandleWaitTimeChanged(value)
 	ToolForks.SetDwellTime(value)
 	ToolForks.SaveToolForkPositions()
 end
+
+-- some unit tests to debug any issues
+function ATCToolForkSetup.test.TestAdd()
+	ToolForks.internal.EnsureToolForks()
+
+	ATCToolForkSetup.SelectedToolFork = ToolForks.AddToolForkPosition()
+	ToolForkPositionsListChanged()
+	print("Selected:"..ATCToolForkSetup.SelectedToolFork.Number)
+
+end
+
+function ATCToolForkSetup.HandleAddToolForkClicked()
+	ATCToolForkSetup.SelectedToolFork = ToolForks.AddToolForkPosition()
+	ToolForkPositionsListChanged()
+end
+
+function ATCToolForkSetup.RemoveLastToolForkClicked()
+	ATCToolForkSetup.SelectedToolFork = ToolForks.RemoveLastToolForkPosition()
+	ToolForkPositionsListChanged()
+	
+end
+
+
+
+if (mc.mcInEditor() == 1) then
+	ATCToolForkSetup.test.TestAdd()
+
+end
+
+
+
+
+
 
 return ATCToolForkSetup

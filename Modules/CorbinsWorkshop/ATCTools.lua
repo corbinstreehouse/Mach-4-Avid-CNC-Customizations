@@ -109,12 +109,29 @@ function ATCTools.OnTabHide()
 
 end
 
+function ATCTools.ValidateOnModifyArgs(...)
+	local value = select(1, ...)
+	local ctrlName = select(2, ...)
+	
+	assert(value ~= nil)
+	assert(ctrlName ~= nil)
+
+	local toolForkNumber = string.match(ctrlName, "%d")
+	if toolForkNumber == nil then
+		wx.wxMessageBox("Programming Error", "ATCTools - caller doesn't have the control name setup right")
+	end
+	return toolForkNumber, value, ctrlName
+end
 
 
-function ATCTools.OnModifyToolForkForTool(toolForkNumber, toolValue)
-	ToolForks.Log("OnModifyToolForkForTool%d, %s", toolForkNumber, toolValue)
-
-	local tool = tonumber(toolValue)
+function ATCTools.OnModifyToolForkForTool(...)
+	local toolForkNumber, value, ctrlName = ATCTools.ValidateOnModifyArgs(...)
+	if toolForkNumber == nil then
+		return
+	end
+		
+	ToolForks.Log("OnModifyToolForkForTool TF%d %s %s", toolForkNumber, ctrlName, value)
+	local tool = tonumber(value)
 	-- validation? 
 
 	--- is the tool already in another fork?
@@ -148,11 +165,14 @@ function ATCTools.OnModifyToolForkForTool(toolForkNumber, toolValue)
 	end
 
 	-- update the text in case we went back to the old value
-	local s = string.format("droToolForToolFork%d", toolForkNumber)
-	scr.SetProperty(s, "Value", tostring(tool))
+	scr.SetProperty(ctrlName, "Value", tostring(tool))
 end
 
-function ATCTools.OnModifyToolDescription(toolForkNumber, value)
+function ATCTools.OnModifyToolDescription(...)
+	local toolForkNumber, value, ctrlName = ATCTools.ValidateOnModifyArgs(...)
+	if toolForkNumber == nil then
+		return
+	end
 	-- get the tool that is set for this fork
 	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
 	-- checks should always pass when this is called..
@@ -161,11 +181,15 @@ function ATCTools.OnModifyToolDescription(toolForkNumber, value)
 	end
 end
 
-function ATCTools.OnFetchButtonClicked(toolForkNumber)
-
+function ATCTools.OnFetchButtonClicked(...)
+	local ctrlName = select(1, ...)
+	local toolForkNumber = string.match(ctrlName, "%d")
+	-- TODO: fetch code
 end
 
-function ATCTools.OnRemoveButtonClicked(toolForkNumber) 
+function ATCTools.OnRemoveButtonClicked(...) 
+	local ctrlName = select(1, ...)
+	local toolForkNumber = string.match(ctrlName, "%d")
 	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
 	if tf ~= nil then
 		tf.Tool = 0
@@ -175,8 +199,9 @@ function ATCTools.OnRemoveButtonClicked(toolForkNumber)
 
 end
 
-function ATCTools.OnTouchOffClicked(toolNumber)
-
+function ATCTools.OnTouchOffClicked(...)
+	local ctrlName = select(1, ...)
+	local toolForkNumber = string.match(ctrlName, "%d")
 
 end
 
