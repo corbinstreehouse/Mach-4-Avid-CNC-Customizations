@@ -191,6 +191,9 @@ function ToolForks.AddToolForkPosition()
 	newToolFork.Tool = 0 -- always start out without a tool
 	newToolFork.Orientation = lastToolFork.Orientation
 
+	local key = string.format("ToolFork%d", newToolFork.Number)
+	ToolForks.ToolForkPositions[key] = newToolFork
+
 	ToolForks.GetToolForkData().ToolForkCount = count + 1
 	ToolForks.Log("added a tool fork; totalcount: "..ToolForks.GetToolForkCount())
 	return newToolFork
