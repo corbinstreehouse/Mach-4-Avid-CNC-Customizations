@@ -86,9 +86,9 @@ function ATCTools.OnTabShow()
 		lastFork = i
 	end
 	-- disable the UI & groups past this
-	for i = lastFork, ATCTools.MaxToolForkCount do
+	for i = lastFork+1, ATCTools.MaxToolForkCount do
 		s = string.format("grpToolFork%d", i)
-		scr.SetProperty(s, "Hidden", "0") -- could be disabled from earlier
+		scr.SetProperty(s, "Hidden", "1") -- could be disabled from earlier
 	end
 
 end
