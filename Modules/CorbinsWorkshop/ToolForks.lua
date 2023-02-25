@@ -34,8 +34,7 @@ DummyToolFork.Tool = 0
 
 local inst = mc.mcGetInstance()
 
--- make internal!!
-local function InitializeToolForkPositions() 
+function ToolForks.internal.InitializeToolForkPositions() 
 	local data = {}
 	data.ToolForkCount = 0
 	data.SlideDistance = 2.5
@@ -73,6 +72,7 @@ end
 
 -- conveninence function to get the count
 function ToolForks.GetToolForkCount()
+	ToolForks.internal.EnsureToolForks()
 	return ToolForks.GetToolForkData().ToolForkCount
 end
 
@@ -91,17 +91,34 @@ function ToolForks.Error(message, ...)
 	mc.mcCntlSetLastError(inst, eventMessage)
 end
 
-function GetToolForkFilePath() 
+function ToolForks.GetToolForkFilePath() 
 	local profile = mc.mcProfileGetName(inst)
 	local machDirPath = mc.mcCntlGetMachDir(inst)
-	ToolForks.Log(machDirPath)
 	-- not sure why tls extension is used, but the tool table does it..so I'm doing it
 	local toolForkFilePath = machDirPath .. "\\Profiles\\" .. profile .. "\\ToolTables\\ToolForks.tls" 
 	return toolForkFilePath
 end
 
+function ToolForks.ValidateToolFork(tf, index)
+	if tf == nil then
+		return false
+	end
+	if tf.Number == nil or tf.Number ~= index then
+		return false
+	end
+	-- TODO: verify other data
+	return true
+end
+
+function ToolForks.internal.EnsureToolForks()
+	if ToolForks.ToolForkPositions == nil then
+		ToolForks.LoadToolForkPositions()
+	end
+end
+
+-- Be careful to not call functions from here that might re-enter the code
 function ToolForks.LoadToolForkPositions()
-	local path = GetToolForkFilePath()
+	local path = ToolForks.GetToolForkFilePath()
 	-- make sure it exists..otherwise an exception is thrown
 	local file = io.open(path, "r")
 	if file ~= nil then
@@ -112,23 +129,40 @@ function ToolForks.LoadToolForkPositions()
 	end
 
 	if ToolForks.ToolForkPositions ~= nil then
-		-- TODO: Maybe verify the data we are reading in..like the count and values?
 		if ToolForks.ToolForkPositions.ToolForkData == nil then
 			-- bad file format for now...reset and log
-			ToolForks.Error("Bad ToolForks.tls file!!")
+			ToolForks.Error("Corrupted Tool Forks file: %s", path)
 			-- TODO: Maybe present this error to the user..as it is kind of a big deal..
-			InitializeToolForkPositions()
-		else 
-			ToolForks.Log(string.format("Loaded ToolForks. Count: %d", ToolForks.GetToolForkCount()))
+			ToolForks.internal.InitializeToolForkPositions()
+		else
+			-- verify the data a bit so we don't get other surprises
+			local count = ToolForks.ToolForkPositions.ToolForkData.ToolForkCount
+			if count > 50 then
+				ToolForks.Error("Too many tool forks - %d Bad Tool Forks file at: %s. Setting count to 50.",  count, ToolForks.GetToolForkFilePath())
+				count  = 50
+				ToolForks.ToolForkPositions.ToolForkData.ToolForkCount = count
+			end
+
+			for i=1, count do
+				local toolFork = ToolForks.GetToolForkNumber(i)
+				if not ToolForks.ValidateToolFork(toolFork, i) then
+					ToolForks.Error("Bad tool fork %d. Corrupted tool Forks file at: %s", i, ToolForks.GetToolForkFilePath())
+					-- force it to the last good number
+					count = i - 1
+					ToolForks.ToolForkPositions.ToolForkData.ToolForkCount = count
+				end
+
+				ToolForks.Log("Loaded ToolForks. Count: %d", count)
+			end
 		end
 	else
-		InitializeToolForkPositions()
+		ToolForks.internal.InitializeToolForkPositions()
 	end
 end
 
 function ToolForks.SaveToolForkPositions()
 	if ToolForks.ToolForkPositions ~= nil then
-		local path = GetToolForkFilePath()
+		local path = ToolForks.GetToolForkFilePath()
 		inifile.save(path, ToolForks.ToolForkPositions)
 		ToolForks.Log("Saved ToolForkPositions to: "..path)
 	else
@@ -138,9 +172,7 @@ end
 
 -- Adds a tool fork; caller should do a SaveToolForkPositions to write it to the file after this.
 function ToolForks.AddToolForkPosition()
-	if ToolForks.ToolForkPositions == nil then
-		InitializeToolForkPositions()
-	end
+	ToolForks.internal.EnsureToolForks()
 
 	local count = ToolForks.GetToolForkCount()
 	local lastToolFork = nil
@@ -165,11 +197,11 @@ function ToolForks.AddToolForkPosition()
 end
 
 function ToolForks.GetToolForkForTool(toolNumber)
-   -- Just look it up so I don't have to keep two lists (one in the tool file and one in the fork file)
-   if toolNumber == 0 then -- 0 is special
+	-- Just look it up so I don't have to keep two lists (one in the tool file and one in the fork file)
+	if toolNumber == 0 then -- 0 is special
 		return nil
-   end
-   for i=1, ToolForks.GetToolForkCount() do
+	end
+	for i=1, ToolForks.GetToolForkCount() do
 		local tf = ToolForks.GetToolForkNumber(i)
 		if tf.Tool == toolNumber then
 			return tf
@@ -229,8 +261,8 @@ end
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-
-	ToolForks.LoadToolForkPositions()
+	ToolForks.internal.EnsureToolForks()
+	
 	ToolForks.AddToolForkPosition()
 	ToolForks.RemoveLastToolForkPosition()
 	ToolForks.SaveToolForkPositions()

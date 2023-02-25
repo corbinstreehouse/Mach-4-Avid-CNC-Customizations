@@ -13,7 +13,8 @@
 -- PLC Script must call ATCTools.PLCScript() for the Height offset LED to work right
 
 local ATCTools = {
-	MaxToolForkCount = 10 -- Increase if you have more tools, and update the UI to have more items
+	MaxToolForkCount = 10, -- Increase if you have more tools, and update the UI to have more items
+	Visible = false
 }
 
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
@@ -65,14 +66,24 @@ function ATCTools.PLCScript()
 end
 
 
-
 function ATCTools.OnTabShow()
+	ATCTools.Visible = true
 	ToolForks.LoadToolForkPositions()
 	local lastFork = 0
 
-	for i=1, ToolForks.GetToolForkCount() do
+	local count = ToolForks.GetToolForkCount() 
+	if count > 50 then
+		ToolForks.Error("Too many tool forks - %d Bad Tool Forks file at: %s",  count, ToolForks.GetToolForkFilePath())
+		do return end
+	end
+	
+	for i=1, count do
 		local toolFork = ToolForks.GetToolForkNumber(i)
-		assert(i == toolFork.Number)
+		if toolFork == nil or toolFork.Number ~= i then
+			ToolForks.Error("No tool fork? Bad Tool Forks file at: %s", ToolForks.GetToolForkFilePath())
+			do return end
+		end
+		
 		local s = nil
 		local v = nil
 
@@ -92,6 +103,12 @@ function ATCTools.OnTabShow()
 	end
 
 end
+
+function ATCTools.OnTabHide()
+	ATCTools.Visible = false
+
+end
+
 
 
 function ATCTools.OnModifyToolForkForTool(toolForkNumber, toolValue)
@@ -164,7 +181,9 @@ function ATCTools.OnTouchOffClicked(toolNumber)
 end
 
 function ATCTools.CurrentToolChanged()
-	ATCTools.OnTabShow() -- reload to show the active tool in green
+	if ATCTools.Visible then
+		ATCTools.OnTabShow() -- reload to show the active tool in green
+	end
 end
 
 

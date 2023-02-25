@@ -3382,6 +3382,9 @@ local ATCTools = require 'ATCTools'
 function tabATCTools_On_Enter_Script(...)
     ATCTools.OnTabShow()
 end
+function tabATCTools_On_Exit_Script(...)
+    ATCTools.OnTabHide()
+end
 function droATCCurrentTool_On_Update_Script(...)
     val = select(1, ...)
     ATCTools.CurrentToolChanged()
@@ -3468,7 +3471,14 @@ function txtToolDescForToolFork4_On_Modify_Script(...)
 end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
--- PLC Script has to call ToolForkTabPLC()
+
+
+
+package.loaded.ATCToolForkSetup = nil
+ATCToolForkSetup = require "ATCToolForkSetup"
+
+--[[
+
 package.loaded.ToolForks = nil
 ToolForks = require "ToolForks"
 
@@ -3640,6 +3650,7 @@ function HandleWaitTimeChanged(value)
 	ToolForks.SetDwellTime(value)
 	ToolForks.SaveToolForkPositions()
 end
+]]--
 function tabATCToolForkSetup_On_Enter_Script(...)
     -- ATC Tool Fork Setup Tab - On Enter Script
     -- by Corbin Dunn, Feb 22, 2023
