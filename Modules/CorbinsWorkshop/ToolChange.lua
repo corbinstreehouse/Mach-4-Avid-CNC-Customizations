@@ -228,29 +228,6 @@ function TurnOffSpindleAndWait()
     return CheckForNoError(rc, "TurnOffSpindleAndWait")
 end
 
-local TOOL_FORK_FIELD_NAME = "ToolFork"
-
--- returns 0 if it isn't set
-function ToolChange.GetToolForkNumberForTool(toolNumber)
-    -- Map the tool number to its tool fork
-    local toolFork, rc = mc.mcToolGetDataExInt(inst, toolNumber, TOOL_FORK_FIELD_NAME)
-    if rc == mc.MERROR_NOERROR then
-        return toolFork
-    else
-        return 0
-    end
-end
-
-function ToolChange.SaveTools()
-	local rc = mc.mcToolSaveFile(inst)
-	CheckForNoError(rc, "SaveTools")
-end
-
-
-function ToolChange.SetToolForkNumberForTool(toolNumber, toolFork)
-    local rc = mc.mcToolSetDataExInt(inst, toolNumber, TOOL_FORK_FIELD_NAME, toolFork)
-    return CheckForNoError(rc, "SetToolForkNumberForTool")
-end
 
 function ToolChange.DoToolChange()
     local selectedTool = mc.mcToolGetSelected(inst)

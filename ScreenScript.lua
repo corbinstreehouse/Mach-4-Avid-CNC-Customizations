@@ -2200,8 +2200,6 @@ function Mach_PLC_Script()
       DisableKeyboard()
     
     end
-    -------------------------------------------------------
-    ToolForkTabPLC() -- hook because list things don't send out script change notifications'
     
     --This is the last thing we do.  So keep it at the end of the script!
     machStateOld = machState;
@@ -3371,43 +3369,63 @@ end
 -- by corbin dunn
 -- corbin@corbinstreehouse.com
 
-function ACTTools.OnTabShow()
-	
-	ToolForks.LoadToolForkPositions()
-	local lastFork = 0
-	for i=1, ToolForks.GetToolForkCount() do
-		
-		local toolFork = ToolForks.GetToolForkNumber(i)
-		assert(i == toolFork.Number)
-		local s = nil
-		s = string.format("lblToolFork%d", i)
-		scr.SetProperty(s, "Label", tostring(i))
-		
-		s = string.format("droToolForToolFork%d", i)
-		scr.SetProperty(s, "Value", toolFork.tool)
-		
-		
-		lastFork = i
-	end
-	
-	
-
-	
-	
-	
+package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+local ATCTools = require 'ATCTools'
+function tabATCTools_On_Enter_Script(...)
+    ATCTools.OnTabShow()
+end
+function droATCCurrentTool_On_Update_Script(...)
+    val = select(1, ...)
+    ATCTools.CurrentToolChanged()
+    return val
+    
+end
+function droATCCurrentTool_On_Modify_Script(...)
+    ATCTools.CurrentToolChanged()
 end
 -- grpToolFork1-GlobalScript
+function droToolForToolFork1_On_Modify_Script(...)
+    val = select(1,...)
+    return ATCTools.OnModifyToolForkForTool(1, val)
+end
+function btnFetchFork1_Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(1)
+    
+end
+function btnRemoveFork1_Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(1)
+end
+function btnTouchOffFork1_Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(1)
+end
+function txtToolDescForToolFork1_On_Modify_Script(...)
+    value = select(1, ...)
+    ATCTools.OnModifyToolDescription(1, value)
+end
 -- grpToolFork2-GlobalScript
+function droToolForToolFork2_On_Modify_Script(...)
+    val = select(1,...)
+    return ATCTools.OnModifyToolForkForTool(2, val)
+end
+function btnFetchFork2_Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(2)
+    
+end
+function btnRemoveFork2_Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(2)
+end
+function btnTouchOffFork2_Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(2)
+end
+function txtToolDescForToolFork2_On_Modify_Script(...)
+    value = select(1, ...)
+    ATCTools.OnModifyToolDescription(2, value)
+end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
 -- PLC Script has to call ToolForkTabPLC()
-
-
 package.loaded.ToolForks = nil
 ToolForks = require "ToolForks"
-
-package.loaded.ToolChange = nil
-ToolChange = require "ToolChange"
 
 -- TODO: convert this all to a table to avoid any method conflicts (which I had happen!)
 local SelectedToolFork = nil
@@ -3558,7 +3576,7 @@ function HandleOnExitToolForkTab()
 	SelectedToolFork = nil
 end
 
-function ToolForkTabPLC()
+function HandleToolForkListBoxSelectionChanged()
 	-- no notification for when the list box selection changes, so we have to poll it
 	if SelectedToolFork ~= nil then
 		if SelectedToolFork.Number ~= GetToolForkListBoxSelected() then
@@ -3632,6 +3650,10 @@ function btnAssignZ_Clicked_Script(...)
     local val = scr.GetProperty("droMachineZ", "Value")
     val = HandlePositionSet(val, "Z")
     HandleSelectedToolForkChanged()
+end
+function lstToolForks_On_Modify_Script(...)
+    HandleToolForkListBoxSelectionChanged()
+    
 end
 function btnAddToolFork_Clicked_Script(...)
     SelectedToolFork = ToolForks.AddToolForkPosition()
