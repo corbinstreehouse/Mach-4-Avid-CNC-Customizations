@@ -3522,29 +3522,17 @@ function txtSlideDistance_On_Modify_Script(...)
     return val
 end
 -- grpToolForkEditor-GlobalScript
-function btnOrientationYNeg_Clicked_Script(...)
-    SelectedToolFork.Orientation = ToolForks.ToolForkOrientation.Y_Minus
-    UpdateToolForkImage()
-    ToolForks.SaveToolForkPositions()
-    
+function btnOrientationYNeg3_Clicked_Script(...)
+    ATCToolForkSetup.OrientationClicked(...)
 end
-function btnOrientationXNeg_Clicked_Script(...)
-    SelectedToolFork.Orientation = ToolForks.ToolForkOrientation.X_Minus
-    UpdateToolForkImage()
-    ToolForks.SaveToolForkPositions()
-    
+function btnOrientationXNeg1_Clicked_Script(...)
+    ATCToolForkSetup.OrientationClicked(...)
 end
-function btnOrientationYPos_Clicked_Script(...)
-    SelectedToolFork.Orientation = ToolForks.ToolForkOrientation.Y_Plus
-    UpdateToolForkImage()
-    ToolForks.SaveToolForkPositions()
-    
+function btnOrientationYPos2_Clicked_Script(...)
+    ATCToolForkSetup.OrientationClicked(...)
 end
-function btnOrientationXPos_Clicked_Script(...)
-    SelectedToolFork.Orientation = ToolForks.ToolForkOrientation.X_Plus
-    UpdateToolForkImage()
-    ToolForks.SaveToolForkPositions()
-    
+function btnOrientationXPos0_Clicked_Script(...)
+    ATCToolForkSetup.OrientationClicked(...)
 end
 function btnRemoveLastToolFork_Clicked_Script(...)
     ATCToolForkSetup.RemoveLastToolForkClicked()

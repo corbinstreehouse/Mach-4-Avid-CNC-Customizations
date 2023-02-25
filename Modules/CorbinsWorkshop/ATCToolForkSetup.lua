@@ -56,6 +56,7 @@ function LoadToolForksIntoListBox()
 	scr.SetProperty("lstToolForks", "Strings", toolForkValues)
 
 	UpdateToolForkListSelection()
+	HandleSelectedToolForkChanged()
 end
 
 function UpdateToolForkImage() 
@@ -125,7 +126,6 @@ end
 function ToolForkPositionsListChanged()
 	LoadToolForksIntoListBox()
 	ToolForks.SaveToolForkPositions()	
-	HandleSelectedToolForkChanged()
 end
 
 function HandlePositionSet(val, position) 
@@ -147,7 +147,6 @@ end
 function HandleOnEnterToolForkTab()
 	ATCToolForkSetup.LoadToolForksAndSetSelected()
 	LoadToolForksIntoListBox() 
-	HandleSelectedToolForkChanged()
 	-- setup the global UI options
 	scr.SetProperty("txtSlideDistance", "Value", string.format("%.4f", ToolForks.GetSlideDistance()))
 	scr.SetProperty("txtWaitTime", "Value", string.format("%.4f", ToolForks.GetDwellTime()))
@@ -184,7 +183,6 @@ function ATCToolForkSetup.test.TestAdd()
 	ATCToolForkSetup.SelectedToolFork = ToolForks.AddToolForkPosition()
 	ToolForkPositionsListChanged()
 	print("Selected:"..ATCToolForkSetup.SelectedToolFork.Number)
-
 end
 
 function ATCToolForkSetup.HandleAddToolForkClicked()
@@ -195,19 +193,30 @@ end
 function ATCToolForkSetup.RemoveLastToolForkClicked()
 	ATCToolForkSetup.SelectedToolFork = ToolForks.RemoveLastToolForkPosition()
 	ToolForkPositionsListChanged()
+end
 
+function ATCToolForkSetup.OrientationClicked(...)
+	local ctrlName = select(1, ...)
+	local orientation = string.match(ctrlName, "%d")
+	orientation = tonumber(orientation)
+	ToolForks.Log("Orientation clicked: %s %d", ctrlName, orientation)
+	ATCToolForkSetup.SelectedToolFork.Orientation = orientation
+	UpdateToolForkImage()
+	ToolForks.SaveToolForkPositions()
+end
+
+function ATCToolForkSetup.test.TestOrientationChange()
+	LoadToolForksIntoListBox() 
+	ATCToolForkSetup.OrientationClicked("blahBlah3")
 end
 
 
 
 if (mc.mcInEditor() == 1) then
-	ATCToolForkSetup.test.TestAdd()
+	--ATCToolForkSetup.test.TestAdd()
+	ATCToolForkSetup.test.TestOrientationChange()
 
 end
-
-
-
-
 
 
 return ATCToolForkSetup
