@@ -10,6 +10,8 @@
 
 -- These are called from the ATC Tools tab. It is way easier to track changes in a text file rather than a binary file.
 
+-- PLC Script must call ATCTools.PLCScript() for the Height offset LED to work right
+
 local ATCTools = {
 	MaxToolForkCount = 10 -- Increase if you have more tools, and update the UI to have more items
 }
@@ -50,6 +52,18 @@ function ATCTools.OnToolForkToolChanged(toolFork)
 
 
 end
+
+function ATCTools.PLCScript()
+	-- Update the LED for the height offset.
+    local HOState = mc.mcCntlGetPoundVar(inst, 4008)
+    if (HOState == 49) then
+        scr.SetProperty("ledATCHeightActive", "Value", "0")
+    else
+        scr.SetProperty("ledATCHeightActive", "Value", "1")
+    end	
+	
+end
+
 
 
 function ATCTools.OnTabShow()

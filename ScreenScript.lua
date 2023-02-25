@@ -2201,6 +2201,10 @@ function Mach_PLC_Script()
     
     end
     
+    if ATCTools ~= nil then
+    	ATCTools.PLCScript() -- corbin, added to update the LED
+    end
+    
     --This is the last thing we do.  So keep it at the end of the script!
     machStateOld = machState;
     machWasEnabled = machEnabled;
@@ -3378,7 +3382,6 @@ function droATCCurrentTool_On_Update_Script(...)
     val = select(1, ...)
     ATCTools.CurrentToolChanged()
     return val
-    
 end
 function droATCCurrentTool_On_Modify_Script(...)
     ATCTools.CurrentToolChanged()
