@@ -16,12 +16,19 @@ ATCToolForkSetup = {
 }
 
 function UpdateToolForkListSelection()
+	if ATCToolForkSetup.SelectedToolFork ~= nil then
+		if ATCToolForkSetup.SelectedToolFork.Number > ToolForks.GetToolForkCount() then
+			ATCToolForkSetup.SelectedToolFork = nil
+		end		
+	end
+
+
 	if ATCToolForkSetup.SelectedToolFork == nil then
 		if ToolForks.GetToolForkCount() > 0 then
 			ATCToolForkSetup.SelectedToolFork = ToolForks.GetToolForkNumber(1)
 		end
 	end
-	
+
 	if ATCToolForkSetup.SelectedToolFork ~= nil then
 		local zeroBasedIndex = ATCToolForkSetup.SelectedToolFork.Number - 1
 		scr.SetProperty("lstToolForks", "Selected", tostring(zeroBasedIndex))
@@ -116,16 +123,9 @@ end
 
 -- call when adding or removing items, or on initial load to update the list box ui
 function ToolForkPositionsListChanged()
-	-- try to and restore the selected one..
-	local selected = ""
-	if ATCToolForkSetup.SelectedToolFork ~= nil then
-		selected = string.format("ToolFork%d", ATCToolForkSetup.SelectedToolFork.Number)
-	end
-
-	ToolForks.Log("ToolForkPositionsListChanged, selected: %s", selected)
-
 	LoadToolForksIntoListBox()
 	ToolForks.SaveToolForkPositions()	
+	HandleSelectedToolForkChanged()
 end
 
 function HandlePositionSet(val, position) 
@@ -195,7 +195,7 @@ end
 function ATCToolForkSetup.RemoveLastToolForkClicked()
 	ATCToolForkSetup.SelectedToolFork = ToolForks.RemoveLastToolForkPosition()
 	ToolForkPositionsListChanged()
-	
+
 end
 
 
