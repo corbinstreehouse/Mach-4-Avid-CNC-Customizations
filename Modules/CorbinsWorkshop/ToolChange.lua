@@ -14,17 +14,16 @@ local DRAWBAR_SIGNAL_OUTPUT = mc.OSIG_OUTPUT6
 local ToolChange = {
     internal = {
         inst = nil,
-        drawBarSigHandle = nil,        
+        drawBarSigHandle = nil,		
     }
+	debug = {
+		TEST_AT_Z_0 = true,  -- set to true to debug the slide at z 0. DON'T HAVE ANY TOOLS IN THE MACHINE..IT WILL DROP THEM!
+		USE_SLOW_FEED_RATES = true, -- if true G01 F25, if false G0
+	}
 }
 
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 local ToolForks = require 'ToolForks'
-
-local TEST_AT_Z_0 = true -- set to true to debug the slide at z 0...don't have any tools in, otherwise they will get dropped!
-local USE_SLOW_FEED_RATES = true -- if true, G01 at F25. if false, G0.
-
------------------------
 
 -- must be the first thing called, and this file calls it.
 function ToolChange.internal.Initialize()
@@ -111,7 +110,7 @@ function ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
 end
 
 function ToolChange.internal.GetRapidFeedGCode()
-    if USE_SLOW_FEED_RATES then
+    if ToolChange.debug.USE_SLOW_FEED_RATES then
         return "G01 F25"
     else
         return "G00"
@@ -125,7 +124,7 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
 
     local initialX, initialY = ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
     local zPos = toolForkPosition.Z
-    if (TEST_AT_Z_0) then
+    if (ToolChange.debug.TEST_AT_Z_0) then
         zPos = 0
     end
     local feedRate = ToolChange.internal.GetRapidFeedGCode()
@@ -168,7 +167,7 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolNumber)
 
     local finalX, finalY = ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
     local zPos = toolForkPosition.Z
-    if (TEST_AT_Z_0) then
+    if (ToolChange.debug.TEST_AT_Z_0) then
         zPos = 0
     end
     local feedRate = ToolChange.internal.GetRapidFeedGCode()
@@ -242,18 +241,12 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 
     if (selectedTool == currentTool) then
         -- not really an error..but useful to see
-        ToolForks.Error(string.format("Tool %d already selected. Skipping tool change.", selectedTool))
+        ToolForks.Error(string.format("TOOL CHANGE: Tool %d already selected. Skipping tool change.", selectedTool))
         do return end
     end
 
---    if ToolForkPositions == nil then
---        wx.wxMessageBox("ToolChange: Invalid setup; nil ToolForkPositions! This is a coding error.\nPerforming Cycle Stop")
---        mc.mcCntlCycleStop(ToolChange.internal.inst)
---        do return end
---    end
-
     local currentPosition = ToolForks.GetToolForkNumberForTool(currentTool)
-    if currentPosition == 0 then
+    if currentPosition == 0 then		
         -- Current tool has to be manually removed. The user has to remove it and then insert the next tool..which might be in a fork. We could make this better by checking that ..but continuing after a stop requires more logic that I'm not sure how to handle, especially if the user has to measure the tool height.
         local message = string.format("Current tool T%d has no tool fork holder to go back to.\nRemove it and manually install tool T%d and continue", currentTool, selectedTool)
         ToolChange.DoManualToolChangeWithMessage(message)

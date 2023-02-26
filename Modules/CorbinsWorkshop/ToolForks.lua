@@ -10,20 +10,21 @@
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 local inifile = require 'inifile'
 
-local ToolForks = { internal = {} }
-
 --ToolForkPositions is a table. 
 -- The keys are: "ToolForkData" and "ToolFork%d", where %d is replaced with the Tool Fork's Number.
 -- Tool Fork Number is 1-based.
--- Ot is saved to an ini file named "ToolForks.tls in the Profile's ToolTables directory.
-ToolForks.ToolForkPositions = nil
+-- It is saved to an ini file named "ToolForks.tls in the Profile's ToolTables directory.
 
--- An orientation for a tool fork
-ToolForks.ToolForkOrientation = { X_Plus = 0, X_Minus = 1, Y_Plus = 2, Y_Minus = 3}
+local ToolForks = { 
+	internal = {},
+	ToolForkPositions = nil, -- maybe rename to ToolForks? kind of confusing for ToolForks.ToolForks. Maybe "Items"?	
+	-- An orientation for a tool fork. Don't change the values, as the UI needs them to be this.
+	ToolForkOrientation = { X_Plus = 0, X_Minus = 1, Y_Plus = 2, Y_Minus = 3}
+}
 
 -- A ToolFork is a table. They keys:
 -- Number, X, Y, Z, Orientation, Tool
--- The DummyToolFork helps with code completion and to copy initial parameters from
+-- The DummyToolFork helps with code completion and to copy initial parameters when there are none to start with.
 local DummyToolFork = {}
 DummyToolFork.Number = 0
 DummyToolFork.X = 0.0
@@ -32,7 +33,7 @@ DummyToolFork.Z = 0.0
 DummyToolFork.Orientation = ToolForks.ToolForkOrientation.X_Plus
 DummyToolFork.Tool = 0
 
-local inst = mc.mcGetInstance("ToolForks.lua")
+local inst = mc.mcGetInstance("ToolForks.lua") -- make it an item in the table? better for data encapsulation.
 
 function ToolForks.internal.InitializeToolForkPositions() 
 	local data = {}
