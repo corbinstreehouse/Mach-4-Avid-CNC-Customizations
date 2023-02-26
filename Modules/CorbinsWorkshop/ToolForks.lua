@@ -39,6 +39,7 @@ function ToolForks.internal.InitializeToolForkPositions()
 	data.ToolForkCount = 0
 	data.SlideDistance = 2.5
 	data.DwellTime = 5.0
+	data.ZBump = 0.100
 	ToolForks.ToolForkPositions = {}
 	ToolForks.ToolForkPositions.ToolForkData = data
 end
@@ -152,6 +153,12 @@ function ToolForks.LoadToolForkPositions()
 					ToolForks.ToolForkPositions.ToolForkData.ToolForkCount = count
 				end
 			end
+
+			if ToolForks.ToolForkPositions.ToolForkData.ZBump == nil then
+				ToolForks.ToolForkPositions.ToolForkData.ZBump = 0.100 -- added later, so could be nil
+			end
+
+
 			ToolForks.Log("Loaded ToolForks. Count: %d", count)			
 		end
 	else
@@ -219,7 +226,7 @@ end
 function ToolForks.GetToolForkNumberForTool(toolNumber)
 	local tf = ToolForks.GetToolForkForTool(toolNumber)
 	if tf ~= nil then
-		return tf.Tool
+		return tf.Number
 	end
 	return 0
 end
