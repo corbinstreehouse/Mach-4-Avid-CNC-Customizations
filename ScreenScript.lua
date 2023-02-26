@@ -3505,6 +3505,54 @@ end
 function txtToolDescForToolFork6_On_Modify_Script(...)
     ATCTools.OnModifyToolDescription(...)
 end
+-- grpToolFork8-GlobalScript
+function droToolForToolFork8_On_Modify_Script(...)
+    ATCTools.OnModifyToolForkForTool(...)
+end
+function btnFetchFork8_Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnRemoveFork8_Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(...)
+end
+function btnTouchOffFork8_Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(...)
+end
+function txtToolDescForToolFork8_On_Modify_Script(...)
+    ATCTools.OnModifyToolDescription(...)
+end
+-- grpToolFork9-GlobalScript
+function droToolForToolFork9_On_Modify_Script(...)
+    ATCTools.OnModifyToolForkForTool(...)
+end
+function btnFetchFork9_Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnRemoveFork9_Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(...)
+end
+function btnTouchOffFork9_Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(...)
+end
+function txtToolDescForToolFork9_On_Modify_Script(...)
+    ATCTools.OnModifyToolDescription(...)
+end
+-- grpToolFork10-GlobalScript
+function droToolForToolFork10_On_Modify_Script(...)
+    ATCTools.OnModifyToolForkForTool(...)
+end
+function btnFetchFork10_Clicked_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnRemoveFork10_Clicked_Script(...)
+    ATCTools.OnRemoveButtonClicked(...)
+end
+function btnTouchOffFork10_Clicked_Script(...)
+    ATCTools.OnTouchOffClicked(...)
+end
+function txtToolDescForToolFork10_On_Modify_Script(...)
+    ATCTools.OnModifyToolDescription(...)
+end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
 package.loaded.ATCToolForkSetup = nil
