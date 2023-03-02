@@ -119,14 +119,14 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
 	local initialX, initialY = ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
 	local zPos = toolForkPosition.Z
 	if (ToolChange.debug.TEST_AT_Z_0) then
-		zPos = 0
+		zPos = -1.0
 	end
 	-- G00 - Rapid
 	-- G90 – Absolute position mode
 	-- G53 – Machine Coordinate System
 	-- G01 - Linear Feed Move; needs a feed rate
 	local GCode = ""
-	GCode = GCode .. "G00 G90 G53 Z0.0\n" -- Rapid to z0 
+	GCode = GCode .. "G00 G90 G53 Z0.0\n" -- Rapid to z0 so we are at a safe distance
 	---------- Put the tool back in the fork
 	GCode = GCode .. string.format("G00 G53 X%.4f Y%.4f\n", initialX, initialY) -- Go to the X/Y position for the slide in to start
 	GCode = GCode .. string.format("G00 G53 Z%.4f\n", zPos)  -- Go down to the Z position
@@ -139,13 +139,13 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
 
 	-- don't continue to open the drawbar if we had an error! We could be dropping a tool.    
 	if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition") then
-		if OpenDrawBar() then
+		if ToolChange.OpenDrawBar() then
 			------ Raise spindle, after releasing tool at 50 IPM (probably doesn't have to go to Z0)
 			-- TODO: corbin - raise height can be some relative height from the Z to clear everything, or we could rapid to it after slowly moving up a certain distance.
 			GCode = "" 
 			GCode = GCode .. string.format("G01 G90 G53 Z0.00 F50.0\n")
 			rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-			if ToolChange.internal.CheckForNoError("ToolChange.PutToolBackInForkAtPosition") then
+			if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition") then
 				return true
 			end
 		end
@@ -259,27 +259,38 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 		do return end
 	end
 
+	-- TODO: start a timer, so we can do the rest of the wait after the moves.
+	if not ToolChange.internal.TurnOffSpindleAndWait() then 
+		ToolForks.Error("Failed to turn off spindle!")
+		do return end
+	end
+
+	local currentPosition = ToolForks.GetToolForkPositionForTool(currentTool)
+	local selectedPosition = ToolForks.GetToolForkPositionForTool(selectedTool)
 
 	-- TODO: If currentTool is tool 0, ask the user to ensure the spindle has no tool in it!
-	if currentTool > 0 then
-		local currentPosition = ToolForks.GetToolForkPositionForTool(currentTool)
-		if currentPosition == nil then		
-			-- Current tool has to be manually removed. The user has to remove it and then insert the next tool..which might be in a fork. We could make this better by checking that ..but continuing after a stop requires more logic that I'm not sure how to handle, especially if the user has to measure the tool height.
-			local message = string.format("Current tool T%d has no tool fork holder to go back to.\nRemove it and manually install tool T%d and continue", currentTool, selectedTool)
-			ToolChange.DoManualToolChangeWithMessage(message)
-			do return end
-		end
+	if currentPosition == nil then		
+		-- Current tool has to be manually removed. The user has to remove it and then insert the next tool..which might be in a fork. We could make this better by checking that ..but continuing after a stop requires more logic that I'm not sure how to handle, especially if the user has to measure the tool height.
+		local message = string.format("Current tool T%d has no tool fork holder to go back to.\nRemove it and manually install tool T%d and continue", currentTool, selectedTool)
+		ToolChange.DoManualToolChangeWithMessage(message)
+		do return end
 	end
 
 	local state = ToolChange.internal.SaveState() -- don't do returns in the middle of a method after this
 
-	-- TODO: start a timer, so we can do the rest of the wait after the moves.
-	if ToolChange.internal.TurnOffSpindleAndWait() then 
-		if currentTool > 0 then
-			ToolChange.PutToolBackInForkAtPosition(currentPosition, currentTool)
-		end
+	local result = true
 
-		local selectedPosition = ToolForks.GetToolForkPositionForTool(selectedTool)
+	if currentPosition ~= nil then
+		result = ToolChange.PutToolBackInForkAtPosition(currentPosition, currentTool)
+		if not result then
+			-- more like a fatal error. Do a stop
+			mc.mcCntlCycleStop(ToolChange.internal.inst)
+				
+		end
+		
+	end
+
+	if result then
 		-- If the next selected tool does not have a position, then the user has to insert it. 
 		-- At least we dropped off the current tool before doing this to save them some time.
 		if selectedPosition ~= nil then
@@ -292,17 +303,17 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 			end
 		else
 			local message = string.format("Selected Tool T%d has no Tool Fork Position.\nManually install it and continue.", selectedTool)
+			ToolChange.CloseDrawBar()
 			ToolChange.DoManualToolChangeWithMessage(message)
 		end
-	else
-		ToolForks.Error("Failed to turn off spindle!")
 	end
-
+	
 	ToolChange.internal.RestoreState(state)
+	return result
 end
 
 function ToolChange.internal.TestToolChange()
-	ToolChange.DoToolChangeFromTo(0, 2)
+	ToolChange.DoToolChangeFromTo(3, 2)
 
 end
 
