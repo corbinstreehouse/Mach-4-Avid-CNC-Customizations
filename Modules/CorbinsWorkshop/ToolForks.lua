@@ -45,6 +45,10 @@ function ToolForks.internal.InitializeToolForkPositions()
 	ToolForks.ToolForkPositions.ToolForkData = data
 end
 
+function ToolForks.GetZBump()
+	return ToolForks.GetToolForkData().ZBump
+end
+
 function ToolForks.SetSlideDistance(value) 
 	ToolForks.GetToolForkData().SlideDistance = value
 end
@@ -208,7 +212,7 @@ function ToolForks.AddToolForkPosition()
 	return newToolFork
 end
 
-function ToolForks.GetToolForkForTool(toolNumber)
+function ToolForks.GetToolForkPositionForTool(toolNumber)
 	-- Just look it up so I don't have to keep two lists (one in the tool file and one in the fork file)
 	if toolNumber == 0 then -- 0 is special
 		return nil
@@ -225,7 +229,7 @@ end
 
 -- returns 0 if it isn't set
 function ToolForks.GetToolForkNumberForTool(toolNumber)
-	local tf = ToolForks.GetToolForkForTool(toolNumber)
+	local tf = ToolForks.GetToolForkPositionForTool(toolNumber)
 	if tf ~= nil then
 		return tf.Number
 	end
