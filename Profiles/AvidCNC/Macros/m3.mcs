@@ -16,8 +16,6 @@ function IsSpindleOn()
 	else 
 		return false;
 	end
-
-
 end
 
 
@@ -27,11 +25,8 @@ function m3()
 	dir, rc = mc.mcSpindleGetDirection(inst)
 	-- only do something if it isn't running..or else we have to stop and change the dirction
 	if dir == mc.MC_SPINDLE_OFF then 
-	--	mc.mcCntlSetLastError(inst, "Spindle Clockwise/Forward")
 		CorbinExtra.SetAirPressure(1)
-		--mc.mcCntlSetLastError(inst, "air on..waiting 5 seconds")
-		CorbinExtra.Sleep(5)
-		--	mc.mcCntlSetLastError(inst, "done waiting, turning on the spindle")
+		CorbinExtra.Sleep(1)
 
 -- the setDirectionWait version does not ever return for me...i wonder what it is waiting on?
 -- The bit is set..but i guess the RPM sensor is not available or hooked up
@@ -45,15 +40,12 @@ function m3()
 		end
 		-- check the state
 		if IsSpindleOn() then
-
 			--RPM, rc = mc.mcSpindleGetSensorRPM(inst)
 			--	mc.mcCntlSetLastError(inst, "spindle is on, rpm:"..RPM.." rc:"..rc)
 		else
 			mc.mcCntlSetLastError(inst, "ERROR: spindle is OFF");
 		end
-		CorbinExtra.Sleep(3)-- spindle needs time to come to speed
-
-
+		CorbinExtra.Sleep(5)-- spindle needs time to come to speed
 	else
 		mc.mcCntlSetLastError("Spindle already on, doing nothing")
 	end

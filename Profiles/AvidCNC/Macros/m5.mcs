@@ -23,13 +23,7 @@ function m5()
 			mc.mcCntlSetLastError(inst, "ERROR: got an error turning on the spindle: "..result)
 		end
 
----		mc.mcCntlSetLastError(inst, "M5: Spindle now off, waiting for spin down 5 seconds")
-		--CorbinExtra.Sleep(10)
-	--	mc.mcCntlSetLastError(inst, "M5: Sleep done, turning off the air")
 		CorbinExtra.SetAirPressure(0)
-	--	mc.mcCntlSetLastError(inst, "M5 done, air is now off")
-	else
---		mc.mcCntlSetLastError(inst, "spindle is already off");
 	end
 
 	return 0
