@@ -135,7 +135,7 @@ function ATCTools.OnModifyToolForkForTool(...)
 	-- validation? 
 
 	--- is the tool already in another fork?
-	local existingTF = ToolForks.GetToolForkForTool(tool)
+	local existingTF = ToolForks.GetToolForkPositionForTool(tool)
     local tf = ToolForks.GetToolForkNumber(toolForkNumber)
     
 	local keepGoing = true
