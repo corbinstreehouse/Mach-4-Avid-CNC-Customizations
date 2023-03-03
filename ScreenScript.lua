@@ -3560,13 +3560,13 @@ ATCToolForkSetup = require "ATCToolForkSetup"
 function tabATCToolForkSetup_On_Enter_Script(...)
     -- ATC Tool Fork Setup Tab - On Enter Script
     -- by Corbin Dunn, Feb 22, 2023
-    HandleOnEnterToolForkTab()
+    ATCToolForkSetup.HandleOnEnterToolForkTab()
     
     
 end
 function txtSlideDistance_On_Modify_Script(...)
     val = select(1,...)
-    val = HandleSlideDistanceChanged(val)
+    val = ATCToolForkSetup.HandleSlideDistanceChanged(val)
     return val
 end
 -- grpToolForkEditor-GlobalScript
@@ -3622,9 +3622,12 @@ function txtToolForkZ_On_Modify_Script(...)
     val = HandlePositionSet(val, "Z")
     return val
 end
+function txtZBump_On_Modify_Script(...)
+    return ATCToolForkSetup.HandleZBumpChanged(...)
+end
 function txtWaitTime_On_Modify_Script(...)
     val = select(1,...)
-    val = HandleWaitTimeChanged(val)
+    val = ATCToolForkSetup.HandleWaitTimeChanged(val)
     return val
 end
 -- grpSpindle-GlobalScript

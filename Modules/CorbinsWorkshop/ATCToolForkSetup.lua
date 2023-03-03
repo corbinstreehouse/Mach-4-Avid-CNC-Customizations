@@ -144,12 +144,13 @@ function ATCToolForkSetup.LoadToolForksAndSetSelected()
 	end
 end
 
-function HandleOnEnterToolForkTab()
+function ATCToolForkSetup.HandleOnEnterToolForkTab()
 	ATCToolForkSetup.LoadToolForksAndSetSelected()
 	LoadToolForksIntoListBox() 
 	-- setup the global UI options
 	scr.SetProperty("txtSlideDistance", "Value", string.format("%.4f", ToolForks.GetSlideDistance()))
 	scr.SetProperty("txtWaitTime", "Value", string.format("%.4f", ToolForks.GetDwellTime()))
+	scr.SetProperty("txtZBump", "Value", string.format("%.4f", ToolForks.GetZBump()))
 end
 
 function HandleOnExitToolForkTab()
@@ -166,14 +167,21 @@ function HandleToolForkListBoxSelectionChanged()
 	end
 end
 
-function HandleSlideDistanceChanged(value)
+function ATCToolForkSetup.HandleSlideDistanceChanged(value)
 	ToolForks.SetSlideDistance(value)
 	ToolForks.SaveToolForkPositions()
 end
 
-function HandleWaitTimeChanged(value)
+function ATCToolForkSetup.HandleWaitTimeChanged(value)
 	ToolForks.SetDwellTime(value)
 	ToolForks.SaveToolForkPositions()
+end
+
+function ATCToolForkSetup.HandleZBumpChanged(...)
+	local val = select(1,...)
+	ToolForks.SetZBump(val)
+	ToolForks.SaveToolForkPositions()
+	return val
 end
 
 -- some unit tests to debug any issues

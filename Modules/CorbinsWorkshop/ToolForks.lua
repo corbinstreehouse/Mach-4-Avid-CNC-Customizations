@@ -41,12 +41,18 @@ function ToolForks.internal.InitializeToolForkPositions()
 	data.SlideDistance = 2.5
 	data.DwellTime = 5.0
 	data.ZBump = 0.100
+	data.TestAtZMax = false
+	data.ZClearanceWithNoTool = 0.0
 	ToolForks.ToolForkPositions = {}
 	ToolForks.ToolForkPositions.ToolForkData = data
 end
 
 function ToolForks.GetZBump()
 	return ToolForks.GetToolForkData().ZBump
+end
+
+function ToolForks.SetZBump(value)
+	ToolForks.GetToolForkData().ZBump = value
 end
 
 function ToolForks.SetSlideDistance(value) 

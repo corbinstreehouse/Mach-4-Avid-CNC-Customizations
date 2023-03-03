@@ -17,7 +17,7 @@ local ToolChange = {
 		drawBarSigHandle = nil,		
 	},
 	debug = {
-		TEST_AT_Z_0 = true,  -- set to true to debug the slide at z 0. DON'T HAVE ANY TOOLS IN THE MACHINE..IT WILL DROP THEM!
+		TEST_AT_Z_0 = false,  -- set to true to debug the slide at z 0. DON'T HAVE ANY TOOLS IN THE MACHINE..IT WILL DROP THEM!
 	}
 }
 
@@ -53,7 +53,7 @@ function ToolChange.CloseDrawBar()
 end
 
 function ToolChange.DoManualToolChangeWithMessage(message)
-	local rc = mc.mcCntlCycleStop(ToolChange.internal.inst)
+	local rc = mc.mcCntlCycleStop(ToolChange.internal.inst) 
 	ToolChange.internal.CheckForNoError(rc, "CycleStop")
 	ToolChange.GotoManualToolChangeLocation()
 	wx.wxMessageBox(message)
@@ -130,7 +130,8 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
 	---------- Put the tool back in the fork
 	GCode = GCode .. string.format("G00 G53 X%.4f Y%.4f\n", initialX, initialY) -- Go to the X/Y position for the slide in to start
 	GCode = GCode .. string.format("G00 G53 Z%.4f\n", zPos)  -- Go down to the Z position
-	GCode = GCode .. string.format("G01 F25 G53 X%.4f Y%.4f\n", toolForkPosition.X, toolForkPosition.Y) -- Slide slowly (maybe make this faster...or consider G00, which some other scripts have done)
+	-- Slide slowly (maybe make this faster...or consider G00, which some other scripts have done)
+	GCode = GCode .. string.format("G00 G53 X%.4f Y%.4f\n", toolForkPosition.X, toolForkPosition.Y) 
 
 	ToolForks.Log("Putting T"..toolNumber.." back and executing GCode:")
 	ToolForks.Log(GCode)
@@ -144,9 +145,10 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
 			ToolChange.internal.DwellForTime(0.2)
 			
 			------ Raise spindle, after releasing tool at 50 IPM (probably doesn't have to go to Z0)
-			-- TODO: corbin - raise height can be some relative height from the Z to clear everything, or we could rapid to it after slowly moving up a certain distance.
+			-- TODO: corbin - raise height can be some relative height from the Z to clear everything,
+			-- or we could rapid to it after slowly moving up a certain distance.
 			GCode = "" 
-			GCode = GCode .. string.format("G01 G90 G53 Z0.00 F50.0\n")
+			GCode = GCode .. string.format("G00 G90 G53 Z0.00\n")
 			rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
 			if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition") then
 				return true
@@ -185,7 +187,7 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolNumber)
 
 	-- Go to the fork's x/y
 	GCode = GCode .. string.format("G00 G90 G53 X%.4f Y%.4f\n", startX, startY) -- rapid here is okay
-	-- Go to the fork's z to put in the tool
+	-- Go to the fork's z to get the tool, going a little higher by the zbump
 	GCode = GCode .. string.format("G00 G90 G53 Z%.4f\n", zPos + ToolForks.GetZBump()) -- rapid here seems scary..but okay
 
 	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
@@ -254,15 +256,15 @@ function ToolChange.internal.TurnOffSpindleAndWait()
 	end
 end
 
-
 function ToolChange.DoToolChange()
+	-- Always get the latest from the file; the UI may have edited it, which is in a different process
+	ToolForks.LoadToolForkPositions()
 	local selectedTool = mc.mcToolGetSelected(ToolChange.internal.inst)
 	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
 	ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 end
 
 function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
-
 	if (selectedTool == currentTool) then
 		-- not really an error..but useful to see
 		ToolForks.Error(string.format("TOOL CHANGE: Tool %d already selected. Skipping tool change.", selectedTool))
@@ -273,6 +275,10 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 	if not ToolChange.internal.TurnOffSpindleAndWait() then 
 		ToolForks.Error("Failed to turn off spindle!")
 		do return end
+	end
+
+	if (ToolChange.debug.TEST_AT_Z_0) then
+		
 	end
 
 	local currentPosition = ToolForks.GetToolForkPositionForTool(currentTool)
