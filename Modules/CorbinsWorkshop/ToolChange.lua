@@ -8,6 +8,11 @@
 -- (c) 2023 Corbin Dunn
 -- Software provided as-is. For redistribution rights, please contact me.
 
+-- NOTE: IF YOU CHANGE THIS FILE, YOU HAVE TO RESTART MACH 4.
+-- It is loaded as a module; the UI may respect changes, but the M6 script will not until a restart.
+-- I usually debug this in the ScriptEditor. When I'm happy with the changes, I restart Mach 4.
+
+
 -- TODO: UI customization for this ... or pass it in from M6
 local DRAWBAR_SIGNAL_OUTPUT = mc.OSIG_OUTPUT6
 
@@ -258,6 +263,7 @@ end
 
 function ToolChange.GotoManualToolChangeLocation()
 	-- TODO: go to a nice spot to do this
+	-- re use the avid spot..
 
 end
 
