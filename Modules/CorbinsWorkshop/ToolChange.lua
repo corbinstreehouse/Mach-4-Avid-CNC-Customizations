@@ -113,7 +113,7 @@ end
 
 -- returns true if it worked; false otherwise and should stop next stuff
 -- Post conditin: spindle left open!
-function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
+function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 	ToolChange.internal.VerifyToolForkPreConditions(toolForkPosition)
 
 	local initialX, initialY = ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
@@ -121,45 +121,68 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
 	if (ToolChange.debug.TEST_AT_Z_0) then
 		zPos = -1.0
 	end
+
+	ToolForks.Log("Putting T"..toolForkPosition.Tool.." back.")	
+
 	-- G00 - Rapid
 	-- G90 – Absolute position mode
 	-- G53 – Machine Coordinate System
 	-- G01 - Linear Feed Move; needs a feed rate
 	local GCode = ""
-	GCode = GCode .. "G00 G90 G53 Z0.0\n" -- Rapid to z0 so we are at a safe distance
-	---------- Put the tool back in the fork
-	GCode = GCode .. string.format("G00 G53 X%.4f Y%.4f\n", initialX, initialY) -- Go to the X/Y position for the slide in to start
-	GCode = GCode .. string.format("G00 G53 Z%.4f\n", zPos)  -- Go down to the Z position
-	-- Slide slowly (maybe make this faster...or consider G00, which some other scripts have done)
-	GCode = GCode .. string.format("G00 G53 X%.4f Y%.4f\n", toolForkPosition.X, toolForkPosition.Y) 
+	local rc = 0
 
-	ToolForks.Log("Putting T"..toolNumber.." back and executing GCode:")
-	ToolForks.Log(GCode)
-
-	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-
-	-- don't continue to open the drawbar if we had an error! We could be dropping a tool.    
-	if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition 1") then
-		if ToolChange.OpenDrawBar() then
-			if ToolChange.internal.DwellForTime(0.2) then
-
-				------ Raise spindle, after releasing tool; we go to the set z position given
-				-- or we could rapid to it after slowly moving up a certain distance.
-				local ZClearanceWithNoTool = ToolForks.GetZClearanceWithNoTool()
-
-				GCode = string.format("G00 G90 G53 Z%.4f", ZClearanceWithNoTool)
-				rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-				if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition 2") then
-					return true
-				end
-			end
-		end
+	-- Rapid to z0 so we are at a safe distance
+	GCode = "G00 G90 G53 Z0.0" 
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)	
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange: Putting Tool Back 0\n"..GCode) then
+		return false
 	end
-	return false
+
+	---------- Put the tool back in the fork
+	-- Go to the X/Y position for the slide in to start
+	GCode = string.format("G00 G53 X%.4f Y%.4f", initialX, initialY) 
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)	
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange: Putting Tool Back 1\n"..GCode) then
+		return false
+	end
+
+	GCode = string.format("G00 G53 Z%.4f", zPos)  -- Go down to the Z position
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)	
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChang.: Putting Tool Back 2\n"..GCode) then
+		return false
+	end	
+
+	-- Slide into the fork/pocket
+	GCode = string.format("G00 G53 X%.4f Y%.4f\n", toolForkPosition.X, toolForkPosition.Y) 
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)	
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange: Putting Tool Back 3\n"..GCode) then
+		return false
+	end		
+
+	-- don't continue to open the drawbar if we had an error! We could be dropping a tool. 
+	if not ToolChange.OpenDrawBar() then
+		return false
+	end
+
+	-- give the tool a brief moment to pop out
+	if not ToolChange.internal.DwellForTime(0.2) then
+		return false
+	end
+
+	-- Tool is released; raise the spindle up to the clearance height
+	local ZClearanceWithNoTool = ToolForks.GetZClearanceWithNoTool()
+
+	GCode = string.format("G00 G90 G53 Z%.4f", ZClearanceWithNoTool)
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange: Putting Tool Back 4\n"..GCode) then
+		return false
+	end
+
+	return true -- all good if we get to here
 end
 
--- Post condition: spindle closed
-function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolNumber)
+-- Post condition: spindle closed, but only on success (returning true)
+function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
 	ToolChange.internal.VerifyToolForkPreConditions(toolForkPosition)
 
 	local finalX, finalY = ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
@@ -174,8 +197,14 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolNumber)
 	local GCode = ""
 	local rc = 0
 
-	------ Move Z to home position to avoid hitting anything when moving to the ATC rack
-	GCode = string.format("G00 G90 G53 Z0.0")
+	------ Move Z to home position to avoid hitting anything when moving to the ATC rack;
+	-- we don't have to do this if we dropped of a tool, and use our clearance height for that.
+	local zClearanceWithNoTool = 0.0
+	if toolWasDroppedOff then
+		zClearanceWithNoTool  = ToolForks.GetZClearanceWithNoTool()
+	end
+	
+	GCode = string.format("G00 G90 G53 Z%.4f", zClearanceWithNoTool)
 	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 0: "..GCode) then
 		return false
@@ -216,7 +245,7 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolNumber)
 	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 3:"..GCode) then
 		return false
 	end
-	
+
 	------ Move Z to home position ------
 	GCode = string.format("G00 G90 G53 Z0.0\n")
 	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
@@ -329,7 +358,7 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 	local result = true
 
 	if currentPosition ~= nil then
-		result = ToolChange.PutToolBackInForkAtPosition(currentPosition, currentTool)
+		result = ToolChange.PutToolBackInForkAtPosition(currentPosition)
 		if not result then
 			-- more like a fatal error. Do a stop
 			mc.mcCntlCycleStop(ToolChange.internal.inst)
@@ -340,13 +369,17 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 		-- If the next selected tool does not have a position, then the user has to insert it. 
 		-- At least we dropped off the current tool before doing this to save them some time.
 		if selectedPosition ~= nil then
-			if ToolChange.LoadToolAtForkPosition(selectedPosition, selectedTool) then
+			local toolWasDroppedOff = currentPosition ~= nil
+			if ToolChange.LoadToolAtForkPosition(selectedPosition, toolWasDroppedOff) then
 				-- set the new tool on success    
 				mc.mcToolSetCurrent(ToolChange.internal.inst, selectedTool)
-
-				-- Not an error..but a message to the user that it worked (for now..)
 				ToolForks.Error("Tool change done. Current tool now: T%d", selectedTool)
 			end
+		elseif selectedTool == 0 then
+			-- going to tool 0 means having no tool in the holder
+			ToolChange.CloseDrawBar()
+			mc.mcToolSetCurrent(ToolChange.internal.inst, selectedTool)
+			ToolForks.Error("Tool change done. Current tool now: T%d", selectedTool)
 		else
 			local message = string.format("Selected Tool T%d has no Tool Fork Position.\nManually install it and continue.", selectedTool)
 			ToolChange.CloseDrawBar()
@@ -360,7 +393,7 @@ end
 
 function ToolChange.internal.TestToolChange()
 	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
-	ToolChange.DoToolChangeFromTo(currentTool, 2)
+	ToolChange.DoToolChangeFromTo(currentTool, 0)
 
 end
 
