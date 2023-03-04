@@ -3387,6 +3387,7 @@ function tabATCTools_On_Exit_Script(...)
 end
 function droATCCurrentTool_On_Update_Script(...)
     val = select(1, ...)
+    ATCTools.SetCurrentToolM6G43(val)
     ATCTools.CurrentToolChanged()
     return val
 end

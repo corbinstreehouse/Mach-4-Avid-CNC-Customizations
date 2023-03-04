@@ -20,6 +20,10 @@ local ATCTools = {
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 local ToolForks = require 'ToolForks'
 
+if ToolChange == nil then
+	ToolChange = require 'ToolChange'
+end
+
 function ATCTools.OnToolForkToolChanged(toolFork)
 	local s = string.format("droToolForToolFork%d", toolFork.Number)
 	scr.SetProperty(s, "Value", tostring(toolFork.Tool))
@@ -56,13 +60,13 @@ end
 
 function ATCTools.PLCScript()
 	-- Update the LED for the height offset.
-    local HOState = mc.mcCntlGetPoundVar(inst, 4008)
-    if (HOState == 49) then
-        scr.SetProperty("ledATCHeightActive", "Value", "0")
-    else
-        scr.SetProperty("ledATCHeightActive", "Value", "1")
-    end	
-	
+	local HOState = mc.mcCntlGetPoundVar(inst, 4008)
+	if (HOState == 49) then
+		scr.SetProperty("ledATCHeightActive", "Value", "0")
+	else
+		scr.SetProperty("ledATCHeightActive", "Value", "1")
+	end	
+
 end
 
 
@@ -73,17 +77,17 @@ function ATCTools.OnTabShow()
 
 	local count = ToolForks.GetToolForkCount() 
 	if count > 50 then
-		ToolForks.Error("Too many tool forks - %d Bad Tool Forks file at: %s",  count, ToolForks.GetToolForkFilePath())
+		ToolForks.Error("Too many tool pockets - %d Bad Tool Pockets file at: %s",  count, ToolForks.GetToolForkFilePath())
 		do return end
 	end
-	
+
 	for i=1, count do
 		local toolFork = ToolForks.GetToolForkNumber(i)
 		if toolFork == nil or toolFork.Number ~= i then
-			ToolForks.Error("No tool fork? Bad Tool Forks file at: %s", ToolForks.GetToolForkFilePath())
+			ToolForks.Error("No tool pocket? Bad Tool Pockets file at: %s", ToolForks.GetToolForkFilePath())
 			do return end
 		end
-		
+
 		local s = nil
 		local v = nil
 
@@ -112,7 +116,7 @@ end
 function ATCTools.ValidateOnModifyArgs(...)
 	local value = select(1, ...)
 	local ctrlName = select(2, ...)
-	
+
 	assert(value ~= nil)
 	assert(ctrlName ~= nil)
 
@@ -129,19 +133,19 @@ function ATCTools.OnModifyToolForkForTool(...)
 	if toolForkNumber == nil then
 		return
 	end
-		
+
 	ToolForks.Log("OnModifyToolForkForTool TF%d %s %s", toolForkNumber, ctrlName, value)
 	local tool = tonumber(value)
 	-- validation? 
 
 	--- is the tool already in another fork?
 	local existingTF = ToolForks.GetToolForkPositionForTool(tool)
-    local tf = ToolForks.GetToolForkNumber(toolForkNumber)
-    
+	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
+
 	local keepGoing = true
 
 	if (existingTF ~= nil) and (tf ~= existingTF)  then
-		local message = string.format("T%d is already in Tool Fork %d. First remove it from that Tool Fork and then try again.", tool, existingTF.Number)
+		local message = string.format("T%d is already in Tool Pocket %d. First remove it from that Tool Procket and then try again.", tool, existingTF.Number)
 		local rc = wx.wxMessageBox(message, "Tool Setup Error")
 		keepGoing = false
 		tool = tf.Tool -- go back to whatever it had in it before
@@ -150,7 +154,7 @@ function ATCTools.OnModifyToolForkForTool(...)
 	if keepGoing then 
 		-- does the fork already have a tool in it that isn't this tool?
 		if tf.Tool > 0 and tf.Tool ~= tool then
-			local message = string.format("Tool Fork %d already contains T%d.\nOverwrite the tool with T%d?", toolForkNumber, tf.Tool, tool)
+			local message = string.format("Tool Pocket %d already contains T%d.\nOverwrite the tool with T%d?", toolForkNumber, tf.Tool, tool)
 			local rc = wx.wxMessageBox(message, "Tool Setup Error", wx.wxYES_NO)
 			if rc ~= wx.wxYES then
 				-- go back to the prior value (TODO: TEST)
@@ -184,7 +188,20 @@ end
 function ATCTools.OnFetchButtonClicked(...)
 	local ctrlName = select(1, ...)
 	local toolForkNumber = string.match(ctrlName, "%d")
-	-- TODO: fetch code
+
+	local tf = ToolForkPositions.GetToolForkNumber(toolForkNumber)
+	if tf == nil then
+		ToolForks.Error("ATCTools Error: No tool pocket for position #%d",  toolForkNumber)		
+		return
+	end
+
+	local GCode = string.format("M6 T%d G43 H%d", tf.Tool, tf.Tool)
+	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
+	if not ToolChange.internal.CheckForNoError(rc, "Fetch tool: "..GCode) then
+		return
+	end	
+
+	-- bring it to the MTC location?	
 end
 
 function ATCTools.OnRemoveButtonClicked(...) 
@@ -211,17 +228,36 @@ function ATCTools.CurrentToolChanged()
 	end
 end
 
+function ATCTools.SetCurrentToolM6G43(tool)
+	tool = tonumber(tool)
+	-- If that tool is in a pocket, then maybe ask the user if we should go get it?
+	local tf = ToolForks.GetToolForkPositionForTool(tool)
+	if tf ~= nil then
+		local message = string.format("Tool T%d is in Pocket %d.\nWould you like to fetch it from the rack?",
+			tf.Tool, tf.Number)
+		local rc = wx.wxMessageBox(message, "Fetch the tool?", wx.wxYES_NO)
+		if rc == wx.wxYES then		
+			-- TODO: Manually call the ToolChange function here.
+			-- doing an M6 won't work, because the current tool will already be set by the DRO, and it wouldn't do anything
+			
+		end
+	else
+		-- If it isn't in a pocket, assume they put it there manually. 
+		-- Activate the height; the DRO should already have set the tool.	
+	end
+	
+	local GCode = string.format("G43 H%d", tool)
+	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
+	if not ToolChange.internal.CheckForNoError(rc, "G43 error: "..GCode) then
+		return
+	end		
+end
+
 
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-
---	ToolForks.LoadToolForkPositions()
---	ATCTools.OnModifyToolForkForTool(1, "5")
---	print("done")
-
---	ToolForks.AddToolForkPosition()
---	SaveToolForkPositions()
+	--ATCTools.SetCurrentToolM6G43(2)
 
 end
 
