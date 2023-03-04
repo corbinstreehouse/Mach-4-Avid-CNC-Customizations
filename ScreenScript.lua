@@ -3630,6 +3630,12 @@ function txtWaitTime_On_Modify_Script(...)
     val = ATCToolForkSetup.HandleWaitTimeChanged(val)
     return val
 end
+function txtZClearance_On_Modify_Script(...)
+    return ATCToolForkSetup.HandleZClearanceChanged(...)
+end
+function btnAssignX_1__Clicked_Script(...)
+    ATCToolForkSetup.HandleZClearanceAssignButtonClick(...)
+end
 -- grpSpindle-GlobalScript
 function droSpindleOverride_On_Update_Script(...)
     local inst = mc.mcGetInstance()

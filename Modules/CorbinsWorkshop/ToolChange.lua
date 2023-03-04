@@ -139,19 +139,19 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition, toolNumber)
 	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
 
 	-- don't continue to open the drawbar if we had an error! We could be dropping a tool.    
-	if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition") then
+	if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition 1") then
 		if ToolChange.OpenDrawBar() then
-			-- TODO: dwell a brief moment..
-			ToolChange.internal.DwellForTime(0.2)
-			
-			------ Raise spindle, after releasing tool at 50 IPM (probably doesn't have to go to Z0)
-			-- TODO: corbin - raise height can be some relative height from the Z to clear everything,
-			-- or we could rapid to it after slowly moving up a certain distance.
-			GCode = "" 
-			GCode = GCode .. string.format("G00 G90 G53 Z0.00\n")
-			rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-			if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition") then
-				return true
+			if ToolChange.internal.DwellForTime(0.2) then
+
+				------ Raise spindle, after releasing tool; we go to the set z position given
+				-- or we could rapid to it after slowly moving up a certain distance.
+				local ZClearanceWithNoTool = ToolForks.GetZClearanceWithNoTool()
+
+				GCode = string.format("G00 G90 G53 Z%.4f", ZClearanceWithNoTool)
+				rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
+				if ToolChange.internal.CheckForNoError(rc, "ToolChange.PutToolBackInForkAtPosition 2") then
+					return true
+				end
 			end
 		end
 	end
@@ -171,52 +171,64 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolNumber)
 		zPos = -1.0
 	end
 
-	-- Make sure the drawbar is open
-	if not ToolChange.OpenDrawBar() then
-		return false -- hate returns in the middle of a method!!
-	end
-	
 	local GCode = ""
+	local rc = 0
 
 	------ Move Z to home position to avoid hitting anything when moving to the ATC rack
 	GCode = string.format("G00 G90 G53 Z0.0")
 	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 0") then
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 0: "..GCode) then
 		return false
 	end	
 
 	-- Go to the fork's x/y
-	GCode = GCode .. string.format("G00 G90 G53 X%.4f Y%.4f\n", startX, startY) -- rapid here is okay
-	-- Go to the fork's z to get the tool, going a little higher by the zbump
-	GCode = GCode .. string.format("G00 G90 G53 Z%.4f\n", zPos + ToolForks.GetZBump()) -- rapid here seems scary..but okay
-
-	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-
-	if ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 1") then
-		if ToolChange.CloseDrawBar() then
-			ToolChange.internal.DwellForTime(0.2)
-			
-			GCode = ""
-			-- Goes back down to zPos after being higher by the ToolForks.ZBump ...so we can slide out safely
-			GCode = GCode .. string.format("G01 G90 G53 Z%.4f F50.0\n", zPos)
-			-- Slide out
-			GCode = GCode .. string.format("G0 G90 G53 X%.4f Y%.4f\n", finalX, finalY)
-			rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode) 
-			if ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 2") then
-				------ Move Z to home position ------
-				GCode = string.format("G00 G90 G53 Z0.0\n")
-				rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-				if ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 3") then
-					return true
-				end
-			end                        
-		end
+	GCode = string.format("G00 G90 G53 X%.4f Y%.4f", startX, startY) -- rapid here is okay
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 1: "..GCode) then
+		return false
 	end
-	return false
+
+	-- Make sure the drawbar is open
+	if not ToolChange.OpenDrawBar() then
+		return false
+	end
+
+	-- Go to the fork's z to get the tool, going a little higher by the zbump
+	GCode = string.format("G00 G90 G53 Z%.4f", zPos + ToolForks.GetZBump()) -- rapid here seems scary..but okay
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)	
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 2:"..GCode) then
+		return false
+	end
+
+	if not ToolChange.CloseDrawBar() then	
+		return false
+	end
+
+	if not ToolChange.internal.DwellForTime(0.2) then
+		return false
+	end
+
+	-- Goes back down to zPos after being higher by the ToolForks.ZBump ...so we can slide out safely
+	GCode = string.format("G01 G90 G53 Z%.4f F50.0\n", zPos)
+	-- Slide out
+	GCode = GCode .. string.format("G0 G90 G53 X%.4f Y%.4f\n", finalX, finalY)
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode) 
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 3:"..GCode) then
+		return false
+	end
+	
+	------ Move Z to home position ------
+	GCode = string.format("G00 G90 G53 Z0.0\n")
+	rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
+	if not ToolChange.internal.CheckForNoError(rc, "ToolChange.LoadToolAtForkPosition 4:"..GCode) then
+		return false
+	end
+
+	return true
 end
 
 function ToolChange.GotoManualToolChangeLocation()
-	-- TOD: go to a nice spot to do this
+	-- TODO: go to a nice spot to do this
 
 end
 
@@ -278,7 +290,13 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 	end
 
 	if (ToolChange.debug.TEST_AT_Z_0) then
-		
+		-- warn the user to not have any tools in the thing, otherwise they will get dropped
+		local rc = wx.wxMessageBox("WARNING: Test height enabled - make sure there are no tools in the spindle. \nWould you like to continue?", 
+			"Tool Warning", wx.wxYES_NO)
+		if rc ~= wx.wxYES then
+			ToolForks.Error("User stopped the test tool change.")
+			do return end
+		end		
 	end
 
 	local currentPosition = ToolForks.GetToolForkPositionForTool(currentTool)
@@ -287,15 +305,23 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 		ToolForks.Log("Doing tool change from %d to %d, from pocket %d to pocket %d", currentTool, selectedTool, 
 			currentPosition.Number, selectedPosition.Number)
 	end
-	
-	
+
+
 	-- TODO: If currentTool is tool 0, ask the user to ensure the spindle has no tool in it!
 	if currentPosition == nil then		
-		-- Current tool has to be manually removed. The user has to remove it and then insert the next tool..which might be in a fork. 
-		-- We could make this better by checking that ..but continuing after a stop requires more logic that I'm not sure how to handle, especially if the user has to measure the tool height.
-		local message = string.format("Current tool T%d has no tool fork holder to go back to.\nRemove it and manually install tool T%d and continue", currentTool, selectedTool)
-		ToolChange.DoManualToolChangeWithMessage(message)
-		do return end
+		if currentTool == 0 then
+			local rc = wx.wxMessageBox("Starting from Tool 0. Ensure the spindle is empty. \nWould you like to continue?", 
+				"Tool Warning", wx.wxYES_NO)
+			if rc ~= wx.wxYES then
+				do return end
+			end
+		else		
+			-- Current tool has to be manually removed. The user has to remove it and then insert the next tool..which might be in a fork. 
+			-- We could make this better by checking that ..but continuing after a stop requires more logic that I'm not sure how to handle, especially if the user has to measure the tool height.
+			local message = string.format("Current tool T%d has no tool fork holder to go back to.\nRemove it and manually install tool T%d and continue", currentTool, selectedTool)
+			ToolChange.DoManualToolChangeWithMessage(message)
+			do return end
+		end
 	end
 
 	local state = ToolChange.internal.SaveState() -- don't do returns in the middle of a method after this
@@ -327,13 +353,14 @@ function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 			ToolChange.DoManualToolChangeWithMessage(message)
 		end
 	end
-	
+
 	ToolChange.internal.RestoreState(state)
 	return result
 end
 
 function ToolChange.internal.TestToolChange()
-	ToolChange.DoToolChangeFromTo(3, 2)
+	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
+	ToolChange.DoToolChangeFromTo(currentTool, 2)
 
 end
 

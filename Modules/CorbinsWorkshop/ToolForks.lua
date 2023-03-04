@@ -55,6 +55,14 @@ function ToolForks.SetZBump(value)
 	ToolForks.GetToolForkData().ZBump = value
 end
 
+function ToolForks.SetZClearanceWithNoTool(value)
+	ToolForks.GetToolForkData().ZClearanceWithNoTool = value
+end
+
+function ToolForks.GetZClearanceWithNoTool() 
+	return ToolForks.GetToolForkData().ZClearanceWithNoTool
+end
+
 function ToolForks.SetSlideDistance(value) 
 	ToolForks.GetToolForkData().SlideDistance = value
 end
@@ -169,6 +177,9 @@ function ToolForks.LoadToolForkPositions()
 				ToolForks.ToolForkPositions.ToolForkData.ZBump = 0.100 -- added later, so could be nil
 			end
 
+			if ToolForks.ToolForkPositions.ToolForkData.ZClearanceWithNoTool == nil then
+				ToolForks.ToolForkPositions.ToolForkData.ZClearanceWithNoTool = 0.0 -- added later; default to z 0
+			end
 
 			ToolForks.Log("Loaded ToolForks. Count: %d", count)			
 		end

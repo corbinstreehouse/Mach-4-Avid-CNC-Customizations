@@ -128,6 +128,15 @@ function ToolForkPositionsListChanged()
 	ToolForks.SaveToolForkPositions()	
 end
 
+function ATCToolForkSetup.HandleZClearanceAssignButtonClick(...)
+	local val = scr.GetProperty("droMachineZ", "Value")
+	ToolForks.SetZClearanceWithNoTool(val)
+	ToolForks.SaveToolForkPositions()
+	scr.SetProperty("txtZClearance", "Value", string.format("%4.4f", ToolForks.GetZClearanceWithNoTool()))
+	return val	
+end
+
+
 function HandlePositionSet(val, position) 
 	ToolForks.Log(string.format("ToolFork %d position: %s, val %.4f", ATCToolForkSetup.SelectedToolFork.Number, position, val))
 	val = tonumber(val) -- The value may be a number or a string. Convert as needed.
@@ -151,7 +160,9 @@ function ATCToolForkSetup.HandleOnEnterToolForkTab()
 	scr.SetProperty("txtSlideDistance", "Value", string.format("%.4f", ToolForks.GetSlideDistance()))
 	scr.SetProperty("txtWaitTime", "Value", string.format("%.4f", ToolForks.GetDwellTime()))
 	scr.SetProperty("txtZBump", "Value", string.format("%.4f", ToolForks.GetZBump()))
+	scr.SetProperty("txtZClearance", "Value", string.format("%4.4f", ToolForks.GetZClearanceWithNoTool()))
 end
+
 
 function HandleOnExitToolForkTab()
 	ATCToolForkSetup.SelectedToolFork = nil
@@ -180,6 +191,13 @@ end
 function ATCToolForkSetup.HandleZBumpChanged(...)
 	local val = select(1,...)
 	ToolForks.SetZBump(val)
+	ToolForks.SaveToolForkPositions()
+	return val
+end
+
+function ATCToolForkSetup.HandleZClearanceChanged(...)
+	local val = select(1, ...)
+	ToolForks.SetZClearanceWithNoTool(val)
 	ToolForks.SaveToolForkPositions()
 	return val
 end
@@ -213,16 +231,10 @@ function ATCToolForkSetup.OrientationClicked(...)
 	ToolForks.SaveToolForkPositions()
 end
 
-function ATCToolForkSetup.test.TestOrientationChange()
-	LoadToolForksIntoListBox() 
-	ATCToolForkSetup.OrientationClicked("blahBlah3")
-end
-
-
 
 if (mc.mcInEditor() == 1) then
-	--ATCToolForkSetup.test.TestAdd()
-	ATCToolForkSetup.test.TestOrientationChange()
+
+
 
 end
 
