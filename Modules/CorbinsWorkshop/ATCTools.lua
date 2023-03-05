@@ -193,6 +193,7 @@ function ATCTools.OnFetchButtonClicked(...)
 	
 	local ctrlName = select(1, ...)
 	local toolForkNumber = string.match(ctrlName, "%d")
+	assert(toolForkNumber ~= nil, "Bad UI setup for tool forks, ctrlName:"..ctrlName)
 
 	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
 	if tf == nil then
