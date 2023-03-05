@@ -158,6 +158,10 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 	-- Slide into the fork/pocket
 	MCCntlGcodeExecuteWait("G00 G53 X%.4f Y%.4f\n", toolForkPosition.X, toolForkPosition.Y)
 
+	-- Dwell for a brief moment; if the user e-stops the above movements, we will sometimes execute the next line.
+	-- we don't want to drop the tool, so a quick dwell will throw an exception if we are now in an eStop state
+	MCCntlGcodeExecuteWait("G04 P%.4f", 0.1)
+
 	ToolChange.OpenDrawBar()
 
 	-- give the tool a brief moment to pop out
@@ -193,6 +197,10 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
 
 	-- Go to the fork's x/y
 	MCCntlGcodeExecuteWait("G00 G90 G53 X%.4f Y%.4f", startX, startY) -- rapid here is okay
+
+	-- Dwell for a brief moment; if the user e-stops the above movements, we will sometimes execute the next line.
+	-- we don't want to drop the tool, so a quick dwell will throw an exception if we are now in an eStop state
+	MCCntlGcodeExecuteWait("G04 P%.4f", 0.1)
 
 	-- Make sure the drawbar is open
 	ToolChange.OpenDrawBar()
@@ -312,7 +320,9 @@ function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 	end
 
 	local state = ToolChange.internal.SaveState() -- don't do returns in the middle of a method after this
-	-- TODO: do acquire pcall to ensure we can restore the state (which may not work!) and re-throw the error if caught
+	-- Maybe do a pcall to ensure we can restore the state (which may not work!)
+	-- and re-throw the error if caught..however, restoring state will fail because gcode calls fail on the estop state
+	-- until the user clears it...so, don't worry about it
 	if currentPosition ~= nil then
 		ToolChange.PutToolBackInForkAtPosition(currentPosition)
 	end
@@ -321,11 +331,9 @@ function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 	-- At least we dropped off the current tool before doing this to save them some time.
 	if selectedPosition ~= nil then
 		local toolWasDroppedOff = currentPosition ~= nil
-		if ToolChange.LoadToolAtForkPosition(selectedPosition, toolWasDroppedOff) then
-			-- set the new tool on success    
-			mc.mcToolSetCurrent(ToolChange.internal.inst, selectedTool)
-			ToolForks.Error("Tool change done. Current tool now: T%d", selectedTool)
-		end
+		ToolChange.LoadToolAtForkPosition(selectedPosition, toolWasDroppedOff)
+		mc.mcToolSetCurrent(ToolChange.internal.inst, selectedTool)
+		ToolForks.Error("Tool change done. Current tool now: T%d", selectedTool)
 	elseif selectedTool == 0 then
 		-- going to tool 0 means having no tool in the holder
 		ToolChange.CloseDrawBar()
@@ -342,7 +350,7 @@ end
 
 function ToolChange.internal.TestToolChange()
 	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
-	ToolChange.DoToolChangeFromTo(currentTool, 0)
+	ToolChange.DoToolChangeFromTo(currentTool, 1)
 end
 
 if (mc.mcInEditor() == 1) then
