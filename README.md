@@ -9,6 +9,9 @@ This is a basic check that ensures the Gcode file is on line 1. If it isn't, the
 ### Feed Rate Sliders
 **TODO**: Change the feed rate to sliders, as the inc/dec buttons are terrible. Tormach's PathPilot does this and is way better to fine tune the rates.
 	
+	
+### Automatic Tool Changer / ATC
+This is the big stuff - an easy way to setup ATC tool pockets for a linear ATC tool rack. You can have your tool pockets in any orientation and at any location. The pockets can contain any tool, and you can easily swap them out. 
 
 
 
@@ -17,4 +20,4 @@ This is a basic check that ensures the Gcode file is on line 1. If it isn't, the
 
 Corbin's Blog: [https://www.corbinstreehouse.com](https://www.corbinstreehouse.com)
 
-CNC Files: [https://www.corbinsworkshop.com](https://www.corbinstreehouse.com)
+CNC Files: [https://www.corbinsworkshop.com](https://www.corbinsworkshop.com)
