@@ -247,16 +247,28 @@ function ToolChange.internal.RestoreState(state)
 end
 
 function ToolChange.internal.TurnOffSpindleAndWait()
+	
 	-- If the spindle is already off, then we don't have to do anything
 	local dir, rc = mc.mcSpindleGetDirection(ToolChange.internal.inst)
 	if rc ~= mc.MERROR_NOERROR then
 		error("Error getting spindle state")
 	end
 	
-	if dir ~= mc.MC_SPINDLE_OFF then
-		-- TODO: start x/y movement while this is happening..do a time to make sure it lasts at least the dwell time, 
-		-- and if it hasn't..dwell for a while
+	-- Just turn it off... calling M5 via gcode was hanging for me if the script was customized, but we can call it if
+	-- it is not nil
+	if m5 ~= nil then
+		-- is this global
+		ToolForks.Log("calling M5 directly")
+		m5()
+	else
+		ToolForks.Log("No m5 to call...doing gcode")
 		MCCntlGcodeExecuteWait("M5") -- spindle stop
+	end
+
+	-- Make sure it is off?
+	--mc.mcSpindleSetDirection(ToolChange.internal.inst, mc.MC_SPINDLE_OFF)
+	if dir ~= mc.MC_SPINDLE_OFF then
+		-- Wait for the spindle to sop
 		MCCntlGcodeExecuteWait("G04 P%.4f", ToolForks.GetDwellTime())
 	end
 end
@@ -272,6 +284,8 @@ end
 function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 	local result, errorMessage = pcall(ToolChange._TryDoToolChangeFromTo, currentTool, selectedTool)
 	if not result then
+		-- try to cycle stop!
+		mc.mcCntlCycleStop(ToolChange.internal.inst) 
 		ToolForks.Error(errorMessage)
 	end
 end
@@ -352,7 +366,7 @@ end
 
 function ToolChange.internal.TestToolChange()
 	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
-	ToolChange.DoToolChangeFromTo(currentTool, 2)
+	ToolChange.DoToolChangeFromTo(currentTool, 1)
 end
 
 if (mc.mcInEditor() == 1) then
