@@ -3387,7 +3387,6 @@ function tabATCTools_On_Exit_Script(...)
 end
 function droATCCurrentTool_On_Update_Script(...)
     val = select(1, ...)
-    ATCTools.SetCurrentToolM6G43(val)
     ATCTools.CurrentToolChanged()
     return val
 end
@@ -3553,6 +3552,9 @@ function btnTouchOffFork10_Clicked_Script(...)
 end
 function txtToolDescForToolFork10_On_Modify_Script(...)
     ATCTools.OnModifyToolDescription(...)
+end
+function btnM6G43_Left_Up_Script(...)
+    ATCTools.DoM6G43(select(1,...))
 end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023

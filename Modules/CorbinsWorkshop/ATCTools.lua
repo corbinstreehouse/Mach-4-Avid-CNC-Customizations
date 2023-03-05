@@ -186,15 +186,20 @@ function ATCTools.OnModifyToolDescription(...)
 end
 
 function ATCTools.OnFetchButtonClicked(...)
+	if not ATCTools.IsHomed() then
+		wx.wxMessageBox("Machine is not homed, it is not safe\nto fetch a tool.", "Automatic Tool Change")		
+		return
+	end
+	
 	local ctrlName = select(1, ...)
 	local toolForkNumber = string.match(ctrlName, "%d")
 
-	local tf = ToolForkPositions.GetToolForkNumber(toolForkNumber)
+	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
 	if tf == nil then
 		ToolForks.Error("ATCTools Error: No tool pocket for position #%d",  toolForkNumber)		
 		return
 	end
-
+--TODO: use the GCode calling wrappers I have in ToolChange, so it throws on an error
 	local GCode = string.format("M6 T%d G43 H%d", tf.Tool, tf.Tool)
 	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "Fetch tool: "..GCode) then
@@ -228,24 +233,32 @@ function ATCTools.CurrentToolChanged()
 	end
 end
 
-function ATCTools.SetCurrentToolM6G43(tool)
+function ATCTools.IsHomed()
+	local xHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.X_AXIS)
+	local yHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.Y_AXIS)
+	local zHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.Z_AXIS)
+	return xHomed and yHomed and zHomed
+end
+
+
+function ATCTools.DoM6G43(tool)
 	tool = tonumber(tool)
 	-- If that tool is in a pocket, then maybe ask the user if we should go get it?
-	local tf = ToolForks.GetToolForkPositionForTool(tool)
-	if tf ~= nil then
-		local message = string.format("Tool T%d is in Pocket %d.\nWould you like to fetch it from the rack?",
-			tf.Tool, tf.Number)
-		local rc = wx.wxMessageBox(message, "Fetch the tool?", wx.wxYES_NO)
-		if rc == wx.wxYES then		
-			-- TODO: Manually call the ToolChange function here.
-			-- doing an M6 won't work, because the current tool will already be set by the DRO, and it wouldn't do anything
+--	local tf = ToolForks.GetToolForkPositionForTool(tool)
+--	if tf ~= nil then
+--		local message = string.format("Tool T%d is in Pocket %d.\nWould you like to fetch it from the rack?",
+--			tf.Tool, tf.Number)
+--		local rc = wx.wxMessageBox(message, "Fetch the tool?", wx.wxYES_NO)
+--		if rc == wx.wxYES then	
+--			-- TODO: Manually call the ToolChange function here.
+--			-- doing an M6 won't work, because the current tool will already be set by the DRO, and it wouldn't do anything
 			
-		end
-	else
-		-- If it isn't in a pocket, assume they put it there manually. 
-		-- Activate the height; the DRO should already have set the tool.	
-	end
-	
+--		end
+--	else
+--		-- If it isn't in a pocket, assume they put it there manually. 
+--		-- Activate the height; the DRO should already have set the tool.	
+--	end
+
 	local GCode = string.format("G43 H%d", tool)
 	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "G43 error: "..GCode) then

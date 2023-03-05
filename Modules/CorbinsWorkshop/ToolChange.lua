@@ -139,7 +139,7 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 		zPos = -1.0
 	end
 
-	ToolForks.Log("Putting T"..toolForkPosition.Tool.." back.")
+	ToolForks.Log("Putting T"..toolForkPosition.Tool.." back to pocket "..toolForkPosition.Number)
 
 	-- G00 - Rapid
 	-- G90 – Absolute position mode
@@ -176,6 +176,8 @@ end
 -- Post condition: spindle closed, but only on success (returning true)
 function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
 	ToolChange.internal.VerifyToolForkPreConditions(toolForkPosition)
+	
+	ToolForks.Log("Loading T"..toolForkPosition.Tool.." from Pocket "..toolForkPosition.Number)
 
 	local finalX, finalY = ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
 	local startX = toolForkPosition.X
@@ -350,7 +352,7 @@ end
 
 function ToolChange.internal.TestToolChange()
 	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
-	ToolChange.DoToolChangeFromTo(currentTool, 1)
+	ToolChange.DoToolChangeFromTo(currentTool, 2)
 end
 
 if (mc.mcInEditor() == 1) then
