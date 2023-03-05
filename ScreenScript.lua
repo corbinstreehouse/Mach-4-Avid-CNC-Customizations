@@ -3100,8 +3100,16 @@ end
 function nbMDIInput_On_Exit_Script(...)
     EnableKeyboard();
 end
-function btnUnitsMode_Left_Up_Script(...)
-    UnitsModeToggle()
+function droCurrentTool2_On_Modify_Script(...)
+    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
+    if ATCTools == nil then
+    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+    	ATCTools = require 'ATCTools'
+    end
+    
+    val = select(1, ...)
+    ATCTools.DoM6G43(val)
+    return val
 end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)
@@ -3387,12 +3395,14 @@ function tabATCTools_On_Exit_Script(...)
 end
 function droATCCurrentTool_On_Update_Script(...)
     val = select(1, ...)
-    ATCTools.SetCurrentToolM6G43(val)
     ATCTools.CurrentToolChanged()
     return val
 end
 function droATCCurrentTool_On_Modify_Script(...)
-    ATCTools.CurrentToolChanged()
+    val = select(1, ...)
+    ATCTools.DoM6G43(val)
+    return val
+    
 end
 -- grpToolFork1-GlobalScript
 function droToolForToolFork1_On_Modify_Script(...)
@@ -3553,6 +3563,10 @@ function btnTouchOffFork10_Clicked_Script(...)
 end
 function txtToolDescForToolFork10_On_Modify_Script(...)
     ATCTools.OnModifyToolDescription(...)
+end
+function btnM6G43_Left_Up_Script(...)
+    local val = scr.GetProperty("droATCCurrentTool", "Value")
+    ATCTools.DoM6G43(val)
 end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
