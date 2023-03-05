@@ -3554,7 +3554,8 @@ function txtToolDescForToolFork10_On_Modify_Script(...)
     ATCTools.OnModifyToolDescription(...)
 end
 function btnM6G43_Left_Up_Script(...)
-    ATCTools.DoM6G43(select(1,...))
+    local val = scr.GetProperty("droATCCurrentTool", "Value")
+    ATCTools.DoM6G43(val)
 end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023

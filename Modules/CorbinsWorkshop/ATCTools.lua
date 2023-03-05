@@ -261,7 +261,7 @@ function ATCTools.DoM6G43(tool)
 
 	local GCode = string.format("G43 H%d", tool)
 	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
-	if not ToolChange.internal.CheckForNoError(rc, "G43 error: "..GCode) then
+	if not ToolChange.internal.CheckForNoError(rc, "Error setting tool height:"..GCode) then
 		return
 	end		
 end
@@ -270,7 +270,7 @@ end
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-	--ATCTools.SetCurrentToolM6G43(2)
+	ATCTools.DoM6G43(0)
 
 end
 
