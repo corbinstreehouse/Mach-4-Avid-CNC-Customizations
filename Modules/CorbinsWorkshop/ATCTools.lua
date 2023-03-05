@@ -261,6 +261,8 @@ function ATCTools.DoM6G43(tool)
 --	end
 
 	local GCode = string.format("G43 H%d", tool)
+	ToolForks.Error("Executing: "..GCode)
+	
 	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "Error setting tool height:"..GCode) then
 		return

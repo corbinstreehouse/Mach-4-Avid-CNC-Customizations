@@ -3100,8 +3100,16 @@ end
 function nbMDIInput_On_Exit_Script(...)
     EnableKeyboard();
 end
-function btnUnitsMode_Left_Up_Script(...)
-    UnitsModeToggle()
+function droCurrentTool2_On_Modify_Script(...)
+    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
+    if ATCTools == nil then
+    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+    	ATCTools = require 'ATCTools'
+    end
+    
+    val = select(1, ...)
+    ATCTools.DoM6G43(val)
+    return val
 end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)
@@ -3391,7 +3399,10 @@ function droATCCurrentTool_On_Update_Script(...)
     return val
 end
 function droATCCurrentTool_On_Modify_Script(...)
-    ATCTools.CurrentToolChanged()
+    val = select(1, ...)
+    ATCTools.DoM6G43(val)
+    return val
+    
 end
 -- grpToolFork1-GlobalScript
 function droToolForToolFork1_On_Modify_Script(...)
