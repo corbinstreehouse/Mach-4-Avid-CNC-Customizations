@@ -51,6 +51,9 @@ mm = require "mcMasterModule"
 package.loaded.CorbinExtra = nil
 CorbinExtra = require "CorbinExtra"
 
+package.loaded.ATCTools = nil
+ATCTools = require "ATCTools"
+
 --Probing module
 -- package.loaded.Probing = nil
 -- prb = require "mcProbing"
@@ -3111,6 +3114,9 @@ function droCurrentTool2_On_Modify_Script(...)
     ATCTools.DoM6G43(val)
     return val
 end
+function btnATCPutBack_1__Left_Up_Script(...)
+    ATCTools.PutBackCurrentTool()
+end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)
     mc.mcProfileWriteInt(inst, "AvidCNC_Profile", "iUpdateOffsetsCounter", 1)
@@ -3294,30 +3300,6 @@ function tbtnG58_Down_Script(...)
     end
     mc.mcCntlSetLastError(inst, string.format("Fixture Offset Set: G%.0f", set))
 end
--- grpZOffset-GlobalScript
-function droGageBlock_On_Modify_Script(...)
-    local inst = mc.mcGetInstance()
-    local val = scr.GetProperty("droGageBlock", "Value")
-    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlock", string.format (val)) --Create a register and write to it
-end
-function btnSetZ_Clicked_Script(...)
-    -- Set Z button
-    local inst = mc.mcGetInstance()			  
-    local GageBlock = scr.GetProperty("droGageBlock", "Value")
-    local CurTool = mc.mcToolGetCurrent(inst) --Current Tool Num
-    local CurH = mc.mcCntlGetPoundVar(inst, 2032) --Current Selected H Offset
-    local CurHVal = mc.mcCntlGetPoundVar(inst, 2035) --Value of Current H Offset
-    local OffsetState = mc.mcCntlGetPoundVar(inst, 4008) --Current Height Offset State
-    if (OffsetState == 49) then
-        CurHVal = 0
-    end
-    GageBlock = tonumber(GageBlock)
-    local ZPos = mc.mcAxisGetMachinePos(inst, mc.Z_AXIS)
-    XVar, YVar, ZVar = GetFixOffsetVars()
-    local OffsetVal = ZPos - GageBlock - CurHVal
-    mc.mcCntlSetPoundVar(inst, ZVar, OffsetVal)
-    mc.mcCntlSetLastError(inst, string.format("Z Offset Set: %.4f", OffsetVal))
-end
 function btnHOActivate_Clicked_Script(...)
     --Toggle height offset button
     local HOState = mc.mcCntlGetPoundVar(inst, 4008)
@@ -3327,29 +3309,6 @@ function btnHOActivate_Clicked_Script(...)
         mc.mcCntlMdiExecute(inst, "G49")
     end
     
-end
--- grpToolOffset-GlobalScript
-function btnSetZ_1__Clicked_Script(...)
-    --Set Tool button
-    local inst = mc.mcGetInstance()			  
-    local GageBlock = scr.GetProperty("droGageBlockT", "Value")
-    local CurTool = mc.mcToolGetCurrent(inst) --Current Tool Num
-    local OffsetState = mc.mcCntlGetPoundVar(inst, 4008) --Current Height Offset State
-    mc.mcCntlGcodeExecuteWait(inst, "G49")
-    GageBlock = tonumber(GageBlock)
-    local ZPos = mc.mcAxisGetPos(inst, mc.Z_AXIS)
-    local OffsetVal = ZPos - GageBlock
-    mc.mcToolSetData(inst, mc.MTOOL_MILL_HEIGHT, CurTool, OffsetVal)
-    mc.mcCntlSetLastError(inst, string.format("Tool %.0f Height Offset Set: %.4f", CurTool, OffsetVal))
-    if (OffsetState ~= 49) then
-        mc.mcCntlMdiExecute(inst, string.format("G%.1f", OffsetState))
-    end
-    
-end
-function droGageBlockT_On_Modify_Script(...)
-    local inst = mc.mcGetInstance()
-    local val = scr.GetProperty("droGageBlockT", "Value")
-    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlockT", string.format (val)) --Create a register and write to it
 end
 -- tabDiagnosticsBig-GlobalScript
 -- TP 2-GlobalScript
@@ -3567,6 +3526,56 @@ end
 function btnM6G43_Left_Up_Script(...)
     local val = scr.GetProperty("droATCCurrentTool", "Value")
     ATCTools.DoM6G43(val)
+end
+-- grpToolOffset(1)-GlobalScript
+function btnSetTool_Clicked_Script(...)
+    --Set Tool button
+    local inst = mc.mcGetInstance()			  
+    local GageBlock = scr.GetProperty("droGageBlockT", "Value")
+    local CurTool = mc.mcToolGetCurrent(inst) --Current Tool Num
+    local OffsetState = mc.mcCntlGetPoundVar(inst, 4008) --Current Height Offset State
+    mc.mcCntlGcodeExecuteWait(inst, "G49")
+    GageBlock = tonumber(GageBlock)
+    local ZPos = mc.mcAxisGetPos(inst, mc.Z_AXIS)
+    local OffsetVal = ZPos - GageBlock
+    mc.mcToolSetData(inst, mc.MTOOL_MILL_HEIGHT, CurTool, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("Tool %.0f Height Offset Set: %.4f", CurTool, OffsetVal))
+    if (OffsetState ~= 49) then
+        mc.mcCntlMdiExecute(inst, string.format("G%.1f", OffsetState))
+    end
+    
+end
+function droGageBlockT_On_Modify_Script(...)
+    local inst = mc.mcGetInstance()
+    local val = scr.GetProperty("droGageBlockT", "Value")
+    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlockT", string.format (val)) --Create a register and write to it
+end
+-- grpZOffset(1)-GlobalScript
+function droGageBlock_On_Modify_Script(...)
+    local inst = mc.mcGetInstance()
+    local val = scr.GetProperty("droGageBlock", "Value")
+    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlock", string.format (val)) --Create a register and write to it
+end
+function btnSetZ_Clicked_Script(...)
+    -- Set Z button
+    local inst = mc.mcGetInstance()			  
+    local GageBlock = scr.GetProperty("droGageBlock", "Value")
+    local CurTool = mc.mcToolGetCurrent(inst) --Current Tool Num
+    local CurH = mc.mcCntlGetPoundVar(inst, 2032) --Current Selected H Offset
+    local CurHVal = mc.mcCntlGetPoundVar(inst, 2035) --Value of Current H Offset
+    local OffsetState = mc.mcCntlGetPoundVar(inst, 4008) --Current Height Offset State
+    if (OffsetState == 49) then
+        CurHVal = 0
+    end
+    GageBlock = tonumber(GageBlock)
+    local ZPos = mc.mcAxisGetMachinePos(inst, mc.Z_AXIS)
+    XVar, YVar, ZVar = GetFixOffsetVars()
+    local OffsetVal = ZPos - GageBlock - CurHVal
+    mc.mcCntlSetPoundVar(inst, ZVar, OffsetVal)
+    mc.mcCntlSetLastError(inst, string.format("Z Offset Set: %.4f", OffsetVal))
+end
+function btnATCPutBack_Left_Up_Script(...)
+    ATCTools.PutBackCurrentTool()
 end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
