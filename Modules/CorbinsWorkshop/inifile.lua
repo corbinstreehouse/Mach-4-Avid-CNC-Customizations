@@ -37,7 +37,7 @@ local backends = {
 	io = {
 		lines = function(name) return assert(io.open(name)):lines() end,
 		write = function(name, contents)
-			f = assert(io.open(name, "w"))
+			local f = assert(io.open(name, "w"))
 			f:write(contents) 
 			f:close()
 			end,
@@ -47,14 +47,6 @@ local backends = {
 		write = function(name, contents) return contents end,
 	},
 }
-
-if love then
-	backends.love = {
-		lines = love.filesystem.lines,
-		write = function(name, contents) love.filesystem.write(name, contents) end,
-	}
-	defaultBackend = "love"
-end
 
 function inifile.parse(name, backend)
 	backend = backend or defaultBackend
