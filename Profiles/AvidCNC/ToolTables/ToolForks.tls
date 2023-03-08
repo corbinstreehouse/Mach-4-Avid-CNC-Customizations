@@ -1,6 +1,6 @@
 [ToolForkData]
 SlideDistance=1.3
-DwellTime=9.0
+DwellTime=12.0
 ZBump=0.005
 ToolForkCount=6
 ZClearanceWithNoTool=-3.19702
