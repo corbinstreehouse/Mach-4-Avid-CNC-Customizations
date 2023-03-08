@@ -225,7 +225,7 @@ end
 function ATCTools.OnTouchOffClicked(...)
 	local ctrlName = select(1, ...)
 	local toolForkNumber = string.match(ctrlName, "%d")
-
+	-- TODO: code..
 end
 
 function ATCTools.CurrentToolChanged()
@@ -240,6 +240,21 @@ function ATCTools.IsHomed()
 	local zHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.Z_AXIS)
 	return xHomed and yHomed and zHomed
 end
+
+function ATCTools.PutBackCurrentTool()
+	if not ATCTools.IsHomed() then
+		wx.wxMessageBox("Machine is not homed, it is not safe\nto put back a tool.", "Automatic Tool Change")		
+		return
+	end	
+	
+	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
+	if currentTool > 0 then
+		ToolChange.DoToolChangeFromTo(currentTool, 0)
+	else
+		
+	end
+end
+
 
 
 function ATCTools.DoM6G43(tool)
@@ -273,7 +288,7 @@ end
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-	ATCTools.DoM6G43(0)
+	--ATCTools.DoM6G43(0)
 
 end
 

@@ -254,8 +254,10 @@ function ToolChange.internal.TurnOffSpindleAndWait()
 		error("Error getting spindle state")
 	end
 	
-	-- Just turn it off... calling M5 via gcode was hanging for me if the script was customized, but we can call it if
-	-- it is not nil
+	local spindleWasOn = dir ~ mc.MC_SPINDLE_OFF	
+	
+	-- Just turn it off... calling M5 via gcode was hanging for me if the script was customized,
+	-- but we can call if it is not nil meaning it is around in the process. A work around.
 	if m5 ~= nil then
 		-- is this global
 		ToolForks.Log("calling M5 directly")
@@ -267,8 +269,8 @@ function ToolChange.internal.TurnOffSpindleAndWait()
 
 	-- Make sure it is off?
 	--mc.mcSpindleSetDirection(ToolChange.internal.inst, mc.MC_SPINDLE_OFF)
-	if dir ~= mc.MC_SPINDLE_OFF then
-		-- Wait for the spindle to sop
+	if spindleWasOn then
+		-- Wait for the spindle to stop
 		MCCntlGcodeExecuteWait("G04 P%.4f", ToolForks.GetDwellTime())
 	end
 end
@@ -294,7 +296,8 @@ end
 function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 	if (selectedTool == currentTool) then
 		-- not really an error..but useful to see
-		error(string.format("TOOL CHANGE: Tool %d already selected. Skipping tool change.", selectedTool))
+		ToolForks.Error(string.format("TOOL CHANGE: Tool %d already selected. Skipping tool change.", selectedTool))
+		return 
 	end
 
 	-- TODO: start a timer, so we can do the rest of the wait after the moves.
