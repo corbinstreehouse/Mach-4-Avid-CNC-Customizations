@@ -26,7 +26,7 @@ function m3()
 	-- only do something if it isn't running..or else we have to stop and change the dirction
 	if dir == mc.MC_SPINDLE_OFF then 
 		CorbinExtra.SetAirPressure(1)
-		CorbinExtra.Sleep(1)
+		--CorbinExtra.Sleep(1)
 
 -- the setDirectionWait version does not ever return for me...i wonder what it is waiting on?
 -- The bit is set..but i guess the RPM sensor is not available or hooked up
@@ -45,7 +45,7 @@ function m3()
 		else
 			mc.mcCntlSetLastError(inst, "ERROR: spindle is OFF");
 		end
-		CorbinExtra.Sleep(5)-- spindle needs time to come to speed
+		CorbinExtra.Sleep(7)-- spindle needs time to come to speed
 	else
 		mc.mcCntlSetLastError("Spindle already on, doing nothing")
 	end
