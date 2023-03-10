@@ -51,6 +51,10 @@ mm = require "mcMasterModule"
 package.loaded.CorbinExtra = nil
 CorbinExtra = require "CorbinExtra"
 
+-- fixes the touch plate issue with tool heights active.
+package.loaded.CWUtilities = nil
+CWUtilities = require "CWUtilities"	
+
 package.loaded.ATCTools = nil
 ATCTools = require "ATCTools"
 
@@ -92,6 +96,7 @@ LastStateEssStateRegister = 0;
 LastStateMtcInProgress = 0;
 
 Tframe = nil	--Touch Plate frame handle
+TframeShown = false
 ASframe = nil	--Touch Plate Advanced Settings frame handle
 co_swu = nil
 warmUpRunning = false
@@ -1534,6 +1539,17 @@ function Mach_PLC_Script()
     if ATCTools ~= nil then
     	ATCTools.PLCScript() -- corbin, added to update the LED
     end
+    
+    -- corbin, fix the touch plate to work with tool offsets. Only runs when it is shown, which shouldn't slow anything down
+    if TframeShown then
+    	-- It was shown (the button clicked), make sure the dialog is still visible; if it isn't, restore state
+    	-- it also might be set back to nil on close...so check for nil and restore state then too.
+    	if Tframe == nil or not Tframe:IsShown() then		
+    		TframeShown = false -- No longer visible..restore state
+    		CWUtilities.RestoreToolHeightActiveState()						
+    	end
+    end
+    
     
     ------------------------------------------
     -- Check for multiple tools in g-code if ignoring tool changes
@@ -3789,15 +3805,20 @@ function bmbKeyboardJog_Clicked_Script(...)
     KeyboardInputsToggle()
 end
 function btnTouchPlate_Left_Up_Script(...)
+    CWUtilities.SaveToolHeightActiveStateAndDisable()
+    
     --Touch Plate script
     if (Tframe == nil) then
     	package.loaded.TouchPlate = nil
     	tou = require "TouchPlate"
     	Tframe = tou.Dialog()
+    	assert(Tframe ~= nil)
     else
     	Tframe:Show()
     	Tframe:Raise()
     end
+    
+    TframeShown = true -- set to true after the Tframe var is set
 end
 -- grpJogRate-GlobalScript
 function btnJogRateMax_Left_Up_Script(...)
