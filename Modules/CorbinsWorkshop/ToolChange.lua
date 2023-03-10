@@ -254,7 +254,7 @@ function ToolChange.internal.TurnOffSpindleAndWait()
 		error("Error getting spindle state")
 	end
 	
-	local spindleWasOn = dir ~ mc.MC_SPINDLE_OFF	
+	local spindleWasOn = dir ~= mc.MC_SPINDLE_OFF	
 	
 	-- Just turn it off... calling M5 via gcode was hanging for me if the script was customized,
 	-- but we can call if it is not nil meaning it is around in the process. A work around.
