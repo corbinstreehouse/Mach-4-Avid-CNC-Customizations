@@ -202,7 +202,7 @@ function ATCTools.OnFetchButtonClicked(...)
 	end
 --TODO: use the GCode calling wrappers I have in ToolChange, so it throws on an error
 	local GCode = string.format("M6 T%d G43 H%d", tf.Tool, tf.Tool)
-	local rc = mc.mcCntlGcodeExecuteWait(ToolChange.internal.inst, GCode)
+	local rc = mc.mcCntlMdiExecute(ToolChange.internal.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "Fetch tool: "..GCode) then
 		return
 	end	
