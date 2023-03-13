@@ -247,14 +247,17 @@ function ToolChange.internal.RestoreState(state)
 end
 
 function ToolChange.internal.TurnOffSpindleAndWait()
+	-- OKAY! Some post processors will turn off the spindle; so checking if it was on isn't
+	-- something we can do. We always have to wait.
+	-- However, for manual "gets and puts" we can do a pre-check and avoid turning off the spindle
 	
-	-- If the spindle is already off, then we don't have to do anything
-	local dir, rc = mc.mcSpindleGetDirection(ToolChange.internal.inst)
-	if rc ~= mc.MERROR_NOERROR then
-		error("Error getting spindle state")
-	end
+--	-- If the spindle is already off, then we don't have to do anything
+--	local dir, rc = mc.mcSpindleGetDirection(ToolChange.internal.inst)
+--	if rc ~= mc.MERROR_NOERROR then
+--		error("Error getting spindle state")
+--	end
 	
-	local spindleWasOn = dir ~= mc.MC_SPINDLE_OFF	
+--	local spindleWasOn = dir ~= mc.MC_SPINDLE_OFF	
 	
 	-- Just turn it off... calling M5 via gcode was hanging for me if the script was customized,
 	-- but we can call if it is not nil meaning it is around in the process. A work around.
@@ -267,12 +270,10 @@ function ToolChange.internal.TurnOffSpindleAndWait()
 		MCCntlGcodeExecuteWait("M5") -- spindle stop
 	end
 
-	-- Make sure it is off?
+	-- Make sure it is off? Probably not needed if everything is done right.
 	--mc.mcSpindleSetDirection(ToolChange.internal.inst, mc.MC_SPINDLE_OFF)
-	if spindleWasOn then
-		-- Wait for the spindle to stop
-		MCCntlGcodeExecuteWait("G04 P%.4f", ToolForks.GetDwellTime())
-	end
+	-- Wait for the spindle to stop
+	MCCntlGcodeExecuteWait("G04 P%.4f", ToolForks.GetDwellTime())
 end
 
 function ToolChange.DoToolChange()
