@@ -17,6 +17,7 @@
 local DRAWBAR_SIGNAL_OUTPUT = mc.OSIG_OUTPUT6
 
 local ToolChange = {
+	lastSpindleStopTime = os.clock(), -- in seconds; The m5 script should set this when it turns off the spindle
 	internal = {
 		inst = nil,
 		drawBarSigHandle = nil,		
@@ -152,6 +153,9 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 	---------- Put the tool back in the fork
 	-- Go to the X/Y position for the slide in to start
 	MCCntlGcodeExecuteWait("G00 G53 X%.4f Y%.4f", initialX, initialY) 
+	
+	ToolChange.DoWaitFromLastSpindleStop() -- wait for the spindle to stop, if needed.
+	
 	  -- Go down to the Z position
 	MCCntlGcodeExecuteWait("G00 G53 Z%.4f", zPos)
 
@@ -165,7 +169,7 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 	ToolChange.OpenDrawBar()
 
 	-- give the tool a brief moment to pop out
-	MCCntlGcodeExecuteWait("G04 P%.4f", 0.2)
+	MCCntlGcodeExecuteWait("G04 P%.4f", 0.3)
 
 	-- Tool is released; raise the spindle up to the clearance height
 	local ZClearanceWithNoTool = ToolForks.GetZClearanceWithNoTool()
@@ -199,6 +203,8 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
 
 	-- Go to the fork's x/y
 	MCCntlGcodeExecuteWait("G00 G90 G53 X%.4f Y%.4f", startX, startY) -- rapid here is okay
+
+	ToolChange.DoWaitFromLastSpindleStop() -- wait for the spindle to stop...we should always have a stopped spindle at this point
 
 	-- Dwell for a brief moment; if the user e-stops the above movements, we will sometimes execute the next line.
 	-- we don't want to drop the tool, so a quick dwell will throw an exception if we are now in an eStop state
@@ -246,21 +252,21 @@ function ToolChange.internal.RestoreState(state)
 	mc.mcCntlSetPoundVar(ToolChange.internal.inst, 4003, state.absMode)
 end
 
-function ToolChange.internal.TurnOffSpindleAndWait()
-	-- OKAY! Some post processors will turn off the spindle; so checking if it was on isn't
-	-- something we can do. We always have to wait.
-	-- However, for manual "gets and puts" we can do a pre-check and avoid turning off the spindle
-	
---	-- If the spindle is already off, then we don't have to do anything
---	local dir, rc = mc.mcSpindleGetDirection(ToolChange.internal.inst)
---	if rc ~= mc.MERROR_NOERROR then
---		error("Error getting spindle state")
---	end
-	
---	local spindleWasOn = dir ~= mc.MC_SPINDLE_OFF	
+function ToolChange.internal.TurnOffSpindle()
+	-- OKAY! Some post processors will turn off the spindle; if they did, the m5 script
+	-- can set the lastSpindleStopTime, and we can wait the appropriate amount of time
+	-- If it didn't..or it didn't set the bit..then we don't wait..which might be bad.
+	-- I'm not sure a better way to do this...maybe a PLC check
 	
 	-- Just turn it off... calling M5 via gcode was hanging for me if the script was customized,
 	-- but we can call if it is not nil meaning it is around in the process. A work around.
+	-- The m5 script should set the lastSpindleStopTime variable when it did turn off the spindle, but just in 
+	-- case, we will set it here if the spindle is running
+	local dir, rc = mc.mcSpindleGetDirection(ToolChange.internal.inst)
+	if dir ~= mc.MC_SPINDLE_OFF then
+		ToolChange.lastSpindleStopTime = os.clock()
+	end	
+	
 	if m5 ~= nil then
 		-- is this global
 		ToolForks.Log("calling M5 directly")
@@ -268,12 +274,8 @@ function ToolChange.internal.TurnOffSpindleAndWait()
 	else
 		ToolForks.Log("No m5 to call...doing gcode")
 		MCCntlGcodeExecuteWait("M5") -- spindle stop
+		ToolChange.lastSpindleStopTime = os.clock() -- make sure we wait...because there wasn't a customized script		
 	end
-
-	-- Make sure it is off? Probably not needed if everything is done right.
-	--mc.mcSpindleSetDirection(ToolChange.internal.inst, mc.MC_SPINDLE_OFF)
-	-- Wait for the spindle to stop
-	MCCntlGcodeExecuteWait("G04 P%.4f", ToolForks.GetDwellTime())
 end
 
 function ToolChange.DoToolChange()
@@ -284,12 +286,34 @@ function ToolChange.DoToolChange()
 	ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
 end
 
-function ToolChange.DoToolChangeFromTo(currentTool, selectedTool)
+
+function ToolChange.DoToolChangeFromTo(currentTool, selectedTool) 	
 	local result, errorMessage = pcall(ToolChange._TryDoToolChangeFromTo, currentTool, selectedTool)
 	if not result then
 		-- try to cycle stop!
 		mc.mcCntlCycleStop(ToolChange.internal.inst) 
 		ToolForks.Error(errorMessage)
+	end
+end
+
+function ToolChange.DoWaitFromLastSpindleStop()
+	local secondsSinceSpindleStopped = os.clock() - ToolChange.lastSpindleStopTime
+	local waitTime = ToolForks.GetDwellTime() -- in seconds
+	if secondsSinceSpindleStopped > 0 then -- should always be > 0..if it isn't, then we use the full dwell, because something is wrong
+		waitTime = waitTime - secondsSinceSpindleStopped		
+	else
+		error("Negative wait time...")
+	end
+	
+	ToolForks.Log("Wait time: %.3f", waitTime);
+	if waitTime > ToolForks.GetDwellTime() then
+		ToolForks.Log("What? Bad wait time?")
+		waitTime = ToolForks.GetDwellTime()
+	end
+	
+	
+	if waitTime > 0 then
+		MCCntlGcodeExecuteWait("G04 P%.4f", waitTime)
 	end
 end
 
@@ -300,9 +324,8 @@ function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 		ToolForks.Error(string.format("TOOL CHANGE: Tool %d already selected. Skipping tool change.", selectedTool))
 		return 
 	end
-
-	-- TODO: start a timer, so we can do the rest of the wait after the moves.
-	ToolChange.internal.TurnOffSpindleAndWait()
+	
+	ToolChange.internal.TurnOffSpindle()
 
 	if (ToolChange.debug.TEST_AT_Z_0) then
 		-- warn the user to not have any tools in the thing, otherwise they will get dropped
@@ -370,11 +393,11 @@ end
 
 function ToolChange.internal.TestToolChange()
 	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
-	ToolChange.DoToolChangeFromTo(currentTool, 1)
+	ToolChange.DoToolChangeFromTo(currentTool, 0)
 end
 
 if (mc.mcInEditor() == 1) then
-	-- ToolChange.internal.TestToolChange()
+	ToolChange.internal.TestToolChange()
 end
 
 return ToolChange

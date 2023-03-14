@@ -1,7 +1,13 @@
 -- Custom spindle control for HITECO ATC
 -- stopping process
+
+-- todo: test removing these as the load_modules should do it.
 if CorbinExtra == nil then 
 	CorbinExtra = require "CorbinExtra"
+end
+
+if ToolChange == nil then
+	ToolChange = require "ToolChange"
 end
 
 
@@ -22,7 +28,8 @@ function m5()
 		else 
 			mc.mcCntlSetLastError(inst, "ERROR: got an error turning on the spindle: "..result)
 		end
-
+		-- save the time we turned off the spindle
+		ToolChange.lastSpindleStopTime = os.clock()
 		CorbinExtra.SetAirPressure(0)
 	end
 

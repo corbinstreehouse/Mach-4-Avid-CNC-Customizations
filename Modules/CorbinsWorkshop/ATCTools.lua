@@ -200,8 +200,11 @@ function ATCTools.OnFetchButtonClicked(...)
 		ToolForks.Error("ATCTools Error: No tool pocket for position #%d",  toolForkNumber)		
 		return
 	end
+	ToolForks.Log("Fetching %d from pocket %d, using M6 call on MDI", tf.Tool, tf.Number)
+	
 --TODO: use the GCode calling wrappers I have in ToolChange, so it throws on an error
-	local GCode = string.format("M6 T%d G43 H%d", tf.Tool, tf.Tool)
+	
+	local GCode = string.format("M6 T%d G43 H%d", tf.Tool, tf.Tool)	
 	local rc = mc.mcCntlMdiExecute(ToolChange.internal.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "Fetch tool: "..GCode) then
 		return
@@ -249,9 +252,12 @@ function ATCTools.PutBackCurrentTool()
 	
 	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
 	if currentTool > 0 then
-		ToolChange.DoToolChangeFromTo(currentTool, 0)
+		-- stalls the UI when doing GCode calls, so do an MDI
+		--ToolChange.DoToolChangeFromTo(currentTool, 0)
+		local GCode = "M6 T0 G43 H0"
+		local rc = mc.mcCntlMdiExecute(ToolChange.internal.inst, GCode)
 	else
-		
+		-- warn user no tool?
 	end
 end
 
@@ -288,7 +294,7 @@ end
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-	--ATCTools.DoM6G43(0)
+	--ATCTools.OnFetchButtonClicked("toolFetch3")
 
 end
 
