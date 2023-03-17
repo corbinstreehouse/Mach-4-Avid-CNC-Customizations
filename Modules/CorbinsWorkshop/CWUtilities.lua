@@ -109,12 +109,33 @@ function CWUtilities.RestoreToolHeightActiveState()
 	end
 end
 
+function CWUtilities.IsHomed()
+	local inst = mc.mcGetInstance("IsHomed()")
+
+	local xHomed = mc.mcAxisIsHomed(inst, mc.X_AXIS)
+	local yHomed = mc.mcAxisIsHomed(inst, mc.Y_AXIS)
+	local zHomed = mc.mcAxisIsHomed(inst, mc.Z_AXIS)
+	return xHomed and yHomed and zHomed
+end
+
+function CWUtilities.GotoMachineHome()
+	if not CWUtilities.IsHomed() then
+		wx.wxMessageBox("Machine is not homed, it is not safe\nto do this.", "Go to home")		
+		return
+	end
+	
+	
+	local inst = mc.mcGetInstance("GotoMachineHome()")
+	local gcode = "G00 G90 G53 Z0.0\nG00 G90 G53 X0.25 Y0.25" -- go to z first
+	mc.mcCntlMdiExecute(inst, gcode)
+
+end
 
 
 
 if (mc.mcInEditor() == 1) then
---	CWUtilities.SaveToolHeightActiveStateAndDisable()
---	CWUtilities.RestoreToolHeightActiveState()
+	CWUtilities.GotoMachineHome()
+
 end
 
 

@@ -126,6 +126,7 @@ SigLib = {
     scr.SetProperty('btnRefAll', 'Enabled', tostring(state));
     scr.SetProperty('btnRefAll2', 'Enabled', tostring(state));
     scr.SetProperty('btnGotoZero', 'Enabled', tostring(state));
+    scr.SetProperty('btnGotoMachineHome', 'Enabled', tostring(state));	
     scr.SetProperty('tabJogging', 'Enabled', tostring(state));
 	scr.SetProperty('luaSelectTool', 'Enabled', tostring(stateReverse))
    
@@ -3132,6 +3133,9 @@ function droCurrentTool2_On_Modify_Script(...)
 end
 function btnATCPutBack_1__Left_Up_Script(...)
     ATCTools.PutBackCurrentTool()
+end
+function btnGotoMachineHome_Left_Up_Script(...)
+    CWUtilities.GotoMachineHome()
 end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)

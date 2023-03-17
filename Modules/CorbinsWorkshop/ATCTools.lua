@@ -238,6 +238,7 @@ function ATCTools.CurrentToolChanged()
 end
 
 function ATCTools.IsHomed()
+	-- TODO: Use same method that is in CWUtilities
 	local xHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.X_AXIS)
 	local yHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.Y_AXIS)
 	local zHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.Z_AXIS)
