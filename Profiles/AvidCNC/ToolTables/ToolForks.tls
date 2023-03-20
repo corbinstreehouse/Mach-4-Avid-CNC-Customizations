@@ -2,7 +2,7 @@
 SlideDistance=1.4
 DwellTime=12.0
 ZBump=0.005
-ToolForkCount=7
+ToolForkCount=10
 ZClearanceWithNoTool=-3.19702
 
 [ToolFork1]
@@ -53,10 +53,34 @@ X=27.32268
 Y=96.8638
 Z=-12.7247
 
+[ToolFork8]
+Tool=0
+Orientation=2
+Y=97.02232
+Z=-12.72692
+Number=8
+X=37.47491
+
+[ToolFork10]
+Tool=0
+Orientation=2
+Y=97.03713
+Z=-12.72692
+Number=10
+X=47.64413
+
 [ToolFork7]
-Tool=99.0
+Tool=0
 Orientation=2
 Y=97.02232
 Z=-12.72692
 Number=7
-X=32.37953
+X=32.3836
+
+[ToolFork9]
+Tool=0
+Orientation=2
+Y=97.02232
+Z=-12.72692
+Number=9
+X=42.5721
