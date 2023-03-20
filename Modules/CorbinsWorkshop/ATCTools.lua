@@ -120,7 +120,7 @@ function ATCTools.ValidateOnModifyArgs(...)
 	assert(value ~= nil)
 	assert(ctrlName ~= nil)
 
-	local toolForkNumber = string.match(ctrlName, "%d")
+	local toolForkNumber = string.match(ctrlName, "%d+")
 	if toolForkNumber == nil then
 		wx.wxMessageBox("Programming Error", "ATCTools - caller doesn't have the control name setup right")
 	end
@@ -192,7 +192,7 @@ function ATCTools.OnFetchButtonClicked(...)
 	end
 	
 	local ctrlName = select(1, ...)
-	local toolForkNumber = string.match(ctrlName, "%d")
+	local toolForkNumber = string.match(ctrlName, "%d+")
 	assert(toolForkNumber ~= nil, "Bad UI setup for tool forks, ctrlName:"..ctrlName)
 
 	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
@@ -215,7 +215,7 @@ end
 
 function ATCTools.OnRemoveButtonClicked(...) 
 	local ctrlName = select(1, ...)
-	local toolForkNumber = string.match(ctrlName, "%d")
+	local toolForkNumber = string.match(ctrlName, "%d+")
 	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
 	if tf ~= nil then
 		tf.Tool = 0
@@ -227,7 +227,7 @@ end
 
 function ATCTools.OnTouchOffClicked(...)
 	local ctrlName = select(1, ...)
-	local toolForkNumber = string.match(ctrlName, "%d")
+	local toolForkNumber = string.match(ctrlName, "%d+")
 	-- TODO: code..
 end
 
@@ -296,6 +296,8 @@ end
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
 	--ATCTools.OnFetchButtonClicked("toolFetch3")
+	local toolForkNumber = string.match("test10", "%d+")
+	print(toolForkNumber)
 
 end
 

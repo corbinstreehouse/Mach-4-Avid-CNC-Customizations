@@ -397,7 +397,7 @@ function ToolChange.internal.TestToolChange()
 end
 
 if (mc.mcInEditor() == 1) then
-	ToolChange.internal.TestToolChange()
+	--ToolChange.internal.TestToolChange()
 end
 
 return ToolChange
