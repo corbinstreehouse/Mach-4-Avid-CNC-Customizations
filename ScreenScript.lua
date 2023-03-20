@@ -3173,36 +3173,6 @@ function luaSelectTool_Script(...)
     
     STframe = touST.MachineSetup()
 end
--- tabDiagnosticsBig-GlobalScript
--- TP 2-GlobalScript
--- nbGCodeInput2-GlobalScript
-function nbGCodeInput2_On_Enter_Script(...)
-     scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
-end
--- nbMDIInput2-GlobalScript
-function nbMDIInput2_On_Enter_Script(...)
-    scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nMDI');
-end
--- Input Signals-GlobalScript
--- Digital Readouts-GlobalScript
--- Output Signals-GlobalScript
--- grpHoming-GlobalScript
-function btnRefAllDiag_Left_Up_Script(...)
-    --RefAllHome()
-    wait = coroutine.create (RefAllHome) --Run the RefAllHome function as a coroutine named wait.
-    --See RefAllHome function in screen load script for coroutine.yield and PLC script for coroutine.resume
-end
-function btnRefX_1__Left_Up_Script(...)
-    --local inst = mc.mcGetInstance ()
-    --mc.mcCntlGcodeExecuteWait(inst, 'M07')
-    --mc.mcAxisHome(inst, 0)
-    --repeat
-    --wx.wxMilliSleep(200)
-    --local homing, rc= mc.mcAxisIsHoming(inst, 0)
-    --until homing == 0
-    --mc.mcCntlGcodeExecuteWait(inst, 'M09')
-    
-end
 -- tabATCTools-GlobalScript
 -- by corbin dunn
 -- corbin@corbinstreehouse.com
