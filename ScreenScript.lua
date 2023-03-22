@@ -3044,6 +3044,17 @@ function btnToolPathDisplaySettings_Left_Up_Script(...)
 end
 -- nbpagePositions-GlobalScript
 function btnRefAll_Left_Up_Script(...)
+    -- make sure we aren't already homed..
+    
+    local isHomed = CWUtilities.IsHomed()
+    if isHomed then
+    	-- ask the user if they really want to home again
+    	local rc = wx.wxMessageBox("Already Homed....want to do it again?", "Tool Setup Error", wx.wxYES_NO)	
+    	if rc ~= wx.wxYES then
+    		do return end
+    	end	
+    end
+    
     wait = coroutine.create (RefAllHome)
 end
 function droCurrentX_On_Update_Script(...)
