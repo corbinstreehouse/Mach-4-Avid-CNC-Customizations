@@ -134,7 +134,7 @@ end
 
 
 if (mc.mcInEditor() == 1) then
-	CWUtilities.GotoMachineHome()
+	--CWUtilities.GotoMachineHome()
 
 end
 

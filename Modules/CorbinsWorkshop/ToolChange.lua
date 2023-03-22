@@ -18,6 +18,8 @@ local DRAWBAR_SIGNAL_OUTPUT = mc.OSIG_OUTPUT6
 
 local ToolChange = {
 	lastSpindleStopTime = os.clock(), -- in seconds; The m5 script should set this when it turns off the spindle
+	lastX = 0.0,
+	lastY = 0.0,
 	internal = {
 		inst = nil,
 		drawBarSigHandle = nil,		
@@ -317,6 +319,19 @@ function ToolChange.DoWaitFromLastSpindleStop()
 	end
 end
 
+function ToolChange.SaveCurrentLocation()	
+	ToolChange.lastX = mc.mcAxisGetMachinePos(inst, mc.X_AXIS)
+	ToolChange.lastY = mc.mcAxisGetMachinePos(inst, mc.Y_AXIS)
+	ToolForks.Log("Saved machine X: "..ToolChange.lastX.." Y:".. ToolChange.LastY);	
+end
+
+function ToolChange.RestoreLastLocation() 
+	-- Rapid to z0 so we are at a safe distance
+	MCCntlGcodeExecuteWait("G00 G90 G53 Z0.0")
+	
+	MCCntlGcodeExecuteWait("G00 G53 X%.4f Y%.4f", ToolChange.lastX, ToolChange.lastY)	
+end
+
 -- may throw an exception/error
 function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 	if (selectedTool == currentTool) then
@@ -326,6 +341,7 @@ function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 	end
 	
 	ToolChange.internal.TurnOffSpindle()
+	ToolChange.SaveCurrentLocation()
 
 	if (ToolChange.debug.TEST_AT_Z_0) then
 		-- warn the user to not have any tools in the thing, otherwise they will get dropped
@@ -348,6 +364,7 @@ function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 	-- TODO: If currentTool is tool 0, ask the user to ensure the spindle has no tool in it!
 	if currentPosition == nil then		
 		if currentTool == 0 then
+			-- Maybe don't awlays show this warning..I'm starting to not like it
 			local rc = wx.wxMessageBox("Starting from Tool 0. Ensure the spindle is empty. \nWould you like to continue?", 
 				"Tool Warning", wx.wxYES_NO)
 			if rc ~= wx.wxYES then
@@ -387,6 +404,8 @@ function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 		ToolChange.CloseDrawBar()
 		ToolChange.DoManualToolChangeWithMessage(message)
 	end
+
+	ToolChange.RestoreLastLocation() 
 
 	ToolChange.internal.RestoreState(state)
 end
