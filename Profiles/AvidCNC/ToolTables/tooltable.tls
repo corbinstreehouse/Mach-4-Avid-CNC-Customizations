@@ -176,7 +176,7 @@ YOffset=0
 YOffsetWear=0
 Desc=
 [Tool14]
-Length=-1.54503
+Length=-1.53528
 LengthWear=0
 Diameter=0.375
 DiameterWear=0
@@ -198,7 +198,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool16]
-Length=0
+Length=-1.42492
 LengthWear=0
 Diameter=0.25
 DiameterWear=0
