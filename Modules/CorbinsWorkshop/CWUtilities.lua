@@ -115,7 +115,7 @@ function CWUtilities.IsHomed()
 	local xHomed = mc.mcAxisIsHomed(inst, mc.X_AXIS)
 	local yHomed = mc.mcAxisIsHomed(inst, mc.Y_AXIS)
 	local zHomed = mc.mcAxisIsHomed(inst, mc.Z_AXIS)
-	return xHomed and yHomed and zHomed
+	return xHomed == 1 and yHomed == 1 and zHomed == 1
 end
 
 function CWUtilities.GotoMachineHome()
@@ -134,7 +134,7 @@ end
 
 
 if (mc.mcInEditor() == 1) then
-	--CWUtilities.GotoMachineHome()
+
 
 end
 
