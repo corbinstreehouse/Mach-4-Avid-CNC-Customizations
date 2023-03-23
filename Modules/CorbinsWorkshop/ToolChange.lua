@@ -320,9 +320,10 @@ function ToolChange.DoWaitFromLastSpindleStop()
 end
 
 function ToolChange.SaveCurrentLocation()	
+	local inst = ToolChange.internal.inst
 	ToolChange.lastX = mc.mcAxisGetMachinePos(inst, mc.X_AXIS)
 	ToolChange.lastY = mc.mcAxisGetMachinePos(inst, mc.Y_AXIS)
-	ToolForks.Log("Saved machine X: "..ToolChange.lastX.." Y:".. ToolChange.LastY);	
+	ToolForks.Log("Saved machine X: "..ToolChange.lastX.." Y:".. ToolChange.lastY);	
 end
 
 function ToolChange.RestoreLastLocation() 
