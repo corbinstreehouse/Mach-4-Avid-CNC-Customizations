@@ -2429,6 +2429,97 @@ function btnReset_Left_Up_Script(...)
     -- Kill spindle warm-up coroutine
     warmUpRunning = false
 end
+-- tabPositionsExtens-GlobalScript
+function tabPositionsExtens_On_Enter_Script(...)
+    local rc;
+    local tabG_Mdi, rc = scr.GetProperty("nbGCodeMDI1", "Current Tab")
+    
+    --See if we have to do an MDI command
+    if (tonumber(tabG_Mdi) == 1 ) then
+        scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nMDI');
+    else
+        scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
+    end
+end
+-- grpToolPath-GlobalScript
+function btnDispRight_Left_Up_Script(...)
+    -- Right
+    local inst = mc.mcGetInstance();
+    local rc = scr.SetProperty("toolpath1", "View", "3")
+    local rc = scr.SetProperty("toolpath2", "View", "3")
+    local rc = scr.SetProperty("toolpath3", "View", "3")
+    local rc = scr.SetProperty("toolpath4", "View", "3")
+    local rc = scr.SetProperty("toolpath5", "View", "3")
+end
+function btnDispBottom_Left_Up_Script(...)
+    -- Bottom
+    local inst = mc.mcGetInstance();
+    local rc = scr.SetProperty("toolpath1", "View", "1")
+    local rc = scr.SetProperty("toolpath2", "View", "1")
+    local rc = scr.SetProperty("toolpath3", "View", "1")
+    local rc = scr.SetProperty("toolpath4", "View", "1")
+    local rc = scr.SetProperty("toolpath5", "View", "1")
+end
+function btnDispTop_Left_Up_Script(...)
+    --Top
+    local inst = mc.mcGetInstance();
+    local rc = scr.SetProperty("toolpath1", "View", "0")
+    local rc = scr.SetProperty("toolpath2", "View", "0")
+    local rc = scr.SetProperty("toolpath3", "View", "0")
+    local rc = scr.SetProperty("toolpath4", "View", "0")
+    local rc = scr.SetProperty("toolpath5", "View", "0")
+end
+function btnDispISO_Left_Up_Script(...)
+    -- ISO
+    local inst = mc.mcGetInstance();
+    local rc = scr.SetProperty("toolpath1", "View", "4")
+    local rc = scr.SetProperty("toolpath2", "View", "4")
+    local rc = scr.SetProperty("toolpath3", "View", "4")
+    local rc = scr.SetProperty("toolpath4", "View", "4")
+    local rc = scr.SetProperty("toolpath5", "View", "4")
+end
+function btnDispLeft_Left_Up_Script(...)
+    -- Left
+    local inst = mc.mcGetInstance();
+    local rc = scr.SetProperty("toolpath1", "View", "2")
+    local rc = scr.SetProperty("toolpath2", "View", "2")
+    local rc = scr.SetProperty("toolpath3", "View", "2")
+    local rc = scr.SetProperty("toolpath4", "View", "2")
+    local rc = scr.SetProperty("toolpath5", "View", "2")
+    
+end
+function btnToolPathDisplaySettings_Left_Up_Script(...)
+    package.loaded.ToolpathDisplay = nil
+    tp = require "ToolpathDisplay"
+    tp.Dialog()
+end
+-- nbGCodeInput1-GlobalScript
+function nbGCodeInput1_On_Enter_Script(...)
+    scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
+    --DisableKeyboard()
+end
+-- nbMDIInput-GlobalScript
+function nbMDIInput_On_Enter_Script(...)
+    scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nMDI');
+    DisableKeyboard()
+end
+function nbMDIInput_On_Exit_Script(...)
+    EnableKeyboard();
+end
+function droCurrentTool2_On_Modify_Script(...)
+    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
+    if ATCTools == nil then
+    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+    	ATCTools = require 'ATCTools'
+    end
+    
+    val = select(1, ...)
+    ATCTools.DoM6G43(val)
+    return val
+end
+function btnATCPutBack_1__Left_Up_Script(...)
+    ATCTools.PutBackCurrentTool()
+end
 -- tabFileOps-GlobalScript
 function lblCurrentFileDisplay_On_Update_Script(...)
     local fileName = select(1, ...);
@@ -2584,569 +2675,6 @@ end
 -- tabJogging-GlobalScript
 function btnToggleJogMode_Left_Up_Script(...)
     ButtonJogModeToggle()
-end
--- tabDiagnosticsSmall-GlobalScript
--- grpTHCLogging-GlobalScript
-function btnTMC3in1MarkLogFile_Clicked_Script(...)
-    local inst = mc.mcGetInstance('Screenset Mark Log File button') -- Pass in the script number, so we can see the commands called by this script in the log
-    
-    local hMarkLogFile = mc.mcRegGetHandle(inst, "TMC3in1/MARK_LOG_FILE")
-    
-    if ( hMarkLogFile == 0) then
-        -- Failure to acquire a handle!
-        mc.mcCntlLog(inst, 'Screenset Mark Log File button HANDLE FAILURE', "", -1) -- This will send a message to the log window
-    else
-        local valhMarkLogFile = mc.mcRegGetValue(hMarkLogFile)
-    
-        mc.mcRegSetValue(hMarkLogFile, valhMarkLogFile + 1)
-        mc.mcCntlLog(inst, 'Screenset Mark Log File button incremented', "", -1) -- This will send a message to the log window
-    
-    end
-end
-function bmbTMC3in1EnableLogging_Clicked_Script(...)
-    --Enable / Disable TMC3in1 THC Logging
-    local inst = mc.mcGetInstance('bmbTMC3in1EnableLogging')
-    
-    local CurReg = 'TMC3in1/LOGGING_ENABLED'
-    local hreg_LOGGING_ENABLED, rc = mc.mcRegGetHandle(inst, CurReg)
-    
-    if (rc ~= mc.MERROR_NOERROR) then
-    	msg = 'Failed to aquire a handle for ' .. CurReg
-    	mc.mcCntlLog(inst, msg, '', -1)
-    else
-    	local RegVal = mc.mcRegGetValueLong(hreg_LOGGING_ENABLED)
-    	if (RegVal == 1) then
-    		mc.mcRegSetValueLong(hreg_LOGGING_ENABLED, 0)
-    		scr.SetProperty('bmbTMC3in1EnableLogging', 'Image', 'toggle_OFF.png')
-    		msg = 'Screen button set ' .. CurReg .. ' to 0'
-    	else
-    		mc.mcRegSetValueLong(hreg_LOGGING_ENABLED, 1)
-    		scr.SetProperty('bmbTMC3in1EnableLogging', 'Image', 'toggle_ON.png')
-    		msg = 'Screen button set ' .. CurReg .. ' to 1'
-    	end
-    	mc.mcCntlLog(inst, msg, "", -1)
-    end
-end
--- grpTMC3in1Status-GlobalScript
--- grpHomingSensors-GlobalScript
--- grpLimitSwitches-GlobalScript
--- grpInputSignals-GlobalScript
--- tabTHCSettings-GlobalScript
--- grpTHCDelayAfterArcOk-GlobalScript
-function bmbTHCDelayAfterArcOk_Clicked_Script(...)
-    ToggleAntiDiveToggleButton("TimeDelay")
-end
--- grpTHCM62M63-GlobalScript
--- grpTHCVelocityBased-GlobalScript
-function bmbTHCVelocityBased_Clicked_Script(...)
-    ToggleAntiDiveToggleButton("VelocityBased")
-end
--- grpTHCVoltageBased-GlobalScript
-function bmbTHCVoltageBased_Clicked_Script(...)
-    ToggleAntiDiveToggleButton("VoltageBased")
-end
-function btnTHCSaveSettings_Clicked_Script(...)
-    --Save Screen THC Settings
-    local inst = mc.mcGetInstance('btnTHCSaveSettings');
-    local msg = "";
-    local hreg = 0;
-    local rc = mc.MERROR_NOERROR;
-    local val = nil;
-    local savedSettings = true;
-    
-    local TMC3in1Params = {{'iAD1DelayAfterArcOkayEnabled', 'TMC3in1/TMC3IN1_AD1_DELAY_ENABLED', 'bmbTHCDelayAfterArcOk', 0},
-      {'iAD3VelocityEnabled', 'TMC3in1/TMC3IN1_AD3_VELOCITY_ENABLED', 'bmbTHCVelocityBased', 0},
-      {'iVoltageAD_Enabled', 'TMC3in1/TMC3IN1_VOLTAGE_AD_ENABLED', 'bmbTHCVoltageBased', 0},
-      {'iVoltageAD_ATV_BufferSize', 'TMC3in1/TMC3IN1_VOLTAGE_AD_ATV_BUFFER_SIZE', 'droTHCVoltageBasedBuffer', 800},
-      {'dAD1DelayValueAfterArcOkay', 'TMC3in1/TMC3IN1_AD1_DELAY_VALUE', 'droTHCDelayAfterArcOkValue', 2.0},
-      {'dAD3VelocityPercentage', 'TMC3in1/TMC3IN1_AD3_VELOCITY_PERCENT', 'droTHCVelocityBasedValue', 97.0},
-      {'dVoltageAD_PreconditionWindowPercent', 'TMC3in1/TMC3IN1_VOLTAGE_AD_PRECONDITION_WINDOW_PERCENT', 'droTHCVoltagePreconditionPercent', 4.0},
-      {'dAD4VoltageThrottlingPercent', 'TMC3in1/TMC3IN1_VOLTAGE_AD_AD4_THC_THROTTLING_PERCENT', 'droTHCVoltageBasedThrottlePercent', 0.0},
-      {'dVoltageAD5ATV_PercentAboveCurrentTipVolts', 'TMC3in1/TMC3IN1_VOLTAGE_AD_AD5_ATV_PERCENT_ABOVE_CURRENT_TIP_VOLTS', 'droTHCVoltageBasedAboveTargetTipVolts', 15.0},
-      {'dVoltageAD6ATV_PercentBelowCurrentTipVolts', 'TMC3in1/TMC3IN1_VOLTAGE_AD_AD6_ATV_PERCENT_BELOW_CURRENT_TIP_VOLTS', 'droTHCVoltageBasedBelowTargetTipVolts', 15.0},
-    };
-    
-    -- Write register values to profile ini
-    for _,setting in pairs(TMC3in1Params) do
-        local hreg, rc = mc.mcRegGetHandle(inst, setting[2]);
-        if (rc ~= mc.MERROR_NOERROR) then
-            savedSettings = false;
-            msg = string.format("'btnTHCSaveSettings': Failed to acquire register handle for %s, rc = %0.0f", setting[2], rc);
-            mc.mcCntlLog(inst, msg, "", -1);
-        elseif (setting[1]:sub(1, 1) == "i") then
-            val = mc.mcRegGetValueLong(hreg);
-            mc.mcProfileWriteInt(inst, 'TMC3in1', setting[1], val);
-        elseif (setting[1]:sub(1, 1) == "d") then
-            val = mc.mcRegGetValue(hreg);
-            mc.mcProfileWriteDouble(inst, 'TMC3in1', setting[1], val);
-        else
-            savedSettings = false;
-            msg = string.format("'btnTHCSaveSettings': Failed to save THC setting of %s", setting[1]);
-            mc.mcCntlLog(inst, msg, "", -1);
-        end
-    end
-    
-    -- Tell the TMC3in1 Config to reload settings from profile ini.
-    hreg, rc = mc.mcRegGetHandle(inst, "TMC3in1/CONFIG_WINDOW_SAVED");
-    if (rc ~= mc.MERROR_NOERROR) then
-        msg = string.format("Failed to acquire register handle for TMC3in1/CONFIG_WINDOW_SAVED, rc = %0.0f", rc);
-      mc.mcCntlLog(inst, msg, "" , -1);
-    else
-      mc.mcRegSetValueLong(hreg, 2);
-    end
-    
-    if savedSettings then
-        mc.mcCntlSetLastError(inst, 'THC settings saved as default.');
-    else
-        mc.mcCntlSetLastError(inst, 'Failed to save all THC settings as default, see log for details.');
-    end
-end
-function btnTHCRestoreDefaultSettings_Clicked_Script(...)
-    RestoreDefaultTHCSettings()
-end
--- tabLaser-GlobalScript
--- grpLaserVector-GlobalScript
-function btnLVO_Up_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/User_Override_PWM_Percentage"))  
-    val = mc.mcRegGetValue(hreg)
-    val = val + 1;
-    
-    if (tonumber(val) >= 1000) then
-    val = 1000;
-    end
-    mc.mcRegSetValue(hreg, val)   
-    
-    
-end
-function btnLVO_Dn_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/User_Override_PWM_Percentage"))  
-    val = mc.mcRegGetValue(hreg)
-    val = val - 1;
-    
-    if (tonumber(val) <= 0) then
-    val = 0;
-    end
-    mc.mcRegSetValue(hreg, val)   
-    
-    
-end
-function btnLVO_500_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/User_Override_PWM_Percentage"))  
-    mc.mcRegSetValue(hreg, 500)   
-end
-function btnLVO_250_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/User_Override_PWM_Percentage"))  
-    mc.mcRegSetValue(hreg, 250)   
-end
-function btnLVO_100_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/User_Override_PWM_Percentage"))  
-    mc.mcRegSetValue(hreg, 100)   
-end
-function btnLVO_50_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/User_Override_PWM_Percentage"))  
-    mc.mcRegSetValue(hreg, 50)   
-end
-function btnLVO_0_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/User_Override_PWM_Percentage"))  
-    mc.mcRegSetValue(hreg, 0)   
-end
--- grpRaster-GlobalScript
-function btnRasterPAUSE_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/Line_Feed_Hold"))  
-    mc.mcRegSetValue(hreg, 1)   -- This will PAUSE the Laser Raster at the END of the current line, and wait for the user...
-    
-    
-    mc.mcCntlLog(inst, "~~~~Laser Raster Stopped" , "", -1) -- This will send a message to the log window
-    mc.mcCntlSetLastError(inst, "Laser Raster Stopped" ) -- This will send a history / error window message
-end
-function btnRasterRESUME_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/Line_Feed_Hold"))  
-    mc.mcRegSetValue(hreg, 0)   -- This will RESUME the Laser Raster from a Laser Raster Feed Hold
-    
-    
-    mc.mcCntlLog(inst, "~~~~Laser Raster Resume Pressed" , "", -1) -- This will send a message to the log window
-    mc.mcCntlSetLastError(inst, "Laser Raster Resume Pressed" ) -- This will send a history / error window message
-end
-function btnRasterSTOP_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/Line_Feed_Hold"))  
-    mc.mcRegSetValue(hreg, 2)   -- This will STOP the Laser Raster at the END of the current line, and then return the head to the starting point commanded by Mach
-    
-    
-end
-function btnLRO_UpperBound_Up_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MAX_Percentage"))  
-    val = mc.mcRegGetValue(hreg)
-    val = val + 1;
-    
-    if (tonumber(val) >= 1000) then
-    val = 1000;
-    end
-    mc.mcRegSetValue(hreg, val)   
-    
-    
-    
-end
-function btnLRO_UpperBound_Dn_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MAX_Percentage"))  
-    val = mc.mcRegGetValue(hreg)
-    val = val - 1;
-    
-    if (tonumber(val) <= 0) then
-    val = 0;
-    end
-    mc.mcRegSetValue(hreg, val)   
-end
-function btnLRO_UpperBound_500_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MAX_Percentage"))  
-    mc.mcRegSetValue(hreg, 500)   
-    
-end
-function btnLRO_UpperBound_250_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MAX_Percentage"))  
-    mc.mcRegSetValue(hreg, 250)   
-    
-end
-function btnLRO_UpperBound_100_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MAX_Percentage"))  
-    mc.mcRegSetValue(hreg, 100)   
-    
-end
-function btnLRO_UpperBound_50_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MAX_Percentage"))  
-    mc.mcRegSetValue(hreg, 50)   
-    
-end
-function btnLRO_UpperBound_0_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MAX_Percentage"))  
-    mc.mcRegSetValue(hreg, 0)   
-    
-end
-function btnLRO_LowerBound_Up_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MIN_Percentage"))  
-    val = mc.mcRegGetValue(hreg)
-    val = val + 1;
-    
-    if (tonumber(val) >= 1000) then
-    val = 1000;
-    end
-    mc.mcRegSetValue(hreg, val)   
-    
-end
-function btnLRO_LowerBound_Dn_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MIN_Percentage"))  
-    val = mc.mcRegGetValue(hreg)
-    val = val - 1;
-    
-    if (tonumber(val) <= 0) then
-    val = 0;
-    end
-    mc.mcRegSetValue(hreg, val)   
-    
-    
-    
-end
-function btnLRO_LowerBound_500_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MIN_Percentage"))  
-    mc.mcRegSetValue(hreg, 500)   
-    
-end
-function btnLRO_LowerBound_250_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MIN_Percentage"))  
-    mc.mcRegSetValue(hreg, 250)   
-    
-end
-function btnLRO_LowerBound_100_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MIN_Percentage"))  
-    mc.mcRegSetValue(hreg, 100)   
-    
-end
-function btnLRO_LowerBound_50_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MIN_Percentage"))  
-    mc.mcRegSetValue(hreg, 50)   
-    
-end
-function btnLRO_LowerBound_0_Left_Up_Script(...)
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Raster/User_Override_PWM_MIN_Percentage"))  
-    mc.mcRegSetValue(hreg, 0)   
-    
-end
--- grpLaserMain-GlobalScript
-function btnAir_Left_Up_Script(...)
-    local inst = mc.mcGetInstance('Screen set Laser Air Assist Button') -- Pass in the script number, so we can see the commands called by this script in the log
-    
-    -- Code for ESS plugin > 260
-    --[[
-    local hThcCommand = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/Command"))  
-    local CurrentStr = "(LASER_AIR_ASSIST_TOGGLE=1)"
-    mc.mcRegSetValueString(hThcCommand, CurrentStr)   -- This will populate the GCode line data into the register
-    
-    mc.mcCntlLog(inst, '~~~~() Toggled Laser Air Assist button.', "", -1) -- This will send a message to the log window
-    --]]
-    
-    -- Code for ESS plugin <= 260
-    local hsig_out63, rc = mc.mcSignalGetHandle(inst, mc.OSIG_OUTPUT63)
-    if (rc ~= mc.MERROR_NOERROR) then
-    	mc.mcCntlLog(
-    		inst,
-    		string.format("Failure to acquire register handle, rc=%s", rc),
-    		"",
-    		-1)
-    else
-    	state_out63 = mc.mcSignalGetState(hsig_out63)
-    	
-    	if (state_out63 == 0) then
-    		mc.mcSignalSetState(hsig_out63, 1)
-    	else
-    		mc.mcSignalSetState(hsig_out63, 0)
-    	end
-    	
-    	mc.mcCntlLog(inst, '~~~~() Toggled Laser Air Assist button.', "", -1) -- This will send a message to the log window
-    end		
-end
-function btnLaserTestArm_Left_Down_Script(...)
-    local inst = mc.mcGetInstance("Laser Test Arm Button")
-    
-    mc.mcCntlLog(inst, "~~~~Laser Test Arm Button Pressed" , "", -1) -- This will send a message to the log window
-    
-    local hregTMP= mc.mcRegGetHandle(inst, string.format("ESS/Laser/Test_Mode_PWM_Power"))
-    local LaserTestModePower = mc.mcRegGetValue(hregTMP)   --Laset Test Mode Power Percent
-    
-    
-    local hreg1 = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/GCode_PWM_Percentage")) 
-    mc.mcRegSetValue(hreg1, LaserTestModePower)   --Percent
-    
-    
-    local hreg2 = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/PWM_Frequency")) 
-    mc.mcRegSetValue(hreg2, 1000)    --Hz
-    
-    
-    local hreg3 = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/Gate_Delay")) 
-    mc.mcRegSetValue(hreg3, 20)   --Percent
-    
-    
-    local hreg4 = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Vector/Gate_Duration")) 
-    mc.mcRegSetValue(hreg4, 80)   --Percent
-    
-    
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Test_Mode_Enable"))  
-    local val = mc.mcRegGetValue(hreg)  
-    if (val == 1) then
-      mc.mcRegSetValue(hreg, 0)   
-      mc.mcCntlLog(inst, "~~~~Laser Test Disrmed" , "", -1) -- This will send a message to the log window
-      mc.mcCntlSetLastError(inst, "Laser Test Disarmed" ) -- This will send a history / error window message
-    else
-      mc.mcRegSetValue(hreg, 1)   
-      mc.mcCntlLog(inst, "~~~~Laser Test Armed" , "", -1) -- This will send a message to the log window
-      mc.mcCntlSetLastError(inst, "Laser Test Armed" ) -- This will send a history / error window message
-    end
-end
-function btnLasetTestFire_Left_Down_Script(...)
-    local inst = mc.mcGetInstance("Laser Test Fire Button Pressed Down")
-    
-    local hregFire = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Test_Mode_Activate"))  
-    local valFire = mc.mcRegGetValue(hregFire)  
-    
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Test_Mode_Enable"))  
-    local val = mc.mcRegGetValue(hreg)  
-    if (val == 1) then
-      mc.mcRegSetValue(hregFire, 1)   
-      mc.mcCntlLog(inst, "~~~~Laser Test FIRING" , "", -1) -- This will send a message to the log window	
-      mc.mcCntlSetLastError(inst, "Laser Test FIRING" ) -- This will send a history / error window message	
-    else
-      mc.mcCntlLog(inst, "~~~~Laser Test NOT ARMED so not firing" , "", -1) -- This will send a message to the log window	
-      mc.mcCntlSetLastError(inst, "Laser Test NOT ARMED so not firing" ) -- This will send a history / error window message
-    end
-    
-    
-end
-function btnLasetTestFire_Left_Up_Script(...)
-    local inst = mc.mcGetInstance("Laser Test Fire Button Released") 
-    
-    local hregFire = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Test_Mode_Activate"))  
-    local valFire = mc.mcRegGetValue(hregFire)  
-    mc.mcRegSetValue(hregFire, 0)    --Shut it off in either case
-    
-    local hreg = mc.mcRegGetHandle(inst, string.format("ESS/Laser/Test_Mode_Enable"))  
-    local val = mc.mcRegGetValue(hreg)  
-    if (val == 1) then
-      mc.mcCntlLog(inst, "~~~~Laser Test Ended" , "", -1) -- This will send a message to the log window	
-      mc.mcCntlSetLastError(inst, "Laser Test Ended" ) -- This will send a history / error window message	
-    else
-      mc.mcCntlLog(inst, "~~~~Laser Test NOT ARMED, but so not firing, but still stopping" , "", -1) -- This will send a message to the log window	
-      mc.mcCntlSetLastError(inst, "Laser Test NOT ARMED so not firing, but still stopping" ) -- This will send a history / error window message
-    end
-    
-    
-end
--- tabPositionsExtens-GlobalScript
-function tabPositionsExtens_On_Enter_Script(...)
-    local rc;
-    local tabG_Mdi, rc = scr.GetProperty("nbGCodeMDI1", "Current Tab")
-    
-    --See if we have to do an MDI command
-    if (tonumber(tabG_Mdi) == 1 ) then
-        scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nMDI');
-    else
-        scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
-    end
-end
--- grpToolPath-GlobalScript
-function btnDispRight_Left_Up_Script(...)
-    -- Right
-    local inst = mc.mcGetInstance();
-    local rc = scr.SetProperty("toolpath1", "View", "3")
-    local rc = scr.SetProperty("toolpath2", "View", "3")
-    local rc = scr.SetProperty("toolpath3", "View", "3")
-    local rc = scr.SetProperty("toolpath4", "View", "3")
-    local rc = scr.SetProperty("toolpath5", "View", "3")
-end
-function btnDispBottom_Left_Up_Script(...)
-    -- Bottom
-    local inst = mc.mcGetInstance();
-    local rc = scr.SetProperty("toolpath1", "View", "1")
-    local rc = scr.SetProperty("toolpath2", "View", "1")
-    local rc = scr.SetProperty("toolpath3", "View", "1")
-    local rc = scr.SetProperty("toolpath4", "View", "1")
-    local rc = scr.SetProperty("toolpath5", "View", "1")
-end
-function btnDispTop_Left_Up_Script(...)
-    --Top
-    local inst = mc.mcGetInstance();
-    local rc = scr.SetProperty("toolpath1", "View", "0")
-    local rc = scr.SetProperty("toolpath2", "View", "0")
-    local rc = scr.SetProperty("toolpath3", "View", "0")
-    local rc = scr.SetProperty("toolpath4", "View", "0")
-    local rc = scr.SetProperty("toolpath5", "View", "0")
-end
-function btnDispISO_Left_Up_Script(...)
-    -- ISO
-    local inst = mc.mcGetInstance();
-    local rc = scr.SetProperty("toolpath1", "View", "4")
-    local rc = scr.SetProperty("toolpath2", "View", "4")
-    local rc = scr.SetProperty("toolpath3", "View", "4")
-    local rc = scr.SetProperty("toolpath4", "View", "4")
-    local rc = scr.SetProperty("toolpath5", "View", "4")
-end
-function btnDispLeft_Left_Up_Script(...)
-    -- Left
-    local inst = mc.mcGetInstance();
-    local rc = scr.SetProperty("toolpath1", "View", "2")
-    local rc = scr.SetProperty("toolpath2", "View", "2")
-    local rc = scr.SetProperty("toolpath3", "View", "2")
-    local rc = scr.SetProperty("toolpath4", "View", "2")
-    local rc = scr.SetProperty("toolpath5", "View", "2")
-    
-end
-function btnToolPathDisplaySettings_Left_Up_Script(...)
-    package.loaded.ToolpathDisplay = nil
-    tp = require "ToolpathDisplay"
-    tp.Dialog()
-end
--- nbpagePositions-GlobalScript
-function btnRefAll_Left_Up_Script(...)
-    -- make sure we aren't already homed..
-    
-    local isHomed = CWUtilities.IsHomed()
-    if isHomed then
-    	-- ask the user if they really want to home again
-    	local rc = wx.wxMessageBox("Already Homed....want to do it again?", "Tool Setup Error", wx.wxYES_NO)	
-    	if rc ~= wx.wxYES then
-    		do return end
-    	end	
-    end
-    
-    wait = coroutine.create (RefAllHome)
-end
-function droCurrentX_On_Update_Script(...)
-    local val = select(1,...) -- Get the system value.
-    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
-    DecToFrac(0)
-    return val -- the script MUST return a value, otherwise, the control will not be updated.
-end
-function droCurrentY_On_Update_Script(...)
-    local val = select(1,...) -- Get the system value.
-    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
-    DecToFrac(1)
-    return val -- the script MUST return a value, otherwise, the control will not be updated.
-end
-function btnZeroZ_Left_Down_Script(...)
-    local inst = mc.mcGetInstance("Zero Z Btn, left down script")
-    local hreg, rc = mc.mcRegGetHandle(inst, "ESS/HC/Z_DRO_Force_Sync_With_Aux")
-    if (rc ~= mc.MERROR_NOERROR) then
-      mc.mcCntlLog(
-        inst,
-        string.format("Failure to acquire register handle for ESS/HC/Z_DRO_Force_Sync_With_Aux, rc=%s", rc)
-        "",
-        -1)
-    else
-      mc.mcRegSetValueLong(hreg, 1)
-      mc.mcCntlLog(inst, "Zero Z button forcing an ESS Z sync", "", -1)
-    end
-end
-function btnZeroZ_Left_Up_Script(...)
-    local inst = mc.mcGetInstance('Zero Z Button')
-    local hHcCommand = mc.mcRegGetHandle(inst, string.format("ESS/HC/Command"))  
-    if (hHcCommand == 0) then
-    	mc.mcCntlLog(inst, "Failure to acquire handle", "", -1)
-    else
-    	mc.mcRegSetValueString(hHcCommand, "(HC_WORK_Z_ZEROED=1)") 
-    	mc.mcCntlLog(inst, '....ZeroZButton() said that Z was zeroed', "", -1) -- This will send a message to the log window
-    end
-end
-function droCurrentZ_On_Update_Script(...)
-    local val = select(1,...) -- Get the system value.
-    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
-    DecToFrac(2)
-    return val -- the script MUST return a value, otherwise, the control will not be updated.
-end
-function droCurrentA_On_Update_Script(...)
-    local val = select(1,...) -- Get the system value.
-    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
-    DecToFrac(3)
-    return val -- the script MUST return a value, otherwise, the control will not be updated.
-end
-function btnRefAOnly_Left_Up_Script(...)
-    waitHome = coroutine.create(RefAHome)
-    
-    --local inst = mc.mcGetInstance()
-    --rc = mc.mcAxisHome(inst, mc.A_AXIS)
-end
--- nbpageExtents-GlobalScript
-function btnGotoZero_Left_Up_Script(...)
-    local show = avd.WarningDialog("Machine Movement Warning!", "Machine will move at the rapid rate and current Z height to the X and Y zero positions of the current work coordinates.", "iShowWarningMoveToWorkZero");
-    if (show == 0) then
-    	GoToWorkZero()
-    end
-end
--- nbGCodeInput1-GlobalScript
-function nbGCodeInput1_On_Enter_Script(...)
-    scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
-    --DisableKeyboard()
-end
--- nbMDIInput-GlobalScript
-function nbMDIInput_On_Enter_Script(...)
-    scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nMDI');
-    DisableKeyboard()
-end
-function nbMDIInput_On_Exit_Script(...)
-    EnableKeyboard();
-end
-function droCurrentTool2_On_Modify_Script(...)
-    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
-    if ATCTools == nil then
-    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
-    	ATCTools = require 'ATCTools'
-    end
-    
-    val = select(1, ...)
-    ATCTools.DoM6G43(val)
-    return val
-end
-function btnATCPutBack_1__Left_Up_Script(...)
-    ATCTools.PutBackCurrentTool()
-end
-function btnGotoMachineHome_Left_Up_Script(...)
-    CWUtilities.GotoMachineHome()
 end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)
@@ -3504,6 +3032,52 @@ end
 function btnAssignX_1__Clicked_Script(...)
     ATCToolForkSetup.HandleZClearanceAssignButtonClick(...)
 end
+-- tabDiagnosticsSmall-GlobalScript
+-- grpTHCLogging-GlobalScript
+function btnTMC3in1MarkLogFile_Clicked_Script(...)
+    local inst = mc.mcGetInstance('Screenset Mark Log File button') -- Pass in the script number, so we can see the commands called by this script in the log
+    
+    local hMarkLogFile = mc.mcRegGetHandle(inst, "TMC3in1/MARK_LOG_FILE")
+    
+    if ( hMarkLogFile == 0) then
+        -- Failure to acquire a handle!
+        mc.mcCntlLog(inst, 'Screenset Mark Log File button HANDLE FAILURE', "", -1) -- This will send a message to the log window
+    else
+        local valhMarkLogFile = mc.mcRegGetValue(hMarkLogFile)
+    
+        mc.mcRegSetValue(hMarkLogFile, valhMarkLogFile + 1)
+        mc.mcCntlLog(inst, 'Screenset Mark Log File button incremented', "", -1) -- This will send a message to the log window
+    
+    end
+end
+function bmbTMC3in1EnableLogging_Clicked_Script(...)
+    --Enable / Disable TMC3in1 THC Logging
+    local inst = mc.mcGetInstance('bmbTMC3in1EnableLogging')
+    
+    local CurReg = 'TMC3in1/LOGGING_ENABLED'
+    local hreg_LOGGING_ENABLED, rc = mc.mcRegGetHandle(inst, CurReg)
+    
+    if (rc ~= mc.MERROR_NOERROR) then
+    	msg = 'Failed to aquire a handle for ' .. CurReg
+    	mc.mcCntlLog(inst, msg, '', -1)
+    else
+    	local RegVal = mc.mcRegGetValueLong(hreg_LOGGING_ENABLED)
+    	if (RegVal == 1) then
+    		mc.mcRegSetValueLong(hreg_LOGGING_ENABLED, 0)
+    		scr.SetProperty('bmbTMC3in1EnableLogging', 'Image', 'toggle_OFF.png')
+    		msg = 'Screen button set ' .. CurReg .. ' to 0'
+    	else
+    		mc.mcRegSetValueLong(hreg_LOGGING_ENABLED, 1)
+    		scr.SetProperty('bmbTMC3in1EnableLogging', 'Image', 'toggle_ON.png')
+    		msg = 'Screen button set ' .. CurReg .. ' to 1'
+    	end
+    	mc.mcCntlLog(inst, msg, "", -1)
+    end
+end
+-- grpTMC3in1Status-GlobalScript
+-- grpHomingSensors-GlobalScript
+-- grpLimitSwitches-GlobalScript
+-- grpInputSignals-GlobalScript
 -- grpSpindle-GlobalScript
 function droSpindleOverride_On_Update_Script(...)
     local inst = mc.mcGetInstance()
@@ -4006,3 +3580,82 @@ end
 function bmbAvidLogo_Clicked_Script(...)
     pf.SplitSwitchGUI()
 end
+-- nbpagePositions-GlobalScript
+function btnRefAll_Left_Up_Script(...)
+    -- make sure we aren't already homed..
+    
+    local isHomed = CWUtilities.IsHomed()
+    if isHomed then
+    	-- ask the user if they really want to home again
+    	local rc = wx.wxMessageBox("Already Homed....want to do it again?", "Tool Setup Error", wx.wxYES_NO)	
+    	if rc ~= wx.wxYES then
+    		do return end
+    	end	
+    end
+    
+    wait = coroutine.create (RefAllHome)
+end
+function droCurrentX_On_Update_Script(...)
+    local val = select(1,...) -- Get the system value.
+    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
+    DecToFrac(0)
+    return val -- the script MUST return a value, otherwise, the control will not be updated.
+end
+function droCurrentY_On_Update_Script(...)
+    local val = select(1,...) -- Get the system value.
+    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
+    DecToFrac(1)
+    return val -- the script MUST return a value, otherwise, the control will not be updated.
+end
+function btnZeroZ_Left_Down_Script(...)
+    local inst = mc.mcGetInstance("Zero Z Btn, left down script")
+    local hreg, rc = mc.mcRegGetHandle(inst, "ESS/HC/Z_DRO_Force_Sync_With_Aux")
+    if (rc ~= mc.MERROR_NOERROR) then
+      mc.mcCntlLog(
+        inst,
+        string.format("Failure to acquire register handle for ESS/HC/Z_DRO_Force_Sync_With_Aux, rc=%s", rc)
+        "",
+        -1)
+    else
+      mc.mcRegSetValueLong(hreg, 1)
+      mc.mcCntlLog(inst, "Zero Z button forcing an ESS Z sync", "", -1)
+    end
+end
+function btnZeroZ_Left_Up_Script(...)
+    local inst = mc.mcGetInstance('Zero Z Button')
+    local hHcCommand = mc.mcRegGetHandle(inst, string.format("ESS/HC/Command"))  
+    if (hHcCommand == 0) then
+    	mc.mcCntlLog(inst, "Failure to acquire handle", "", -1)
+    else
+    	mc.mcRegSetValueString(hHcCommand, "(HC_WORK_Z_ZEROED=1)") 
+    	mc.mcCntlLog(inst, '....ZeroZButton() said that Z was zeroed', "", -1) -- This will send a message to the log window
+    end
+end
+function droCurrentZ_On_Update_Script(...)
+    local val = select(1,...) -- Get the system value.
+    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
+    DecToFrac(2)
+    return val -- the script MUST return a value, otherwise, the control will not be updated.
+end
+function droCurrentA_On_Update_Script(...)
+    local val = select(1,...) -- Get the system value.
+    val = tonumber(val) -- The value may be a number or a string. Convert as needed.
+    DecToFrac(3)
+    return val -- the script MUST return a value, otherwise, the control will not be updated.
+end
+function btnRefAOnly_Left_Up_Script(...)
+    waitHome = coroutine.create(RefAHome)
+    
+    --local inst = mc.mcGetInstance()
+    --rc = mc.mcAxisHome(inst, mc.A_AXIS)
+end
+function btnGotoMachineHome_Left_Up_Script(...)
+    CWUtilities.GotoMachineHome()
+end
+function btnGotoZero_Left_Up_Script(...)
+    local show = avd.WarningDialog("Machine Movement Warning!", "Machine will move at the rapid rate and current Z height to the X and Y zero positions of the current work coordinates.", "iShowWarningMoveToWorkZero");
+    if (show == 0) then
+    	GoToWorkZero()
+    end
+end
+-- nbpageExtents-GlobalScript

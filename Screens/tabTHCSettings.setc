@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Mach4ScreenInfo>
+  <mcNotebookPage>
+    <Property name="Name">tabTHCSettings</Property>
+    <Property name="Enabled">1</Property>
+    <Property name="Hidden">0</Property>
+    <Property name="Shown">1</Property>
+    <Property name="Label"></Property>
+    <Property name="Bg Color">#F0F0F0</Property>
+    <Property name="Background Color">#F0F0F0</Property>
+    <Property name="Bg Image"></Property>
+    <Property name="Scale Method">0</Property>
+    <Property name="Text Height">9</Property>
+    <Property name="Global Script"></Property>
+    <Event name="On Enter Script"></Event>
+    <Event name="On Exit Script"></Event>
+    <mcGroup>
+      <Property name="Name">grpTHCDelayAfterArcOk</Property>
+      <Property name="Instance">0</Property>
+      <Property name="Top">5</Property>
+      <Property name="Left">2</Property>
+      <Property name="Height">65</Property>
+      <Property name="Width">185</Property>
+      <Property name="Enabled">1</Property>
+      <Property name="Hidden">1</Property>
+      <Property name="Shown">1</Property>
+      <Property name="Enable With Machine">0</Property>
+      <Property name="Enabled States">0</Property>
+      <Property name="Label">Time Delay Anti-Dive</Property>
+      <Property name="Fg Color"></Property>
+      <Property name="Bg Color"></Property>
+      <Property name="Bg Image"></Property>
+      <Property name="Scale Method">0</Property>
+      <Property name="No Border">0</Property>
+      <Property name="Global Script"></Property>
+      <mcStaticText>
+        <Property name="Name">lblTHCDelayAfterArcOkValue</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">38</Property>
+        <Property name="Left">45</Property>
+        <Property name="Height">14</Property>
+        <Property name="Width">120</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">(sec) Delay After Arc OK</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;10;-7;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcDro>
+        <Property name="Name">droTHCDelayAfterArcOkValue</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">37</Property>
+        <Property name="Left">10</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">35</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="DRO Code">-1</Property>
+        <Property name="Register">TMC3in1/TMC3IN1_AD1_DELAY_VALUE</Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Property name="Analog In"></Property>
+        <Property name="Analog Out"></Property>
+        <Property name="Value">0.750000</Property>
+        <Property name="Format">%0.2f</Property>
+        <Property name="Editor">0</Property>
+        <Property name="Justify">0</Property>
+        <Property name="Border">1</Property>
+        <Property name="Font">1;0;-12;0;0;0;400;0;0;0;0;3;2;1;34;Arial</Property>
+        <Property name="Fg Color">#00FF00</Property>
+        <Property name="Bg Color">#000000</Property>
+        <Property name="Editor Fg Color"></Property>
+        <Property name="Editor Bg Color">#000000</Property>
+        <Property name="Show Units">0</Property>
+        <Property name="Units">0</Property>
+        <Property name="Inch Display"></Property>
+        <Property name="Metric Display"></Property>
+        <Event name="On Update Script"></Event>
+        <Event name="On Modify Script"></Event>
+      </mcDro>
+      <mcBitmapButton>
+        <Property name="Name">bmbTHCDelayAfterArcOk</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">15</Property>
+        <Property name="Left">10</Property>
+        <Property name="Height">23</Property>
+        <Property name="Width">50</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Image">toggle_ON.png</Property>
+        <Property name="Disabled Image"></Property>
+        <Property name="Scale Method">0</Property>
+        <Property name="Leave Is Up">0</Property>
+        <Event name="Left Down Action">0</Event>
+        <Event name="Left Up Action">0</Event>
+        <Event name="Left Down Script"></Event>
+        <Event name="Left Up Script"></Event>
+        <Event name="Clicked Action">0</Event>
+        <Event name="Clicked Script">ToggleAntiDiveToggleButton("TimeDelay")</Event>
+        <Event name="Goto Page"></Event>
+        <Event name="Run MDI"></Event>
+      </mcBitmapButton>
+      <mcStaticText>
+        <Property name="Name">lblTHCDelayAfterArcOkInhibiting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">19</Property>
+        <Property name="Left">93</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">75</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">Inhibiting THC</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;10;-9;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcLed>
+        <Property name="Name">LedDelayAfterArcOkInhibiting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">16</Property>
+        <Property name="Left">75</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">18</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Shape">1</Property>
+        <Property name="Square Border">2097152</Property>
+        <Property name="Value">0</Property>
+        <Property name="Color">128</Property>
+        <Property name="Image On"></Property>
+        <Property name="Image Off"></Property>
+        <Property name="Scale Method">0</Property>
+        <Property name="Type">0</Property>
+        <Property name="Blink Rate">500</Property>
+        <Property name="Input Signal">-1</Property>
+        <Property name="Output Signal">-1</Property>
+        <Property name="Register">TMC3in1/REPORT_MODE_ARC_OK_DELAY_BEFORE_THC_INHIBITING_THC</Property>
+        <Property name="Invert State">0</Property>
+      </mcLed>
+    </mcGroup>
+    <mcGroup>
+      <Property name="Name">grpTHCM62M63</Property>
+      <Property name="Instance">0</Property>
+      <Property name="Top">72</Property>
+      <Property name="Left">2</Property>
+      <Property name="Height">50</Property>
+      <Property name="Width">185</Property>
+      <Property name="Enabled">1</Property>
+      <Property name="Hidden">1</Property>
+      <Property name="Shown">1</Property>
+      <Property name="Enable With Machine">0</Property>
+      <Property name="Enabled States">0</Property>
+      <Property name="Label">M62 / M63 Anti-Dive</Property>
+      <Property name="Fg Color"></Property>
+      <Property name="Bg Color"></Property>
+      <Property name="Bg Image"></Property>
+      <Property name="Scale Method">0</Property>
+      <Property name="No Border">0</Property>
+      <Property name="Global Script"></Property>
+      <mcStaticText>
+        <Property name="Name">lblTHCM62M63Inhibiting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">19</Property>
+        <Property name="Left">93</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">75</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">Inhibiting THC</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;10;-9;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcLed>
+        <Property name="Name">LedM62M63Inhibiting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">18</Property>
+        <Property name="Left">75</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">18</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Shape">1</Property>
+        <Property name="Square Border">2097152</Property>
+        <Property name="Value">0</Property>
+        <Property name="Color">128</Property>
+        <Property name="Image On"></Property>
+        <Property name="Image Off"></Property>
+        <Property name="Scale Method">0</Property>
+        <Property name="Type">0</Property>
+        <Property name="Blink Rate">500</Property>
+        <Property name="Input Signal">-1</Property>
+        <Property name="Output Signal">-1</Property>
+        <Property name="Register">TMC3in1/REPORT_MODE_M62_M63_INHIBITING_THC</Property>
+        <Property name="Invert State">0</Property>
+      </mcLed>
+    </mcGroup>
+    <mcGroup>
+      <Property name="Name">grpTHCVelocityBased</Property>
+      <Property name="Instance">0</Property>
+      <Property name="Top">125</Property>
+      <Property name="Left">2</Property>
+      <Property name="Height">65</Property>
+      <Property name="Width">185</Property>
+      <Property name="Enabled">1</Property>
+      <Property name="Hidden">1</Property>
+      <Property name="Shown">1</Property>
+      <Property name="Enable With Machine">0</Property>
+      <Property name="Enabled States">0</Property>
+      <Property name="Label">Velocity Based Anti-Dive</Property>
+      <Property name="Fg Color"></Property>
+      <Property name="Bg Color"></Property>
+      <Property name="Bg Image"></Property>
+      <Property name="Scale Method">0</Property>
+      <Property name="No Border">0</Property>
+      <Property name="Global Script"></Property>
+      <mcStaticText>
+        <Property name="Name">lblTHCVelocityBasedValue</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">39</Property>
+        <Property name="Left">45</Property>
+        <Property name="Height">17</Property>
+        <Property name="Width">130</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">% of Commanded Feedrate</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-8;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcDro>
+        <Property name="Name">droTHCVelocityBasedValue</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">37</Property>
+        <Property name="Left">10</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">35</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="DRO Code">-1</Property>
+        <Property name="Register">TMC3in1/TMC3IN1_AD3_VELOCITY_PERCENT</Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Property name="Analog In"></Property>
+        <Property name="Analog Out"></Property>
+        <Property name="Value">97.000000</Property>
+        <Property name="Format">%0.1f</Property>
+        <Property name="Editor">0</Property>
+        <Property name="Justify">0</Property>
+        <Property name="Border">1</Property>
+        <Property name="Font">1;0;-12;0;0;0;400;0;0;0;0;3;2;1;34;Arial</Property>
+        <Property name="Fg Color">#00FF00</Property>
+        <Property name="Bg Color">#000000</Property>
+        <Property name="Editor Fg Color"></Property>
+        <Property name="Editor Bg Color">#000000</Property>
+        <Property name="Show Units">0</Property>
+        <Property name="Units">0</Property>
+        <Property name="Inch Display"></Property>
+        <Property name="Metric Display"></Property>
+        <Event name="On Update Script"></Event>
+        <Event name="On Modify Script"></Event>
+      </mcDro>
+      <mcBitmapButton>
+        <Property name="Name">bmbTHCVelocityBased</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">15</Property>
+        <Property name="Left">10</Property>
+        <Property name="Height">23</Property>
+        <Property name="Width">50</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Image">toggle_ON.png</Property>
+        <Property name="Disabled Image"></Property>
+        <Property name="Scale Method">0</Property>
+        <Property name="Leave Is Up">0</Property>
+        <Event name="Left Down Action">0</Event>
+        <Event name="Left Up Action">0</Event>
+        <Event name="Left Down Script"></Event>
+        <Event name="Left Up Script"></Event>
+        <Event name="Clicked Action">0</Event>
+        <Event name="Clicked Script">ToggleAntiDiveToggleButton("VelocityBased")</Event>
+        <Event name="Goto Page"></Event>
+        <Event name="Run MDI"></Event>
+      </mcBitmapButton>
+      <mcStaticText>
+        <Property name="Name">lblTHCVelocityInhibiting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">19</Property>
+        <Property name="Left">93</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">75</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">Inhibiting THC</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;10;-9;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcLed>
+        <Property name="Name">LedVelocityAntiDiveInhibiting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">18</Property>
+        <Property name="Left">75</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">18</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Shape">1</Property>
+        <Property name="Square Border">2097152</Property>
+        <Property name="Value">0</Property>
+        <Property name="Color">128</Property>
+        <Property name="Image On"></Property>
+        <Property name="Image Off"></Property>
+        <Property name="Scale Method">0</Property>
+        <Property name="Type">0</Property>
+        <Property name="Blink Rate">500</Property>
+        <Property name="Input Signal">-1</Property>
+        <Property name="Output Signal">-1</Property>
+        <Property name="Register">TMC3in1/REPORT_MODE_VELOCITY_BASED_ANTIDIVE_INHIBITING_THC</Property>
+        <Property name="Invert State">0</Property>
+      </mcLed>
+    </mcGroup>
+    <mcGroup>
+      <Property name="Name">grpTHCVoltageBased</Property>
+      <Property name="Instance">0</Property>
+      <Property name="Top">5</Property>
+      <Property name="Left">185</Property>
+      <Property name="Height">160</Property>
+      <Property name="Width">300</Property>
+      <Property name="Enabled">1</Property>
+      <Property name="Hidden">1</Property>
+      <Property name="Shown">1</Property>
+      <Property name="Enable With Machine">0</Property>
+      <Property name="Enabled States">0</Property>
+      <Property name="Label">Voltage Based Anti-Dive</Property>
+      <Property name="Fg Color"></Property>
+      <Property name="Bg Color"></Property>
+      <Property name="Bg Image"></Property>
+      <Property name="Scale Method">0</Property>
+      <Property name="No Border">0</Property>
+      <Property name="Global Script"></Property>
+      <mcDro>
+        <Property name="Name">droTHCVoltageBasedBuffer</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">40</Property>
+        <Property name="Left">5</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">35</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="DRO Code">-1</Property>
+        <Property name="Register">TMC3in1/TMC3IN1_VOLTAGE_AD_ATV_BUFFER_SIZE</Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Property name="Analog In"></Property>
+        <Property name="Analog Out"></Property>
+        <Property name="Value">800.000000</Property>
+        <Property name="Format">%0.0f</Property>
+        <Property name="Editor">0</Property>
+        <Property name="Justify">0</Property>
+        <Property name="Border">1</Property>
+        <Property name="Font">1;0;-12;0;0;0;400;0;0;0;0;3;2;1;34;Arial</Property>
+        <Property name="Fg Color">#00FF00</Property>
+        <Property name="Bg Color">#000000</Property>
+        <Property name="Editor Fg Color"></Property>
+        <Property name="Editor Bg Color">#000000</Property>
+        <Property name="Show Units">0</Property>
+        <Property name="Units">0</Property>
+        <Property name="Inch Display"></Property>
+        <Property name="Metric Display"></Property>
+        <Event name="On Update Script"></Event>
+        <Event name="On Modify Script"></Event>
+      </mcDro>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageBasedBuffer</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">41</Property>
+        <Property name="Left">40</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">230</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">ms of ATV (Avg Tip Volts) buffer (800 ms max)</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-9;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcDro>
+        <Property name="Name">droTHCVoltagePreconditionPercent</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">60</Property>
+        <Property name="Left">5</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">35</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="DRO Code">-1</Property>
+        <Property name="Register">TMC3in1/TMC3IN1_VOLTAGE_AD_PRECONDITION_WINDOW_PERCENT</Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Property name="Analog In"></Property>
+        <Property name="Analog Out"></Property>
+        <Property name="Value">4.000000</Property>
+        <Property name="Format">%0.1f</Property>
+        <Property name="Editor">0</Property>
+        <Property name="Justify">0</Property>
+        <Property name="Border">1</Property>
+        <Property name="Font">1;0;-12;0;0;0;400;0;0;0;0;3;2;1;34;Arial</Property>
+        <Property name="Fg Color">#00FF00</Property>
+        <Property name="Bg Color">#000000</Property>
+        <Property name="Editor Fg Color"></Property>
+        <Property name="Editor Bg Color">#000000</Property>
+        <Property name="Show Units">0</Property>
+        <Property name="Units">0</Property>
+        <Property name="Inch Display"></Property>
+        <Property name="Metric Display"></Property>
+        <Event name="On Update Script"></Event>
+        <Event name="On Modify Script"></Event>
+      </mcDro>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageBasedChangePercent</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">61</Property>
+        <Property name="Left">40</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">170</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">% for precondition</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-9;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcDro>
+        <Property name="Name">droTHCVoltageBasedThrottlePercent</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">80</Property>
+        <Property name="Left">5</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">35</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="DRO Code">-1</Property>
+        <Property name="Register">TMC3in1/TMC3IN1_VOLTAGE_AD_AD4_THC_THROTTLING_PERCENT</Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Property name="Analog In"></Property>
+        <Property name="Analog Out"></Property>
+        <Property name="Value">0.000000</Property>
+        <Property name="Format">%0.1f</Property>
+        <Property name="Editor">0</Property>
+        <Property name="Justify">0</Property>
+        <Property name="Border">1</Property>
+        <Property name="Font">1;0;-12;0;0;0;400;0;0;0;0;3;2;1;34;Arial</Property>
+        <Property name="Fg Color">#00FF00</Property>
+        <Property name="Bg Color">#000000</Property>
+        <Property name="Editor Fg Color"></Property>
+        <Property name="Editor Bg Color">#000000</Property>
+        <Property name="Show Units">0</Property>
+        <Property name="Units">0</Property>
+        <Property name="Inch Display"></Property>
+        <Property name="Metric Display"></Property>
+        <Event name="On Update Script"></Event>
+        <Event name="On Modify Script"></Event>
+      </mcDro>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageBasedResponsePercent</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">81</Property>
+        <Property name="Left">40</Property>
+        <Property name="Height">30</Property>
+        <Property name="Width">255</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">% of normal speed to throttle THC when outside\nof voltage range</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-9;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcDro>
+        <Property name="Name">droTHCVoltageBasedAboveActualTipVolts</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">113</Property>
+        <Property name="Left">115</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">35</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="DRO Code">-1</Property>
+        <Property name="Register">TMC3in1/TMC3IN1_VOLTAGE_AD_AD5_ATV_PERCENT_ABOVE_CURRENT_TIP_VOLTS</Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Property name="Analog In"></Property>
+        <Property name="Analog Out"></Property>
+        <Property name="Value">15.000000</Property>
+        <Property name="Format">%0.1f</Property>
+        <Property name="Editor">0</Property>
+        <Property name="Justify">0</Property>
+        <Property name="Border">1</Property>
+        <Property name="Font">1;0;-12;0;0;0;400;0;0;0;0;3;2;1;34;Arial</Property>
+        <Property name="Fg Color">#00FF00</Property>
+        <Property name="Bg Color">#000000</Property>
+        <Property name="Editor Fg Color"></Property>
+        <Property name="Editor Bg Color">#000000</Property>
+        <Property name="Show Units">0</Property>
+        <Property name="Units">0</Property>
+        <Property name="Inch Display"></Property>
+        <Property name="Metric Display"></Property>
+        <Event name="On Update Script"></Event>
+        <Event name="On Modify Script"></Event>
+      </mcDro>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageBasedAboveTargetTipVolts_1</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">115</Property>
+        <Property name="Left">10</Property>
+        <Property name="Height">17</Property>
+        <Property name="Width">105</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">Disable THC if ATV is:</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-8;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageBasedAboveTargetTipVolts_2</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">115</Property>
+        <Property name="Left">150</Property>
+        <Property name="Height">17</Property>
+        <Property name="Width">140</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">% above actual tip volts</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-8;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcDro>
+        <Property name="Name">droTHCVoltageBasedBelowActualTipVolts</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">133</Property>
+        <Property name="Left">115</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">35</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="DRO Code">-1</Property>
+        <Property name="Register">TMC3in1/TMC3IN1_VOLTAGE_AD_AD6_ATV_PERCENT_BELOW_CURRENT_TIP_VOLTS</Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Property name="Analog In"></Property>
+        <Property name="Analog Out"></Property>
+        <Property name="Value">3.000000</Property>
+        <Property name="Format">%0.1f</Property>
+        <Property name="Editor">0</Property>
+        <Property name="Justify">0</Property>
+        <Property name="Border">1</Property>
+        <Property name="Font">1;0;-12;0;0;0;400;0;0;0;0;3;2;1;34;Arial</Property>
+        <Property name="Fg Color">#00FF00</Property>
+        <Property name="Bg Color">#000000</Property>
+        <Property name="Editor Fg Color"></Property>
+        <Property name="Editor Bg Color">#000000</Property>
+        <Property name="Show Units">0</Property>
+        <Property name="Units">0</Property>
+        <Property name="Inch Display"></Property>
+        <Property name="Metric Display"></Property>
+        <Event name="On Update Script"></Event>
+        <Event name="On Modify Script"></Event>
+      </mcDro>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageBasedBelowTargetTipVolts_1</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">135</Property>
+        <Property name="Left">10</Property>
+        <Property name="Height">17</Property>
+        <Property name="Width">105</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">Disable THC if ATV is:</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-8;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageBasedBelowTargetTipVolts_2</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">135</Property>
+        <Property name="Left">150</Property>
+        <Property name="Height">17</Property>
+        <Property name="Width">140</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">% below actual tip volts</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;0;-8;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcBitmapButton>
+        <Property name="Name">bmbTHCVoltageBased</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">15</Property>
+        <Property name="Left">5</Property>
+        <Property name="Height">23</Property>
+        <Property name="Width">50</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Image">toggle_ON.png</Property>
+        <Property name="Disabled Image"></Property>
+        <Property name="Scale Method">0</Property>
+        <Property name="Leave Is Up">0</Property>
+        <Event name="Left Down Action">0</Event>
+        <Event name="Left Up Action">0</Event>
+        <Event name="Left Down Script"></Event>
+        <Event name="Left Up Script"></Event>
+        <Event name="Clicked Action">0</Event>
+        <Event name="Clicked Script">ToggleAntiDiveToggleButton("VoltageBased")</Event>
+        <Event name="Goto Page"></Event>
+        <Event name="Run MDI"></Event>
+      </mcBitmapButton>
+      <mcStaticText>
+        <Property name="Name">lblTHCVoltageInhibiting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">19</Property>
+        <Property name="Left">93</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">75</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Justify">-1</Property>
+        <Property name="Border">0</Property>
+        <Property name="Label">Inhibiting THC</Property>
+        <Property name="Lines">1</Property>
+        <Property name="Font">1;10;-9;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+        <Property name="Fg Color">#000000</Property>
+        <Property name="Bg Color"></Property>
+        <Property name="Label Code">-1</Property>
+        <Property name="Register"></Property>
+        <Property name="SysVar">0</Property>
+        <Property name="SysParam">0</Property>
+        <Event name="On Update Script"></Event>
+      </mcStaticText>
+      <mcLed>
+        <Property name="Name">LedVoltageAntiDiveInhibting</Property>
+        <Property name="Instance">0</Property>
+        <Property name="Top">18</Property>
+        <Property name="Left">75</Property>
+        <Property name="Height">18</Property>
+        <Property name="Width">18</Property>
+        <Property name="Enabled">1</Property>
+        <Property name="Hidden">0</Property>
+        <Property name="Shown">1</Property>
+        <Property name="Enable With Machine">0</Property>
+        <Property name="Enabled States">0</Property>
+        <Property name="Shape">1</Property>
+        <Property name="Square Border">2097152</Property>
+        <Property name="Value">0</Property>
+        <Property name="Color">128</Property>
+        <Property name="Image On"></Property>
+        <Property name="Image Off"></Property>
+        <Property name="Scale Method">0</Property>
+        <Property name="Type">0</Property>
+        <Property name="Blink Rate">500</Property>
+        <Property name="Input Signal">-1</Property>
+        <Property name="Output Signal">-1</Property>
+        <Property name="Register">TMC3in1/REPORT_MODE_VOLTAGE_BASED_ANTIDIVE_INHIBITING_THC</Property>
+        <Property name="Invert State">0</Property>
+      </mcLed>
+    </mcGroup>
+    <mcButton>
+      <Property name="Name">btnTHCSaveSettings</Property>
+      <Property name="Instance">0</Property>
+      <Property name="Top">164</Property>
+      <Property name="Left">220</Property>
+      <Property name="Height">32</Property>
+      <Property name="Width">100</Property>
+      <Property name="Enabled">1</Property>
+      <Property name="Hidden">1</Property>
+      <Property name="Shown">1</Property>
+      <Property name="Enable With Machine">0</Property>
+      <Property name="Enabled States">0</Property>
+      <Property name="Label">Save as Default\nAnti-Dive Settings</Property>
+      <Property name="Font">1;9;-12;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+      <Property name="Fg Color">#000000</Property>
+      <Property name="Text Color">#000000</Property>
+      <Property name="Bg Color"></Property>
+      <Property name="Button Color"></Property>
+      <Property name="Leave Is Up">0</Property>
+      <Event name="Left Down Action">0</Event>
+      <Event name="Left Up Action">0</Event>
+      <Event name="Left Down Script"></Event>
+      <Event name="Left Up Script"></Event>
+      <Event name="Clicked Action">0</Event>
+      <Event name="Clicked Script">--Save Screen THC Settings
+local inst = mc.mcGetInstance('btnTHCSaveSettings');
+local msg = "";
+local hreg = 0;
+local rc = mc.MERROR_NOERROR;
+local val = nil;
+local savedSettings = true;
+
+local TMC3in1Params = {{'iAD1DelayAfterArcOkayEnabled', 'TMC3in1/TMC3IN1_AD1_DELAY_ENABLED', 'bmbTHCDelayAfterArcOk', 0},
+  {'iAD3VelocityEnabled', 'TMC3in1/TMC3IN1_AD3_VELOCITY_ENABLED', 'bmbTHCVelocityBased', 0},
+  {'iVoltageAD_Enabled', 'TMC3in1/TMC3IN1_VOLTAGE_AD_ENABLED', 'bmbTHCVoltageBased', 0},
+  {'iVoltageAD_ATV_BufferSize', 'TMC3in1/TMC3IN1_VOLTAGE_AD_ATV_BUFFER_SIZE', 'droTHCVoltageBasedBuffer', 800},
+  {'dAD1DelayValueAfterArcOkay', 'TMC3in1/TMC3IN1_AD1_DELAY_VALUE', 'droTHCDelayAfterArcOkValue', 2.0},
+  {'dAD3VelocityPercentage', 'TMC3in1/TMC3IN1_AD3_VELOCITY_PERCENT', 'droTHCVelocityBasedValue', 97.0},
+  {'dVoltageAD_PreconditionWindowPercent', 'TMC3in1/TMC3IN1_VOLTAGE_AD_PRECONDITION_WINDOW_PERCENT', 'droTHCVoltagePreconditionPercent', 4.0},
+  {'dAD4VoltageThrottlingPercent', 'TMC3in1/TMC3IN1_VOLTAGE_AD_AD4_THC_THROTTLING_PERCENT', 'droTHCVoltageBasedThrottlePercent', 0.0},
+  {'dVoltageAD5ATV_PercentAboveCurrentTipVolts', 'TMC3in1/TMC3IN1_VOLTAGE_AD_AD5_ATV_PERCENT_ABOVE_CURRENT_TIP_VOLTS', 'droTHCVoltageBasedAboveTargetTipVolts', 15.0},
+  {'dVoltageAD6ATV_PercentBelowCurrentTipVolts', 'TMC3in1/TMC3IN1_VOLTAGE_AD_AD6_ATV_PERCENT_BELOW_CURRENT_TIP_VOLTS', 'droTHCVoltageBasedBelowTargetTipVolts', 15.0},
+};
+
+-- Write register values to profile ini
+for _,setting in pairs(TMC3in1Params) do
+    local hreg, rc = mc.mcRegGetHandle(inst, setting[2]);
+    if (rc ~= mc.MERROR_NOERROR) then
+        savedSettings = false;
+        msg = string.format("'btnTHCSaveSettings': Failed to acquire register handle for %s, rc = %0.0f", setting[2], rc);
+        mc.mcCntlLog(inst, msg, "", -1);
+    elseif (setting[1]:sub(1, 1) == "i") then
+        val = mc.mcRegGetValueLong(hreg);
+        mc.mcProfileWriteInt(inst, 'TMC3in1', setting[1], val);
+    elseif (setting[1]:sub(1, 1) == "d") then
+        val = mc.mcRegGetValue(hreg);
+        mc.mcProfileWriteDouble(inst, 'TMC3in1', setting[1], val);
+    else
+        savedSettings = false;
+        msg = string.format("'btnTHCSaveSettings': Failed to save THC setting of %s", setting[1]);
+        mc.mcCntlLog(inst, msg, "", -1);
+    end
+end
+
+-- Tell the TMC3in1 Config to reload settings from profile ini.
+hreg, rc = mc.mcRegGetHandle(inst, "TMC3in1/CONFIG_WINDOW_SAVED");
+if (rc ~= mc.MERROR_NOERROR) then
+    msg = string.format("Failed to acquire register handle for TMC3in1/CONFIG_WINDOW_SAVED, rc = %0.0f", rc);
+  mc.mcCntlLog(inst, msg, "" , -1);
+else
+  mc.mcRegSetValueLong(hreg, 2);
+end
+
+if savedSettings then
+    mc.mcCntlSetLastError(inst, 'THC settings saved as default.');
+else
+    mc.mcCntlSetLastError(inst, 'Failed to save all THC settings as default, see log for details.');
+end</Event>
+      <Event name="Goto Page"></Event>
+      <Event name="Run MDI"></Event>
+    </mcButton>
+    <mcButton>
+      <Property name="Name">btnTHCRestoreDefaultSettings</Property>
+      <Property name="Instance">0</Property>
+      <Property name="Top">164</Property>
+      <Property name="Left">345</Property>
+      <Property name="Height">32</Property>
+      <Property name="Width">100</Property>
+      <Property name="Enabled">1</Property>
+      <Property name="Hidden">1</Property>
+      <Property name="Shown">1</Property>
+      <Property name="Enable With Machine">0</Property>
+      <Property name="Enabled States">0</Property>
+      <Property name="Label">Restore Default\nAnti-Dive Settings</Property>
+      <Property name="Font">1;9;-12;0;0;0;400;0;0;0;1;0;0;0;32;Arial</Property>
+      <Property name="Fg Color">#000000</Property>
+      <Property name="Text Color">#000000</Property>
+      <Property name="Bg Color"></Property>
+      <Property name="Button Color"></Property>
+      <Property name="Leave Is Up">0</Property>
+      <Event name="Left Down Action">0</Event>
+      <Event name="Left Up Action">0</Event>
+      <Event name="Left Down Script"></Event>
+      <Event name="Left Up Script"></Event>
+      <Event name="Clicked Action">0</Event>
+      <Event name="Clicked Script">RestoreDefaultTHCSettings()</Event>
+      <Event name="Goto Page"></Event>
+      <Event name="Run MDI"></Event>
+    </mcButton>
+  </mcNotebookPage>
+</Mach4ScreenInfo>
