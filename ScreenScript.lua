@@ -2506,21 +2506,38 @@ end
 function nbMDIInput_On_Exit_Script(...)
     EnableKeyboard();
 end
-function droCurrentTool2_On_Modify_Script(...)
-    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
-    if ATCTools == nil then
-    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
-    	ATCTools = require 'ATCTools'
+function btnRunFromHere_Left_Up_Script(...)
+    -- Check if file is loaded before showing warning dialog
+    local inst = mc.mcGetInstance("Run From Here button");
+    local fineName = mc.mcCntlGetGcodeFileName(inst);
+    if (fileName == "") then return end;
+    
+    -- Warning dialog
+    local cuttingTool = mc.mcProfileGetString(inst, "AvidCNC_Profile", "scuttingtool", "cutting tool");
+    if (cuttingTool ~= "Plasma") then
+    	local msg = "If using \"Run From Here\" to start mid-program, you must manually start your "..string.lower(cuttingTool).." before pressing \"Cycle Start\".";
+      avd.WarningDialog("Machine Operation Warning!", msg, "iShowWarningRunFromHere", true);
+      scr.DoFunctionCode(21)
+    else
+      scr.DoFunctionCode(21)
     end
     
-    val = select(1, ...)
-    ATCTools.DoM6G43(val)
-    return val
 end
-function btnATCPutBack_1__Left_Up_Script(...)
-    ATCTools.PutBackCurrentTool()
+function btnEditGcode_Left_Up_Script(...)
+    DisableKeyboard();
 end
--- tabFileOps-GlobalScript
+function btnCloseGcode_Left_Up_Script(...)
+    local inst = mc.mcGetInstance("Close GCode Button");
+    local hreg, rc = mc.mcRegGetHandle(inst, "iRegs0/AvidCNC/ToolChange/Ignore_Tool_Changes");
+    local ignore = mc.mcProfileGetInt(inst, "AvidCNC_Profile", "iConfigIgnoreToolChanges", 0);
+    
+    if (rc ~= mc.MERROR_NOERROR) then
+    	mc.mcCntlLog(inst, "Close GCode Button: Failure to acquire register handle, rc="..rc, "", -1);
+    else
+    	mc.mcRegSetValue(hreg, ignore);
+    end
+    
+end
 function lblCurrentFileDisplay_On_Update_Script(...)
     local fileName = select(1, ...);
     local inst = mc.mcGetInstance("Screen lblCurrentFileDisplay");
@@ -2559,37 +2576,19 @@ function lblCurrentFileDisplay_On_Update_Script(...)
     
     return fileName;
 end
-function btnEditGcode_Left_Up_Script(...)
-    DisableKeyboard();
-end
-function btnCloseGcode_Left_Up_Script(...)
-    local inst = mc.mcGetInstance("Close GCode Button");
-    local hreg, rc = mc.mcRegGetHandle(inst, "iRegs0/AvidCNC/ToolChange/Ignore_Tool_Changes");
-    local ignore = mc.mcProfileGetInt(inst, "AvidCNC_Profile", "iConfigIgnoreToolChanges", 0);
+function btnRewindGcode_Left_Up_Script(...)
+    local inst = mc.mcGetInstance('Screenset Rewind button') -- Pass in the script number, so we can see the commands called by this script in the log
+    local hEssHcZ_DRO_Force_Sync_With_Aux = mc.mcRegGetHandle(inst, "ESS/HC/Z_DRO_Force_Sync_With_Aux")
     
-    if (rc ~= mc.MERROR_NOERROR) then
-    	mc.mcCntlLog(inst, "Close GCode Button: Failure to acquire register handle, rc="..rc, "", -1);
+    mc.mcCntlRewindFile(inst)
+    
+    if (hEssHcZ_DRO_Force_Sync_With_Aux == 0) then
+    	-- Failure to acquire a handle!
+    	mc.mcCntlLog(inst, 'TMC3in1 ESS/HC/Z_DRO_Force_Sync_With_Aux Handle Failure', "", -1) -- This will send a message to the log window
     else
-    	mc.mcRegSetValue(hreg, ignore);
+    	mc.mcRegSetValueLong(hEssHcZ_DRO_Force_Sync_With_Aux, 1)
+    	mc.mcCntlLog(inst, 'Rewind forcing an ESS Z sync', "", -1) -- This will send a message to the log window
     end
-    
-end
-function btnRunFromHere_Left_Up_Script(...)
-    -- Check if file is loaded before showing warning dialog
-    local inst = mc.mcGetInstance("Run From Here button");
-    local fineName = mc.mcCntlGetGcodeFileName(inst);
-    if (fileName == "") then return end;
-    
-    -- Warning dialog
-    local cuttingTool = mc.mcProfileGetString(inst, "AvidCNC_Profile", "scuttingtool", "cutting tool");
-    if (cuttingTool ~= "Plasma") then
-    	local msg = "If using \"Run From Here\" to start mid-program, you must manually start your "..string.lower(cuttingTool).." before pressing \"Cycle Start\".";
-      avd.WarningDialog("Machine Operation Warning!", msg, "iShowWarningRunFromHere", true);
-      scr.DoFunctionCode(21)
-    else
-      scr.DoFunctionCode(21)
-    end
-    
 end
 function btnResumeCut_Left_Up_Script(...)
     -- Disable soft limts for Z axis when using a plasma cutting tool
@@ -2616,21 +2615,6 @@ function btnResumeCut_Left_Up_Script(...)
     
     mc.mcCntlLog(inst, 'ESS Cut Resume button pressed. Starting torch and resuming the cut!', "", -1) -- This will send a message to the log window
 end
-function btnRewindGcode_Left_Up_Script(...)
-    local inst = mc.mcGetInstance('Screenset Rewind button') -- Pass in the script number, so we can see the commands called by this script in the log
-    local hEssHcZ_DRO_Force_Sync_With_Aux = mc.mcRegGetHandle(inst, "ESS/HC/Z_DRO_Force_Sync_With_Aux")
-    
-    mc.mcCntlRewindFile(inst)
-    
-    if (hEssHcZ_DRO_Force_Sync_With_Aux == 0) then
-    	-- Failure to acquire a handle!
-    	mc.mcCntlLog(inst, 'TMC3in1 ESS/HC/Z_DRO_Force_Sync_With_Aux Handle Failure', "", -1) -- This will send a message to the log window
-    else
-    	mc.mcRegSetValueLong(hEssHcZ_DRO_Force_Sync_With_Aux, 1)
-    	mc.mcCntlLog(inst, 'Rewind forcing an ESS Z sync', "", -1) -- This will send a message to the log window
-    end
-end
--- tabTool-GlobalScript
 -- grpMTC-GlobalScript
 function btnSetMTCLoc_Clicked_Script(...)
     -- Remember Position
@@ -2671,10 +2655,6 @@ function btnViewMTCLocation_Clicked_Script(...)
     end
     
     wx.wxMessageBox(msg, "Manual Tool Change")
-end
--- tabJogging-GlobalScript
-function btnToggleJogMode_Left_Up_Script(...)
-    ButtonJogModeToggle()
 end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)
@@ -3659,3 +3639,22 @@ function btnGotoZero_Left_Up_Script(...)
     end
 end
 -- nbpageExtents-GlobalScript
+-- grpJogging-GlobalScript
+function btnToggleJogMode_Left_Up_Script(...)
+    ButtonJogModeToggle()
+end
+-- grpTools-GlobalScript
+function droCurrentTool2_On_Modify_Script(...)
+    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
+    if ATCTools == nil then
+    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+    	ATCTools = require 'ATCTools'
+    end
+    
+    val = select(1, ...)
+    ATCTools.DoM6G43(val)
+    return val
+end
+function btnATCPutBack_1__Left_Up_Script(...)
+    ATCTools.PutBackCurrentTool()
+end
