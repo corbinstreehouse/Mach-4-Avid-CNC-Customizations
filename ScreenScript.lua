@@ -3647,7 +3647,6 @@ function btnGotoZero_Left_Up_Script(...)
     	GoToWorkZero()
     end
 end
--- nbpageExtents-GlobalScript
 -- grpJogging-GlobalScript
 function btnToggleJogMode_Left_Up_Script(...)
     ButtonJogModeToggle()
