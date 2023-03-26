@@ -2616,21 +2616,6 @@ function btnResumeCut_Left_Up_Script(...)
     mc.mcCntlLog(inst, 'ESS Cut Resume button pressed. Starting torch and resuming the cut!', "", -1) -- This will send a message to the log window
 end
 -- grpMTC-GlobalScript
-function btnSetMTCLoc_Clicked_Script(...)
-    -- Remember Position
-    if (pf.IsHomed()) then
-      XPos, YPos, ZPos = RememberPosition() -- This runs the Remember Position function that is in the screenload script
-    
-      XPos = string.format("%0.4f", XPos)
-      YPos = string.format("%0.4f", YPos)
-      ZPos = string.format("%0.4f", ZPos)
-    
-      msg = 'MTC location set to:\n\nMACHINE COORDINATES:\nX Position: ' .. XPos .. '\nY Postion: ' .. YPos .. '\nZ Postion: ' .. ZPos
-      wx.wxMessageBox(msg, "Manual Tool Change")
-    else
-      wx.wxMessageBox("Your machine must be homed\nbefore setting MTC location", "Manual Tool Change")
-    end
-end
 function btnGoToMTCLoc_Left_Up_Script(...)
     -- Return To Position
     ReturnToPosition() -- This runs the Return to Position Function that is in the screenload script.
@@ -2639,22 +2624,9 @@ end
 function btnResumeGCode_Left_Up_Script(...)
     coResumeGCode = coroutine.create(ResumeGCode);
 end
-function btnViewMTCLocation_Clicked_Script(...)
-    -- View MTC Location
-    local inst = mc.mcGetInstance("View MTC Location btn")
-    local axes = {"X", "Y", "Z"}
-    local msg = "MTC Location\n\nMACHINE COORDINATES:\n"
-    
-    for axis = 1,3,1 do
-    	local pos = mc.mcProfileGetString(inst, "RememberPos", axes[axis], "Not Found")
-    	if (pos == "Not Found") then
-    		msg = "MTC position not found.\nYou must set MTC location first."
-    	else
-    		msg = msg .. axes[axis] .. " Position: " .. string.format("%0.4f", tonumber(pos)) .. "\n"
-    	end
-    end
-    
-    wx.wxMessageBox(msg, "Manual Tool Change")
+-- grpProgramTools-GlobalScript
+function btnATCPutBack_2__Left_Up_Script(...)
+    ATCTools.PutBackCurrentTool()
 end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)
@@ -2928,6 +2900,43 @@ function btnSetZ_Clicked_Script(...)
 end
 function btnATCPutBack_Left_Up_Script(...)
     ATCTools.PutBackCurrentTool()
+end
+function btnSetMTCLoc_1__Clicked_Script(...)
+    -- Remember Position
+    if (pf.IsHomed()) then
+      XPos, YPos, ZPos = RememberPosition() -- This runs the Remember Position function that is in the screenload script
+    
+      XPos = string.format("%0.4f", XPos)
+      YPos = string.format("%0.4f", YPos)
+      ZPos = string.format("%0.4f", ZPos)
+    
+      msg = 'MTC location set to:\n\nMACHINE COORDINATES:\nX Position: ' .. XPos .. '\nY Postion: ' .. YPos .. '\nZ Postion: ' .. ZPos
+      wx.wxMessageBox(msg, "Manual Tool Change")
+    else
+      wx.wxMessageBox("Your machine must be homed\nbefore setting MTC location", "Manual Tool Change")
+    end
+end
+function btnGoToMTCLoc_1__Left_Up_Script(...)
+    -- Return To Position
+    ReturnToPosition() -- This runs the Return to Position Function that is in the screenload script.
+    
+end
+function btnViewMTCLocation_1__Clicked_Script(...)
+    -- View MTC Location
+    local inst = mc.mcGetInstance("View MTC Location btn")
+    local axes = {"X", "Y", "Z"}
+    local msg = "MTC Location\n\nMACHINE COORDINATES:\n"
+    
+    for axis = 1,3,1 do
+    	local pos = mc.mcProfileGetString(inst, "RememberPos", axes[axis], "Not Found")
+    	if (pos == "Not Found") then
+    		msg = "MTC position not found.\nYou must set MTC location first."
+    	else
+    		msg = msg .. axes[axis] .. " Position: " .. string.format("%0.4f", tonumber(pos)) .. "\n"
+    	end
+    end
+    
+    wx.wxMessageBox(msg, "Manual Tool Change")
 end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
