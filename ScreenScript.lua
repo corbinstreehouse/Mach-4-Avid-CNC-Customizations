@@ -3569,7 +3569,26 @@ end
 function bmbAvidLogo_Clicked_Script(...)
     pf.SplitSwitchGUI()
 end
--- nbpagePositions-GlobalScript
+-- grpJogging-GlobalScript
+function btnToggleJogMode_Left_Up_Script(...)
+    ButtonJogModeToggle()
+end
+-- grpTools-GlobalScript
+function droCurrentTool2_On_Modify_Script(...)
+    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
+    if ATCTools == nil then
+    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+    	ATCTools = require 'ATCTools'
+    end
+    
+    val = select(1, ...)
+    ATCTools.DoM6G43(val)
+    return val
+end
+function btnATCPutBack_1__Left_Up_Script(...)
+    ATCTools.PutBackCurrentTool()
+end
+-- grpDROsEtc-GlobalScript
 function btnRefAll_Left_Up_Script(...)
     -- make sure we aren't already homed..
     
@@ -3646,23 +3665,4 @@ function btnGotoZero_Left_Up_Script(...)
     if (show == 0) then
     	GoToWorkZero()
     end
-end
--- grpJogging-GlobalScript
-function btnToggleJogMode_Left_Up_Script(...)
-    ButtonJogModeToggle()
-end
--- grpTools-GlobalScript
-function droCurrentTool2_On_Modify_Script(...)
-    -- this is when the user changes it..not somewhere else. Also do a G43 on the height
-    if ATCTools == nil then
-    	package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
-    	ATCTools = require 'ATCTools'
-    end
-    
-    val = select(1, ...)
-    ATCTools.DoM6G43(val)
-    return val
-end
-function btnATCPutBack_1__Left_Up_Script(...)
-    ATCTools.PutBackCurrentTool()
 end
