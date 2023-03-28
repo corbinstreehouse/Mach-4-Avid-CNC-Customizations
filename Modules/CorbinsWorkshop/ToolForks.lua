@@ -33,7 +33,7 @@ DummyToolFork.Z = 0.0
 DummyToolFork.Orientation = ToolForks.ToolForkOrientation.X_Plus
 DummyToolFork.Tool = 0
 
-local inst = mc.mcGetInstance("ToolForks.lua") -- make it an item in the table? better for data encapsulation.
+local inst = mc.mcGetInstance("ToolForks.lua") -- TODO: make it an item in the table? better for data encapsulation.
 
 function ToolForks.internal.InitializeToolForkPositions() 
 	local data = {}
@@ -310,5 +310,7 @@ if (mc.mcInEditor() == 1) then
 
 end
 
+-- Load the fork positions when we load this module
+ToolForks.internal.EnsureToolForks()
 
 return ToolForks -- Module End

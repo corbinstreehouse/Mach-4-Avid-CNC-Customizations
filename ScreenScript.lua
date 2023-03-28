@@ -58,6 +58,9 @@ CWUtilities = require "CWUtilities"
 package.loaded.ATCTools = nil
 ATCTools = require "ATCTools"
 
+package.loaded.ToolForks = nil
+ToolForks = require "ToolForks"
+
 --Probing module
 -- package.loaded.Probing = nil
 -- prb = require "mcProbing"
@@ -2625,6 +2628,36 @@ function btnResumeGCode_Left_Up_Script(...)
     coResumeGCode = coroutine.create(ResumeGCode);
 end
 -- grpProgramTools-GlobalScript
+function btnFetchToolPocket1_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket2_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket3_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket4_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket5_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket6_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket7_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket8_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket9_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket10_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
 function btnATCPutBack_2__Left_Up_Script(...)
     ATCTools.PutBackCurrentTool()
 end
