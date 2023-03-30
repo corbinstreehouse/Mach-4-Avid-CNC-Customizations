@@ -13,8 +13,8 @@ package.path = string.format(
 package.loaded.Offsets = nil
 require "Offsets"
 
-package.loaded.CorbinExtra = nil
-CorbinExtra = require "CorbinExtra"
+package.loaded.CWUtilities = nil
+CWUtilities = require "CWUtilities"
 
 package.loaded.ToolChange = nil
 if ToolChange == nil then

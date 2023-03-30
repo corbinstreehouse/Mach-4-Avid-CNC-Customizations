@@ -2,8 +2,8 @@
 -- stopping process
 
 -- todo: test removing these as the load_modules should do it.
-if CorbinExtra == nil then 
-	CorbinExtra = require "CorbinExtra"
+if CWUtilities == nil then 
+	CWUtilities = require "CWUtilities"
 end
 
 if ToolChange == nil then
@@ -30,7 +30,7 @@ function m5()
 		end
 		-- save the time we turned off the spindle
 		ToolChange.lastSpindleStopTime = os.clock()
-		CorbinExtra.SetAirPressure(0)
+		CWUtilities.SetAirPressure(0)
 	end
 
 	return 0
@@ -42,7 +42,7 @@ if (mc.mcInEditor() == 1) then
 
 	mc.mcCntlSetLastError(inst, "Testing!! in the editor")
 
-	rc = mc.mcCntlGcodeExecute(inst, "M05");
+	rc = mc.mcCntlGcodeExecuteWait(inst, "M05");
 
 	mc.mcCntlSetLastError(inst, "DONE:..".. rc.." "..mc.MERROR_NOT_NOW.." "..mc.MERROR_NOT_COMPILED)
 	--m5()

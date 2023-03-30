@@ -1,5 +1,8 @@
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
-local ToolChange = require 'ToolChange'
+
+if ToolChange == nil then
+	ToolChange = require 'ToolChange'
+end
 
 function m6()
 	ToolChange.DoToolChange()
