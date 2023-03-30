@@ -6,11 +6,23 @@ local CWUtilities = {
 	startingMachineZ = 0.0
 }
 
+-- this output signal is used to turn on the case pressurization for the ATC spindle
+local CD_SIG_PRESSURIZED_AIR = mc.OSIG_OUTPUT7
+
 CWUtilities.inst = mc.mcGetInstance("CWUtilities")
 
 -- sleep in seconds
 function CWUtilities.Sleep(duration)
 	wx.wxSleep(duration)
+end
+
+-- set pressured air on/off for the spindle; this way it isn't always on
+function CWUtilities.SetAirPressure(state)
+	local inst = mc.mcGetInstance("SetAirPressure)")
+	
+	--mc.mcCntlSetLastError(inst, "Turning air pressure and fan to state: "..state)
+	local hndlSigAirPressure = mc.mcSignalGetHandle(inst, CD_SIG_PRESSURIZED_AIR)
+	mc.mcSignalSetState(hndlSigAirPressure, state)	
 end
 
 
