@@ -48,10 +48,7 @@ ToolForks = require 'ToolForks'
 package.loaded.MasterModule = nil
 mm = require "mcMasterModule"
 
-package.loaded.CorbinExtra = nil
-CorbinExtra = require "CorbinExtra"
-
--- fixes the touch plate issue with tool heights active.
+-- fixes the touch plate issue with tool heights active
 package.loaded.CWUtilities = nil
 CWUtilities = require "CWUtilities"	
 
@@ -575,9 +572,6 @@ function SpinCW()
     
     if (sigState == 1) then 
         mc.mcSpindleSetDirection(inst, 0);
-		-- leave the air on for now...
-	--	CorbinExtra.Sleep(5) -- wait for spindle slow down
-	--	CorbinExtra.SetAirPressure(0); -- air off
       -- Spindle warm-up procedure checks.
       if warmUpRunning and co_swu then
         local co_state = coroutine.status(co_swu)
@@ -587,8 +581,6 @@ function SpinCW()
         end
       end
     else 
-		CorbinExtra.SetAirPressure(1);--air on,wait
-	--	CorbinExtra.Sleep(5)
         mc.mcSpindleSetDirection(inst, 1);
     end
 end
@@ -602,9 +594,7 @@ function SpinCCW()
     
     if (sigState == 1) then 
         mc.mcSpindleSetDirection(inst, 0);
-		CorbinExtra.SetAirPressure(0);
     else 
-		CorbinExtra.SetAirPressure(1);
         mc.mcSpindleSetDirection(inst, -1);
     end
 end
