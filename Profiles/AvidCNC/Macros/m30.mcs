@@ -1,5 +1,5 @@
-if CorbinExtra == nil then 
-	CorbinExtra = require "CorbinExtra"
+if CWUtilities == nil then 
+	CWUtilities= require "CWUtilities"
 end
 
 
@@ -38,11 +38,11 @@ function m30()
 
 	--mc.mcCntlSetLastError(inst, "M30 gcode all done..")  
 
-	mc.mcCntlSetLastError(inst, "M30: Spindle now off, waiting for spin down 5 seconds")
-	CorbinExtra.Sleep(5)
-	mc.mcCntlSetLastError(inst, "M30: Sleep done, turning off the air and fan")
-	CorbinExtra.SetAirPressure(0)
-	mc.mcCntlSetLastError(inst, "M30 done, air is now off")
+	--mc.mcCntlSetLastError(inst, "M30: Spindle now off, waiting for spin down 5 seconds")
+	CWUtilities.Sleep(5)
+	--mc.mcCntlSetLastError(inst, "M30: Sleep done, turning off the air and fan")
+	CWUtilities.SetAirPressure(0)
+	--mc.mcCntlSetLastError(inst, "M30 done, air is now off")
 	
 --	if (rc ~= mc.MERROR_NOERROR) then
 --		mc.mcCntlLog(

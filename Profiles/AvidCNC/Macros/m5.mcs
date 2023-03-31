@@ -13,7 +13,7 @@ end
 
 function m5()
 	local inst = mc.mcGetInstance()
-	mc.mcCntlSetLastError(inst, "M5: Turning off the spindle")
+--	mc.mcCntlSetLastError(inst, "M5: Turning off the spindle")
 
 	-- stop the spindle, if it isn't running
 	dir, rc = mc.mcSpindleGetDirection(inst)
