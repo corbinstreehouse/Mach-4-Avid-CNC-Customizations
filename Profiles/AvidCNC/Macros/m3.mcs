@@ -46,7 +46,8 @@ function m3()
 		end
 		CWUtilities.Sleep(7)-- spindle needs time to come to speed
 	else
-		mc.mcCntlSetLastError("Spindle already on, doing nothing")
+		mc.mcCntlSetLastError("Spindle already on, but calling the code to turn it on...because i get a hang")
+		mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_FWD)
 	end
 
 
