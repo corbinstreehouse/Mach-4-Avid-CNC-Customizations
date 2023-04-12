@@ -22,7 +22,7 @@ function m5()
 		result = mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_OFF)
 
 		if result == mc.MERROR_NOERROR then
-			mc.mcCntlSetLastError(inst, "Spindle now OFF.")
+			--mc.mcCntlSetLastError(inst, "Spindle now OFF.")
 		elseif result == mc.MERROR_TIMED_OUT then
 			mc.mcCntlSetLastError(inst, "ERROR: spindle timed out.")
 		else 
