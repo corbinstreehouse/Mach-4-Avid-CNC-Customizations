@@ -18,10 +18,17 @@ local ATCTools = {
 }
 
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
-local ToolForks = require 'ToolForks'
+
+if ToolForks == nil then
+	ToolForks = require 'ToolForks'
+end
 
 if ToolChange == nil then
 	ToolChange = require 'ToolChange'
+end
+
+if CWUtilities == nil then
+	CWUtilities= require 'CWUtilities'
 end
 
 function ATCTools.OnToolForkToolChanged(toolFork)
@@ -186,7 +193,7 @@ function ATCTools.OnModifyToolDescription(...)
 end
 
 function ATCTools.OnFetchButtonClicked(...)
-	if not ATCTools.IsHomed() then
+	if not CWUtilities.IsHomed() then
 		wx.wxMessageBox("Machine is not homed, it is not safe\nto fetch a tool.", "Automatic Tool Change")		
 		return
 	end
@@ -239,14 +246,11 @@ end
 
 function ATCTools.IsHomed()
 	-- TODO: Use same method that is in CWUtilities
-	local xHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.X_AXIS)
-	local yHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.Y_AXIS)
-	local zHomed = mc.mcAxisIsHomed(ToolChange.internal.inst, mc.Z_AXIS)
-	return xHomed and yHomed and zHomed
+	return CWUtilities.IsHomed()
 end
 
 function ATCTools.PutBackCurrentTool()
-	if not ATCTools.IsHomed() then
+	if not CWUtilities.IsHomed() then
 		wx.wxMessageBox("Machine is not homed, it is not safe\nto put back a tool.", "Automatic Tool Change")		
 		return
 	end	
@@ -267,20 +271,6 @@ end
 function ATCTools.DoM6G43(tool)
 	tool = tonumber(tool)
 	-- If that tool is in a pocket, then maybe ask the user if we should go get it?
---	local tf = ToolForks.GetToolForkPositionForTool(tool)
---	if tf ~= nil then
---		local message = string.format("Tool T%d is in Pocket %d.\nWould you like to fetch it from the rack?",
---			tf.Tool, tf.Number)
---		local rc = wx.wxMessageBox(message, "Fetch the tool?", wx.wxYES_NO)
---		if rc == wx.wxYES then	
---			-- TODO: Manually call the ToolChange function here.
---			-- doing an M6 won't work, because the current tool will already be set by the DRO, and it wouldn't do anything
-			
---		end
---	else
---		-- If it isn't in a pocket, assume they put it there manually. 
---		-- Activate the height; the DRO should already have set the tool.	
---	end
 
 	local GCode = string.format("G43 H%d", tool)
 	ToolForks.Error("Executing: "..GCode)
