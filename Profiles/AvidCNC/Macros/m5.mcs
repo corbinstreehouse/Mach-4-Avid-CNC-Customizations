@@ -32,7 +32,7 @@ function m5()
 		-- save the time we turned off the spindle
 		ToolChange.lastSpindleStopTime = os.clock()
 		
-		if CWUtilities.UseCasePressurization() then
+		if CWUtilities.GetShouldUseCasePressurization() then
 			CWUtilities.SetAirPressure(0)
 		end		
 	end

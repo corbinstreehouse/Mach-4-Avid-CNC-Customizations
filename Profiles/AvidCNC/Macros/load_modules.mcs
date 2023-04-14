@@ -2,8 +2,9 @@ local inst = mc.mcGetInstance("load_modules.mcs")
 
 local installPath = mc.mcCntlGetMachDir(inst)
 package.path = string.format(
-	"%s;%s\\Modules\\?.lua;%s\\Modules\\AvidCNC\\?.luac;./Modules/CorbinsWorkshop/?.lua;",
+	"%s;%s\\Modules\\?.lua;%s\\Modules\\AvidCNC\\?.luac;%s\\Modules\\CorbinsWorkshop\\?.lua;",
 	package.path,
+	installPath,
 	installPath,
 	installPath
 )

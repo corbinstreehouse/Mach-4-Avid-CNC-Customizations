@@ -1,5 +1,9 @@
--- Custom spindle control for HITECO ATC
--- Starting process
+-- Custom spindle start control for HITECO ATC (or any other ATC spindle)
+-- by corbin dunn
+-- provided as-is! No warranty that it will work for you.
+
+-- for debugging! Not needed under normal module load
+-- package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 
 if CWUtilities == nil then 
 	CWUtilities = require "CWUtilities"
@@ -26,7 +30,7 @@ function m3()
 	local dir = mc.mcSpindleGetDirection(inst)
 	-- only do something if it isn't running..or else we have to stop and change the dirction
 	if dir == mc.MC_SPINDLE_OFF then 
-		if CWUtilities.UseCasePressurization() then
+		if CWUtilities.GetShouldUseCasePressurization() then
 			CWUtilities.SetAirPressure(1)
 		end
 
@@ -65,7 +69,7 @@ end
 
 -- testing
 if (mc.mcInEditor() == 1) then
-	--m3()
+	m3()
 
 end
 
