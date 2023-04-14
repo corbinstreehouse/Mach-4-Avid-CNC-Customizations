@@ -18,7 +18,7 @@ function m5()
 	-- stop the spindle, if it isn't running
 	dir, rc = mc.mcSpindleGetDirection(inst)
 	if dir ~= mc.MC_SPINDLE_OFF then
-		-- the "Wait" version does not work for me...it just hangs.
+		-- the "Wait" version of this method does not work for me...it just hangs.
 		result = mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_OFF)
 
 		if result == mc.MERROR_NOERROR then
@@ -28,9 +28,13 @@ function m5()
 		else 
 			mc.mcCntlSetLastError(inst, "ERROR: got an error turning on the spindle: "..result)
 		end
+		
 		-- save the time we turned off the spindle
 		ToolChange.lastSpindleStopTime = os.clock()
-		CWUtilities.SetAirPressure(0)
+		
+		if CWUtilities.UseCasePressurization() then
+			CWUtilities.SetAirPressure(0)
+		end		
 	end
 
 	return 0
@@ -38,13 +42,6 @@ end
 
 -- testing
 if (mc.mcInEditor() == 1) then
-	local inst = mc.mcGetInstance()
 
-	mc.mcCntlSetLastError(inst, "Testing!! in the editor")
-
-	rc = mc.mcCntlGcodeExecuteWait(inst, "M05");
-
-	mc.mcCntlSetLastError(inst, "DONE:..".. rc.." "..mc.MERROR_NOT_NOW.." "..mc.MERROR_NOT_COMPILED)
-	--m5()
 
 end

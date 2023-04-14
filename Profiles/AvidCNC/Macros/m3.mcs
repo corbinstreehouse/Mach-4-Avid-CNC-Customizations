@@ -26,11 +26,12 @@ function m3()
 	local dir = mc.mcSpindleGetDirection(inst)
 	-- only do something if it isn't running..or else we have to stop and change the dirction
 	if dir == mc.MC_SPINDLE_OFF then 
-		
-		CWUtilities.SetAirPressure(1)
+		if CWUtilities.UseCasePressurization() then
+			CWUtilities.SetAirPressure(1)
+		end
 
--- the setDirectionWait version does not ever return for me...i wonder what it is waiting on?
--- The bit is set..but i guess the RPM sensor is not available or hooked up
+		-- the setDirectionWait version does not ever return for me...i wonder what it is waiting on?
+		-- The bit is set..but i guess the RPM sensor is not available or hooked up
 		local result = mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_FWD)
 		if result == mc.MERROR_NOERROR then
 --			mc.mcCntlSetLastError(inst, "Spindle now on, rc:"..result)
@@ -39,6 +40,7 @@ function m3()
 		else 
 			mc.mcCntlSetLastError(inst, "ERROR: got an error turning on the spindle: "..result)
 		end
+		
 		-- check the state
 		if IsSpindleOn() then
 			--RPM, rc = mc.mcSpindleGetSensorRPM(inst)
@@ -46,12 +48,17 @@ function m3()
 		else
 			mc.mcCntlSetLastError(inst, "ERROR: spindle is OFF");
 		end
-		-- TODO: make this a gcode wait...which I think is better than a manual sleep which can't be stopped
-		CWUtilities.Sleep(7)-- spindle needs time to come to speed
+				
+--		CWUtilities.Sleep(7)-- spindle needs time to come to speed
+-- TODO: make this an option for how long it takes to spin up!
+		local spindleSpeedUpTime = 7.0 -- in seconds
+		local gcode = string.format("G04 P%.4f", spindleSpeedUpTime)
+		
+		mc.mcCntlGcodeExecuteWait(inst, gcode)
 	else
-		mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_FWD)
+		-- mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_FWD)
+		-- Probably should error out; changing the spindle direction when on could be 
 	end
-
 
 end
 
