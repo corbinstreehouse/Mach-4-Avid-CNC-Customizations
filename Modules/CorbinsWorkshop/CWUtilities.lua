@@ -3,13 +3,67 @@
 local CWUtilities = {
 	toolHeightsWereActive = false,
 	startingZ = 0.0,
-	startingMachineZ = 0.0
+	startingMachineZ = 0.0,
+	REG_USE_CASE_PRESSURIZATION = "CorbinsWorkshop/UseCasePressurization"
 }
 
 -- this output signal is used to turn on the case pressurization for the ATC spindle
 local CD_SIG_PRESSURIZED_AIR = mc.OSIG_OUTPUT7
 
 CWUtilities.inst = mc.mcGetInstance("CWUtilities")
+
+function tobool(str)
+	if str == "true" or str == "1" then
+		return true
+	--elseif str == "false" or str == "0" then -- well...not needed if i always return false on everything else
+	--	return false
+	else
+		return false
+	end
+end
+
+function CWUtilities.GetRegisterValueAsBool(strName, defaultValue)
+	local inst = CWUtilities.inst
+
+	local hreg = mc.mcRegGetHandle(inst, strName)
+	local resultAsString = mc.mcRegGetValueString(hreg)
+	if resultAsString ~= "" then
+		return tobool(resultAsString)
+	end
+	-- Load the ini file, in case it isn't loaded, and then save the value to the register
+	resultAsString = mc.mcProfileGetString(inst, "Registers", strName, "")
+	if resultAsString ~= "" then
+		-- It was saved in the ini file, so initialize the register value
+		mc.mcRegSetValueString(hreg, resultAsString)
+		return tobool(resultAsString)
+	end
+	
+	-- Not yet in the ini file, so save it
+	CWUtilities.SetRegisterValueAsBool(strName, defaultValue)
+	
+	return defaultValue
+end
+
+function CWUtilities.SetRegisterValueAsBool(strName, value)
+	local inst = CWUtilities.inst
+	local hreg = mc.mcRegGetHandle(inst, strName)
+	local valueAsString = tostring(value)
+	mc.mcRegSetValueString(hreg, valueAsString)
+	-- also save it to the machine.ini file right now! I hate things getting lost.
+	mc.mcProfileWriteString(inst, "Registers", strName, valueAsString)
+	mc.mcProfileFlush(inst)	
+end
+
+function CWUtilities.GetShouldUseCasePressurization()
+	return CWUtilities.GetRegisterValueAsBool(CWUtilities.REG_USE_CASE_PRESSURIZATION, false)
+end
+
+function CWUtilities.SetShouldUseCasePressurization(value)
+	CWUtilities.SetRegisterValueAsBool(CWUtilities.REG_USE_CASE_PRESSURIZATION, value)
+end
+
+
+
 
 -- sleep in seconds
 function CWUtilities.Sleep(duration)
@@ -18,7 +72,7 @@ end
 
 -- set pressured air on/off for the spindle; this way it isn't always on
 function CWUtilities.SetAirPressure(state)
-	local inst = mc.mcGetInstance("SetAirPressure)")
+	local inst = CWUtilities.inst
 	
 	--mc.mcCntlSetLastError(inst, "Turning air pressure and fan to state: "..state)
 	local hndlSigAirPressure = mc.mcSignalGetHandle(inst, CD_SIG_PRESSURIZED_AIR)

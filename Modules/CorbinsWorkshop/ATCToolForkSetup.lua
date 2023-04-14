@@ -153,6 +153,20 @@ function ATCToolForkSetup.LoadToolForksAndSetSelected()
 	end
 end
 
+function ATCToolForkSetup.UpdateCasePresButton()
+	if CWUtilities.GetShouldUseCasePressurization() then
+		scr.SetProperty('btnCasePressurization', 'Image', 'toggle_ON.png')	
+	else
+		scr.SetProperty('btnCasePressurization', 'Image', 'toggle_OFF.png')	
+	end
+end
+
+function ATCToolForkSetup.ToggleCasePressButton()
+	local v = not CWUtilities.GetShouldUseCasePressurization()
+	CWUtilities.SetShouldUseCasePressurization(v)
+	ATCToolForkSetup.UpdateCasePresButton()
+end
+
 function ATCToolForkSetup.HandleOnEnterToolForkTab()
 	ATCToolForkSetup.LoadToolForksAndSetSelected()
 	LoadToolForksIntoListBox() 
@@ -161,6 +175,13 @@ function ATCToolForkSetup.HandleOnEnterToolForkTab()
 	scr.SetProperty("txtWaitTime", "Value", string.format("%.4f", ToolForks.GetDwellTime()))
 	scr.SetProperty("txtZBump", "Value", string.format("%.4f", ToolForks.GetZBump()))
 	scr.SetProperty("txtZClearance", "Value", string.format("%4.4f", ToolForks.GetZClearanceWithNoTool()))
+	
+	
+	ATCToolForkSetup.UpdateCasePresButton()
+
+	
+	
+	
 end
 
 

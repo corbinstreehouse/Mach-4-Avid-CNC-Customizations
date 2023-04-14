@@ -3044,6 +3044,9 @@ end
 function btnAssignX_1__Clicked_Script(...)
     ATCToolForkSetup.HandleZClearanceAssignButtonClick(...)
 end
+function btnCasePressurization_Clicked_Script(...)
+    ATCToolForkSetup.ToggleCasePressButton()
+end
 -- tabDiagnosticsSmall-GlobalScript
 -- grpTHCLogging-GlobalScript
 function btnTMC3in1MarkLogFile_Clicked_Script(...)
