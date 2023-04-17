@@ -1,6 +1,9 @@
 -- Custom spindle control for HITECO ATC
 -- stopping process
 
+--package.path = package.path .. ";c:\\Mach4Hobby\\Modules\\CorbinsWorkshop\\?.lua"
+
+
 -- todo: test removing these as the load_modules should do it.
 if CWUtilities == nil then 
 	CWUtilities = require "CWUtilities"
@@ -8,6 +11,10 @@ end
 
 if ToolChange == nil then
 	ToolChange = require "ToolChange"
+end
+
+if ToolForks == nil then
+	ToolForks = require "ToolForks"
 end
 
 
@@ -32,7 +39,7 @@ function m5()
 		-- save the time we turned off the spindle
 		ToolChange.lastSpindleStopTime = os.clock()
 		
-		if CWUtilities.GetShouldUseCasePressurization() then
+		if ToolForks.GetShouldUseCasePressurization() then
 			CWUtilities.SetAirPressure(0)
 		end		
 	end
@@ -42,6 +49,6 @@ end
 
 -- testing
 if (mc.mcInEditor() == 1) then
-
+ m5()
 
 end

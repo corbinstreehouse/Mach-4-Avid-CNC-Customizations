@@ -2,6 +2,10 @@ if CWUtilities == nil then
 	CWUtilities= require "CWUtilities"
 end
 
+if ToolForks == nil then
+	ToolForks = require "ToolForks"
+end
+
 
 function m30()
 	local inst = mc.mcGetInstance();
@@ -28,21 +32,30 @@ function m30()
   --]]
 
 	-- Cutter comp, coolant, mist, and spindle OFF
-	rc = mc.mcCntlGcodeExecute(inst, "G40");
+	rc = mc.mcCntlGcodeExecuteWait(inst, "G40");
 
 -- TODO m9?
 
 	--rc = mc.mcCntlGcodeExecute(inst, "M05");
-	-- above line deadlocks for some reason due to myt custom script
-	rc = mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_OFF)
+	-- above line deadlocks for some reason due to myt custom script 
+	if m5 ~= nil then
+		m5()
+	else
+		mc.mcCntlGcodeExecuteWait(inst, "M05");
+	end
+	-- or the code below?
+	
+--	rc = mc.mcSpindleSetDirection(inst, mc.MC_SPINDLE_OFF)
 
 	--mc.mcCntlSetLastError(inst, "M30 gcode all done..")  
 
 	--mc.mcCntlSetLastError(inst, "M30: Spindle now off, waiting for spin down 5 seconds")
-	CWUtilities.Sleep(5)
+	--CWUtilities.Sleep(5)
 	--mc.mcCntlSetLastError(inst, "M30: Sleep done, turning off the air and fan")
-	CWUtilities.SetAirPressure(0)
-	--mc.mcCntlSetLastError(inst, "M30 done, air is now off")
+	
+	--if ToolForks.GetShouldUseCasePressurization() then
+	--	CWUtilities.SetAirPressure(0)
+	--end
 	
 --	if (rc ~= mc.MERROR_NOERROR) then
 --		mc.mcCntlLog(

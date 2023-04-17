@@ -3,11 +3,16 @@
 -- provided as-is! No warranty that it will work for you.
 
 -- for debugging! Not needed under normal module load
-package.path = package.path .. ";c:\\Mach4Hobby\\Modules\\CorbinsWorkshop\\?.lua"
+--package.path = package.path .. ";c:\\Mach4Hobby\\Modules\\CorbinsWorkshop\\?.lua"
 
 if CWUtilities == nil then 
 	CWUtilities = require "CWUtilities"
 end
+
+if ToolForks == nil then
+	ToolForks = require "ToolForks"
+end
+
 
 function IsSpindleOn() 
 	local inst = mc.mcGetInstance()
@@ -30,7 +35,7 @@ function m3()
 	local dir = mc.mcSpindleGetDirection(inst)
 	-- only do something if it isn't running..or else we have to stop and change the dirction
 	if dir == mc.MC_SPINDLE_OFF then 
-		if CWUtilities.GetShouldUseCasePressurization() then			
+		if ToolForks.GetShouldUseCasePressurization() then			
 			CWUtilities.SetAirPressure(1)
 		end
 
