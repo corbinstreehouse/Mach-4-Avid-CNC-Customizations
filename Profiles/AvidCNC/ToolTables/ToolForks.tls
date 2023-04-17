@@ -4,6 +4,7 @@ DwellTime=12.0
 ZBump=0.005
 ToolForkCount=10
 ZClearanceWithNoTool=-3.19702
+ShouldUseCasePressurization=true
 
 [ToolFork1]
 X=1.91887
