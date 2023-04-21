@@ -1,15 +1,87 @@
+-- CWUtilities 
+-- Corbin's Workshop Utilities
+-- by Corbin Dunn
+-- https://www.corbinsworkshop.com
+-- https://www.corbinstreehouse.com
+-- April 2023
+-- (c) 2023 Corbin Dunn
+-- Software provided as-is. For redistribution rights, please contact me. 
+-- No warranty is made on this software working correctly.
 
+--package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+local inifile = require 'inifile'
 
 local CWUtilities = {
 	toolHeightsWereActive = false,
 	startingZ = 0.0,
 	startingMachineZ = 0.0,
+	startingTime = 0.0,
 }
 
 -- this output signal is used to turn on the case pressurization for the ATC spindle
 local CD_SIG_PRESSURIZED_AIR = mc.OSIG_OUTPUT7
 
 CWUtilities.inst = mc.mcGetInstance("CWUtilities")
+
+function CWUtilities.GCodeStarted()
+	CWUtilities.startingTime = os.clock()
+end
+
+function CWUtilities.LoadRuntimesTable()
+	local path =  CWUtilities.GetFileRuntimesPath()
+	local file = io.open(path, "r")
+	local fileRuntimes = nil
+	if file ~= nil then
+		file:close()
+		fileRuntimes = inifile.parse(path)
+	else 
+		fileRuntimes = {} -- empty table
+	end	
+	return fileRuntimes
+end
+
+
+function CWUtilities.GetFileRuntimesPath() 
+	local inst = CWUtilities.inst
+	local profile = mc.mcProfileGetName(inst)
+	local machDirPath = mc.mcCntlGetMachDir(inst)
+	-- not sure why tls extension is used, but the tool table does it..so I'm doing it
+	local path = machDirPath .. "\\Profiles\\" .. profile .. "\\Runtimes.ini" 
+	return path
+end
+
+
+function CWUtilities.SaveDurationForFile(filename, duration)
+	local fileRuntimes = CWUtilities.LoadRuntimesTable()
+	-- append/overwrite 
+	fileRuntimes[filename] = duration	
+		
+	inifile.save(path, fileRuntimes)
+end
+
+function CWUtilities.GCodeEnded()
+	local inst = CWUtilities.inst
+	local filename = mc.mcCntlGetGcodeFileName(inst)
+	if filename ~= nil and filename ~= "" then
+		local duration= os.clock() - CWUtilities.startingTime -- in seconds
+		CWUtilities.SaveDurationForFile(filename, duration)
+	end	
+end
+
+function CWUtilities.GetLastRuntimeForCurrentFile()
+	local inst = CWUtilities.inst
+	local filename = mc.mcCntlGetGcodeFileName(inst)
+	if filename ~= nil and filename ~= "" then
+		local fileRuntimes = CWUtilities.LoadRuntimesTable()
+		local duration = fileRuntimes[filename]
+		if duration ~= nil then
+			return duration
+		end
+	end	
+	return 0
+end
+
+
 
 -- sleep in seconds
 function CWUtilities.Sleep(duration)
