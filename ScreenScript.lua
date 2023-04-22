@@ -2961,6 +2961,12 @@ function btnViewMTCLocation_1__Clicked_Script(...)
     
     wx.wxMessageBox(msg, "Manual Tool Change")
 end
+function btnNext10_Left_Up_Script(...)
+    ATCTools.NextTenButtonClicked()
+end
+function btnPrevious10_Left_Up_Script(...)
+    ATCTools.PreviousTenButtonClicked()
+end
 -- tabATCToolForkSetup-GlobalScript
 -- Created by Corbin Dunn, corbin@corbinstreehouse.com, Feb 2023
 package.loaded.ATCToolForkSetup = nil

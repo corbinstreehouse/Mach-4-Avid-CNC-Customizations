@@ -109,9 +109,9 @@ end
 function ToolForks.Log(message, ...)
 	local eventMessage = string.format(message, ...)	
 	-- Comment out for speed; uncomment for more logging
---	print(eventMessage)
+	print(eventMessage)
 	mc.mcCntlLog(inst, eventMessage, "", -1)
---	mc.mcCntlSetLastError(inst, eventMessage) -- for debugging	
+	mc.mcCntlSetLastError(inst, eventMessage) -- for debugging	
 end
 
 function ToolForks.Error(message, ...)

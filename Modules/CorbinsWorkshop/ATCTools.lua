@@ -14,7 +14,8 @@
 
 local ATCTools = {
 	MaxToolForkCount = 10, -- Increase if you have more tools, and update the UI to have more items
-	Visible = false
+	Visible = false,
+	CurrentOffset = 0, -- For more than 10 tools
 }
 
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
@@ -31,11 +32,16 @@ if CWUtilities == nil then
 	CWUtilities= require 'CWUtilities'
 end
 
+ATCTools.inst = mc.mcGetInstance("ATCTools.lua")
+
 function ATCTools.OnToolForkToolChanged(toolFork)
-	local s = string.format("droToolForToolFork%d", toolFork.Number)
+	local inst = ATCTools.inst
+	local uiIndex = toolFork.Number - ATCTools.CurrentOffset
+	
+	local s = string.format("droToolForToolFork%d", uiIndex)
 	scr.SetProperty(s, "Value", tostring(toolFork.Tool))
 
-	s = string.format("txtToolDescForToolFork%d", toolFork.Number)
+	s = string.format("txtToolDescForToolFork%d", uiIndex)
 	local v = ""
 	if toolFork.Tool > 0 then            
 		v = ToolForks.GetToolDescription(toolFork.Tool)
@@ -45,7 +51,7 @@ function ATCTools.OnToolForkToolChanged(toolFork)
 	end
 	scr.SetProperty(s, "Value", v)
 
-	s = string.format("lblHeightForToolFork%d", toolFork.Number)
+	s = string.format("lblHeightForToolFork%d", uiIndex)
 	if toolFork.Tool > 0 then
 		local height, rc = mc.mcToolGetData(inst, mc.MTOOL_MILL_HEIGHT, toolFork.Tool)	
 		v = string.format("%3.4f", height)
@@ -54,7 +60,7 @@ function ATCTools.OnToolForkToolChanged(toolFork)
 	end
 	scr.SetProperty(s, "Label", v)
 
-	s = string.format("grpToolFork%d", toolFork.Number)
+	s = string.format("grpToolFork%d", uiIndex)
 	local currentTool = mc.mcToolGetCurrent(inst)
 	if currentTool == toolFork.Tool and currentTool > 0 then
 		scr.SetProperty(s, "Bg Color", "#80FF80") -- green
@@ -66,6 +72,7 @@ function ATCTools.OnToolForkToolChanged(toolFork)
 end
 
 function ATCTools.PLCScript()
+	local inst = ATCTools.inst
 	-- Update the LED for the height offset.
 	local HOState = mc.mcCntlGetPoundVar(inst, 4008)
 	if (HOState == 49) then
@@ -76,21 +83,32 @@ function ATCTools.PLCScript()
 
 end
 
+function ATCTools.UpdateUI()
 
-function ATCTools.OnTabShow()
-	ATCTools.Visible = true
-	ToolForks.LoadToolForkPositions()
-	local lastFork = 0
-
-	local count = ToolForks.GetToolForkCount() 
-	if count > 50 then
-		ToolForks.Error("Too many tool pockets - %d Bad Tool Pockets file at: %s",  count, ToolForks.GetToolForkFilePath())
+	local toolPocketCount = ToolForks.GetToolForkCount() 
+	--  some sanity checks...no one has more than 509 pockets
+	if toolPocketCount > 50 then
+		ToolForks.Error("Too many tool pockets - %d Bad Tool Pockets file at: %s", toolPocketCount, ToolForks.GetToolForkFilePath())
 		do return end
 	end
 
+	local count = ATCTools.MaxToolForkCount -- UI max is 10, hardcoded
+	if toolPocketCount < count then
+		count = toolPocketCount
+	end
+	
+	local lastIndex = 0
+	
+	-- Handle deleting one..
+	if ATCTools.CurrentOffset >= toolPocketCount then
+		ATCTools.CurrentOffset = 0
+	end
+
 	for i=1, count do
-		local toolFork = ToolForks.GetToolForkNumber(i)
-		if toolFork == nil or toolFork.Number ~= i then
+		local toolPocketNumber = i + ATCTools.CurrentOffset
+		
+		local toolFork = ToolForks.GetToolForkNumber(toolPocketNumber)
+		if toolFork == nil or toolFork.Number ~= toolPocketNumber then
 			ToolForks.Error("No tool pocket? Bad Tool Pockets file at: %s", ToolForks.GetToolForkFilePath())
 			do return end
 		end
@@ -102,16 +120,45 @@ function ATCTools.OnTabShow()
 		scr.SetProperty(s, "Hidden", "0") -- could be disabled from earlier
 
 		s = string.format("lblToolFork%d", i)
-		scr.SetProperty(s, "Label", tostring(i))
+		scr.SetProperty(s, "Label", tostring(toolPocketNumber))
 
 		ATCTools.OnToolForkToolChanged(toolFork)
-		lastFork = i
+		lastIndex = i
+		if toolPocketNumber >= toolPocketCount then
+			break
+		end
 	end
 	-- disable the UI & groups past this
-	for i = lastFork+1, ATCTools.MaxToolForkCount do
+	for i = lastIndex+1, ATCTools.MaxToolForkCount do
 		s = string.format("grpToolFork%d", i)
 		scr.SetProperty(s, "Hidden", "1") -- could be disabled from earlier
+	end	
+	
+	
+
+	-- Update the Previous/Next 10 buttons
+	if ATCTools.CurrentOffset > 0 then
+		scr.SetProperty("btnPrevious10", "Enabled", "1")
+	else
+		scr.SetProperty("btnPrevious10", "Enabled", "0")		
 	end
+	
+	local lastPocketShown = ATCTools.CurrentOffset + lastIndex
+	if toolPocketCount > lastPocketShown then
+		scr.SetProperty("btnNext10", "Enabled", "1")
+	else
+		scr.SetProperty("btnNext10", "Enabled", "0")	
+	end
+	--ToolForks.Log("CurrentOffset: %d, lastPocketShown %d, toolPocketCount %d",  
+	-- ATCTools.CurrentOffset, lastPocketShown, toolPocketCount)
+	
+	
+end
+
+function ATCTools.OnTabShow()
+	ATCTools.Visible = true
+	ToolForks.LoadToolForkPositions()
+	ATCTools.UpdateUI()
 
 end
 
@@ -131,6 +178,8 @@ function ATCTools.ValidateOnModifyArgs(...)
 	if toolForkNumber == nil then
 		wx.wxMessageBox("Programming Error", "ATCTools - caller doesn't have the control name setup right")
 	end
+	-- add in the page offset
+	toolForkNumber = toolForkNumber + ATCTools.CurrentOffset
 	return toolForkNumber, value, ctrlName
 end
 
@@ -192,17 +241,26 @@ function ATCTools.OnModifyToolDescription(...)
 	end
 end
 
+function ATCTools.ToolForkForUIItem(ctrlName)
+	local toolForkNumber = string.match(ctrlName, "%d+")
+	assert(toolForkNumber ~= nil, "Bad UI setup for tool forks, ctrlName:"..ctrlName)
+
+	-- Add in the offset
+	toolForkNumber = toolForkNumber + ATCTools.CurrentOffset
+
+	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
+	return tf -- may be nil
+end
+
+
 function ATCTools.OnFetchButtonClicked(...)
 	if not CWUtilities.IsHomed() then
 		wx.wxMessageBox("Machine is not homed, it is not safe\nto fetch a tool.", "Automatic Tool Change")		
 		return
 	end
-	
-	local ctrlName = select(1, ...)
-	local toolForkNumber = string.match(ctrlName, "%d+")
-	assert(toolForkNumber ~= nil, "Bad UI setup for tool forks, ctrlName:"..ctrlName)
 
-	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
+	local ctrlName = select(1, ...)
+	local tf = ATCTools.ToolForkForUIItem(ctrlName)
 	if tf == nil then
 		ToolForks.Error("ATCTools Error: No tool pocket for position #%d",  toolForkNumber)		
 		return
@@ -212,7 +270,7 @@ function ATCTools.OnFetchButtonClicked(...)
 --TODO: use the GCode calling wrappers I have in ToolChange, so it throws on an error
 	
 	local GCode = string.format("M6 T%d G43 H%d", tf.Tool, tf.Tool)	
-	local rc = mc.mcCntlMdiExecute(ToolChange.internal.inst, GCode)
+	local rc = mc.mcCntlMdiExecute(ATCTools.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "Fetch tool: "..GCode) then
 		return
 	end	
@@ -222,8 +280,7 @@ end
 
 function ATCTools.OnRemoveButtonClicked(...) 
 	local ctrlName = select(1, ...)
-	local toolForkNumber = string.match(ctrlName, "%d+")
-	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
+	local tf = ATCTools.ToolForkForUIItem(ctrlName)
 	if tf ~= nil then
 		tf.Tool = 0
 		ToolForks.SaveToolForkPositions()
@@ -234,7 +291,7 @@ end
 
 function ATCTools.OnTouchOffClicked(...)
 	local ctrlName = select(1, ...)
-	local toolForkNumber = string.match(ctrlName, "%d+")
+	local tf = ATCTools.ToolForkForUIItem(ctrlName)
 	-- TODO: code..
 end
 
@@ -255,12 +312,12 @@ function ATCTools.PutBackCurrentTool()
 		return
 	end	
 	
-	local currentTool = mc.mcToolGetCurrent(ToolChange.internal.inst)
+	local currentTool = mc.mcToolGetCurrent(ATCTools.inst)
 	if currentTool > 0 then
 		-- stalls the UI when doing GCode calls, so do an MDI
 		--ToolChange.DoToolChangeFromTo(currentTool, 0)
 		local GCode = "M6 T0 G43 H0"
-		local rc = mc.mcCntlMdiExecute(ToolChange.internal.inst, GCode)
+		local rc = mc.mcCntlMdiExecute(ATCTools.inst, GCode)
 	else
 		-- warn user no tool?
 	end
@@ -275,19 +332,33 @@ function ATCTools.DoM6G43(tool)
 	local GCode = string.format("G43 H%d", tool)
 	ToolForks.Error("Executing: "..GCode)
 	
-	local rc = mc.mcCntlMdiExecute(ToolChange.internal.inst, GCode)
+	local rc = mc.mcCntlMdiExecute(ATCTools.inst, GCode)
 	if not ToolChange.internal.CheckForNoError(rc, "Error setting tool height:"..GCode) then
 		return
 	end		
 end
+
+function ATCTools.PreviousTenButtonClicked()
+	ATCTools.CurrentOffset = ATCTools.CurrentOffset - 10
+	if ATCTools.CurrentOffset < 0 then
+		ATCTools.CurrentOffset = 0
+	end
+	ATCTools.UpdateUI()
+end
+
+function ATCTools.NextTenButtonClicked()
+	ATCTools.CurrentOffset = ATCTools.CurrentOffset + 10
+	ATCTools.UpdateUI()	
+end
+
 
 
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
 	--ATCTools.OnFetchButtonClicked("toolFetch3")
-	local toolForkNumber = string.match("test10", "%d+")
-	print(toolForkNumber)
+	ATCTools.CurrentOffset = 10
+	ATCTools.UpdateUI()
 
 end
 
