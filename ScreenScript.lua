@@ -2890,7 +2890,7 @@ function btnSetTool_Clicked_Script(...)
     if (OffsetState ~= 49) then
         mc.mcCntlMdiExecute(inst, string.format("G%.1f", OffsetState))
     end
-    
+    ATCTools.UpdateUI()
 end
 function droGageBlockT_On_Modify_Script(...)
     local inst = mc.mcGetInstance()
