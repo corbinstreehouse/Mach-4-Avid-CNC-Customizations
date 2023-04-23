@@ -1926,6 +1926,7 @@ function Mach_PLC_Script()
     --  PLC First Run
     -------------------------------------------------------
     if (testcount == 1) then
+    	ATCTools.SetMainScreenButtonTitles()	
     	DisableKeyboard()
     	
         -- prb.LoadSettings()
@@ -2433,6 +2434,8 @@ function tabPositionsExtens_On_Enter_Script(...)
     else
         scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
     end
+    
+    ATCTools.SetMainScreenButtonTitles()
 end
 -- grpToolPath-GlobalScript
 function btnDispRight_Left_Up_Script(...)
@@ -2650,6 +2653,12 @@ function btnFetchToolPocket10_Left_Up_Script(...)
 end
 function btnATCPutBack_2__Left_Up_Script(...)
     ATCTools.PutBackCurrentTool()
+end
+function btnFetchToolPocket11_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
+end
+function btnFetchToolPocket12_Left_Up_Script(...)
+    ATCTools.OnFetchButtonClicked(...)
 end
 -- tabOffsets-GlobalScript
 function tabOffsets_On_Enter_Script(...)

@@ -164,7 +164,6 @@ end
 
 function ATCTools.OnTabHide()
 	ATCTools.Visible = false
-
 end
 
 function ATCTools.ValidateOnModifyArgs(...)
@@ -351,14 +350,41 @@ function ATCTools.NextTenButtonClicked()
 	ATCTools.UpdateUI()	
 end
 
+function ATCTools.SetMainScreenButtonTitles()
+	local count = 12 -- currently what i have showing..
+	
+	for i=1, count do	
+		local toolForkNumber = i -- could do an offset like some other stuff
+		local ctrlName = string.format("btnFetchToolPocket%d", i)
+		local title = ""
+		local toolFork = ToolForks.GetToolForkNumber(toolForkNumber)
+		if toolFork ~= nil and toolFork.Tool > 0 then
+			local toolDesc = ToolForks.GetToolDescription(toolFork.Tool)
+			if toolDesc ~= "" then
+				title = string.match(toolDesc, "%[.+%]")
+				if title == nil then
+					title = string.sub(toolDesc, 1,5)
+				else
+					-- whack off the []
+					title = string.sub(title, 2, -2)
+				end
+			end			
+			scr.SetProperty(ctrlName, "Enabled", "1")
+		else
+			scr.SetProperty(ctrlName, "Enabled", "0")
+		end
+
+		local ctrlTitle = string.format("%d\n%s", toolForkNumber, title)
+		scr.SetProperty(ctrlName, "Label", ctrlTitle)
+	end
+end
+
 
 
 
 if (mc.mcInEditor() == 1) then
 	-- Easier testing.. to do stuff here
-	--ATCTools.OnFetchButtonClicked("toolFetch3")
-	ATCTools.CurrentOffset = 10
-	ATCTools.UpdateUI()
+ATCTools.SetMainScreenButtonTitles()
 
 end
 
