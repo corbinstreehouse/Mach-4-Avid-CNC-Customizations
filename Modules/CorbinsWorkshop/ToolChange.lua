@@ -166,12 +166,13 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 
 	-- Dwell for a brief moment; if the user e-stops the above movements, we will sometimes execute the next line.
 	-- we don't want to drop the tool, so a quick dwell will throw an exception if we are now in an eStop state
-	MCCntlGcodeExecuteWait("G04 P%.4f", 0.1) -- corbin, try removing
+	MCCntlGcodeExecuteWait("G04 P%.4f", 0.1)
 
 	ToolChange.OpenDrawBar()
 
-	-- give the tool a brief moment to pop out
-	MCCntlGcodeExecuteWait("G04 P%.4f", 0.3) -- corbin, try removing..
+	-- give the tool a brief moment to pop out. I tried it without this, and it almost pulled my fork off.
+	-- my machine takes a bit for the tool to pop out.
+	MCCntlGcodeExecuteWait("G04 P%.4f", 0.3) 
 
 	-- Tool is released; raise the spindle up to the clearance height
 	local ZClearanceWithNoTool = ToolForks.GetZClearanceWithNoTool()
