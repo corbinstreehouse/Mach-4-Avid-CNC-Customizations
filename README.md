@@ -3,6 +3,9 @@
 
 Customizations for the default Avid profile in Mach 4.
 
+Installation and directions are currently located here: 
+[https://www.corbinstreehouse.com/blog/avid-cnc-atc-automatic-tool-changer-with-mach-4/]
+
 ### Cycle Start Check
 This is a basic check that ensures the Gcode file is on line 1. If it isn't, the user is prompted to continue. Stopping a cycle or eStopping doesn't rewind the GCode file, and I would not remember to rewind it before hitting cycle start. This caused some air cutting without the spindle being on. To prevent this, the user is explicitly prompted if they really want to cycle start.
 
