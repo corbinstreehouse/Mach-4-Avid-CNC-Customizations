@@ -44,6 +44,7 @@ function ToolForks.internal.InitializeToolForkPositions()
 	data.TestAtZMax = false
 	data.ZClearanceWithNoTool = 0.0
 	data.ShouldUseCasePressurization = false
+	data.ShouldCheckAirPressure = true
 	ToolForks.ToolForkPositions = {}
 	ToolForks.ToolForkPositions.ToolForkData = data
 end
@@ -72,6 +73,13 @@ function ToolForks.GetShouldUseCasePressurization()
 	return ToolForks.GetToolForkData().ShouldUseCasePressurization
 end
 
+function ToolForks.SetShouldCheckAirPressure(value)
+	ToolForks.GetToolForkData().ShouldCheckAirPressure = value
+end
+
+function ToolForks.GetShouldCheckAirPressure()
+	return ToolForks.GetToolForkData().ShouldCheckAirPressure
+end
 
 function ToolForks.SetSlideDistance(value) 
 	ToolForks.GetToolForkData().SlideDistance = value
@@ -194,6 +202,10 @@ function ToolForks.LoadToolForkPositions()
 			
 			if ToolForks.ToolForkPositions.ToolForkData.ShouldUseCasePressurization  == nil then
 				ToolForks.ToolForkPositions.ToolForkData.ShouldUseCasePressurization = false
+			end
+			
+			if ToolForks.ToolForkPositions.ToolForkData.ShouldCheckAirPressure == nil then
+				ToolForks.ToolForkPositions.ToolForkData.ShouldCheckAirPressure = true
 			end
 
 			ToolForks.Log("Loaded ToolForks. Count: %d", count)			

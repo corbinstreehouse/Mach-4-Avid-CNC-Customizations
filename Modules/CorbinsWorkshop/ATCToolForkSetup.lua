@@ -159,6 +159,15 @@ function ATCToolForkSetup.UpdateCasePresButton()
 	else
 		scr.SetProperty('btnCasePressurization', 'Image', 'toggle_OFF.png')	
 	end
+	if ToolForks.GetShouldCheckAirPressure() then
+		scr.SetProperty('btnCheckAirPressure', 'Image', 'toggle_ON.png')	
+	else
+		scr.SetProperty('btnCheckAirPressure', 'Image', 'toggle_OFF.png')	
+		
+	end
+	
+	
+	
 end
 
 function ATCToolForkSetup.ToggleCasePressButton()
@@ -167,6 +176,14 @@ function ATCToolForkSetup.ToggleCasePressButton()
 	ToolForks.SaveToolForkPositions()
 	ATCToolForkSetup.UpdateCasePresButton()
 end
+
+function ATCToolForkSetup.ToggleUseAirPressure()
+	local v = not ToolForks.GetShouldCheckAirPressure()
+	ToolForks.SetShouldCheckAirPressure(v)
+	ToolForks.SaveToolForkPositions()
+	ATCToolForkSetup.UpdateCasePresButton()
+end
+
 
 function ATCToolForkSetup.HandleOnEnterToolForkTab()
 	ATCToolForkSetup.LoadToolForksAndSetSelected()

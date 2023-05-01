@@ -3,8 +3,9 @@ SlideDistance=1.4
 DwellTime=12.0
 ZBump=0.005
 ToolForkCount=10
-ZClearanceWithNoTool=-5.723120
+ZClearanceWithNoTool=-5.72312
 ShouldUseCasePressurization=true
+ShouldCheckAirPressure=true
 
 [ToolFork1]
 X=1.91887

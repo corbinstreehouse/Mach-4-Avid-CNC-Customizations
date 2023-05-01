@@ -3062,6 +3062,9 @@ end
 function btnCasePressurization_Clicked_Script(...)
     ATCToolForkSetup.ToggleCasePressButton()
 end
+function btnCheckAirPressure_Clicked_Script(...)
+    ATCToolForkSetup.ToggleUseAirPressure()
+end
 -- tabDiagnosticsSmall-GlobalScript
 -- grpTHCLogging-GlobalScript
 function btnTMC3in1MarkLogFile_Clicked_Script(...)

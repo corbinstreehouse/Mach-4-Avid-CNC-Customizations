@@ -15,6 +15,8 @@
 
 -- TODO: UI customization for this ... or pass it in from M6
 local DRAWBAR_SIGNAL_OUTPUT = mc.OSIG_OUTPUT6
+local DRAWBAR_PRESSURE_INPUT = mc.ISIG_INPUT15
+
 
 local ToolChange = {
 	lastSpindleStopTime = os.clock(), -- in seconds; The m5 script should set this when it turns off the spindle
@@ -22,7 +24,8 @@ local ToolChange = {
 	lastY = 0.0,
 	internal = {
 		inst = nil,
-		drawBarSigHandle = nil,		
+		drawBarSigHandle = nil,
+		pressureSigHandle = nil,
 	},
 	debug = {
 		TEST_AT_Z_0 = false,  -- set to true to debug the slide at z 0. DON'T HAVE ANY TOOLS IN THE MACHINE..IT WILL DROP THEM!
@@ -36,7 +39,9 @@ local ToolForks = require 'ToolForks'
 function ToolChange.internal.Initialize()
 	ToolChange.internal.inst = mc.mcGetInstance("ToolChange.lua")
 	ToolChange.internal.drawBarSigHandle, rc = mc.mcSignalGetHandle(ToolChange.internal.inst, DRAWBAR_SIGNAL_OUTPUT)
-	ToolChange.internal.CheckForNoError(rc, "Getting drawbar signal")
+	ToolChange.internal.CheckForNoError(rc, "Getting drawbar OUTPUT signal")
+	ToolChange.internal.pressureSigHandle, rc = mc.mcSignalGetHandle(ToolChange.internal.inst, DRAWBAR_PRESSURE_INPUT)
+	ToolChange.internal.CheckForNoError(rc, "Getting drawbar pressure signal")
 end
 
 local function MCTry(msg, f, ...)
@@ -65,11 +70,25 @@ end
 
 ToolChange.internal.Initialize()
 
+function ToolChange.VerifyAirPressure()
+	if ToolForks.GetShouldCheckAirPressure() then
+		local state, rc = mc.mcSignalGetState(ToolChange.internal.pressureSigHandle)
+		if rc ~= mc.MERROR_NOERROR then
+			error("Error reading pressure signal!")
+		end
+		if state ~= 1 then
+			error("Low air pressure! Aborting tool change.")
+		end		
+	end	
+end
+
 function ToolChange.OpenDrawBar()
+	ToolChange.VerifyAirPressure()
 	MCTry("OpenDrawBar", mc.mcSignalSetState, ToolChange.internal.drawBarSigHandle, 1)
 end
 
 function ToolChange.CloseDrawBar()
+	ToolChange.VerifyAirPressure()
 	MCTry("CloseDrawBar", mc.mcSignalSetState, ToolChange.internal.drawBarSigHandle, 0)
 end
 
@@ -134,6 +153,7 @@ end
 -- returns true if it worked; false otherwise and should stop next stuff
 -- Post conditin: spindle left open!
 function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
+	ToolChange.VerifyAirPressure()
 	ToolChange.internal.VerifyToolForkPreConditions(toolForkPosition)
 
 	local initialX, initialY = ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
@@ -182,6 +202,7 @@ end
 
 -- Post condition: spindle closed, but only on success (returning true)
 function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
+	ToolChange.VerifyAirPressure()	
 	ToolChange.internal.VerifyToolForkPreConditions(toolForkPosition)
 	
 	ToolForks.Log("Loading T"..toolForkPosition.Tool.." from Pocket "..toolForkPosition.Number)
