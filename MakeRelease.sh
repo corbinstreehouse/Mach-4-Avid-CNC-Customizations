@@ -3,6 +3,7 @@
 mkdir -p ./Mach4Hobby
 cp -r ./Modules/ ./Mach4Hobby/Modules/
 mkdir -p ./Mach4Hobby/Profiles/AvidCNC/Macros
+mkdir -p ./Mach4Hobby/Screens
 cp ./Profiles/AvidCNC/Macros/m5.mcs ./Mach4Hobby/Profiles/AvidCNC/Macros/m5.mcs
 cp ./Profiles/AvidCNC/Macros/m3.mcs ./Mach4Hobby/Profiles/AvidCNC/Macros/m3.mcs
 cp ./Profiles/AvidCNC/Macros/m6.mcs ./Mach4Hobby/Profiles/AvidCNC/Macros/m6.mcs
