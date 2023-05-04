@@ -359,7 +359,7 @@ end
 function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 	if (selectedTool == currentTool) then
 		-- not really an error..but useful to see
-		ToolForks.Error(string.format("TOOL CHANGE: Tool %d already selected. Skipping tool change.", selectedTool))
+		ToolForks.Error(string.format("Tool change not needed: Tool %d already selected. Skipping tool change.", selectedTool))
 		return 
 	end
 	
