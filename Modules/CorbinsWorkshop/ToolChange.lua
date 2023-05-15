@@ -150,6 +150,64 @@ function ToolChange.internal.GetToolForkEntryPosition(toolForkPosition)
 	return initialX, initialY
 end
 
+-- long tools may not clear on an 8" gantry, so move to an intermediate position
+-- if the target location would cause a collision
+function ToolChange.GetIntermediateMovePositionIfNeeded(toolForkPosition)
+	local needed = false
+	local x = 0
+	local y = 0
+	local adjustAmount = 6.5 -- looks about right based on testing
+	
+	local inst = ToolChange.internal.inst
+	-- TODO: error checking...
+	local xMin = mc.mcAxisGetSoftlimitMin(inst, mc.X_AXIS)
+	local xMax = mc.mcAxisGetSoftlimitMax(inst, mc.X_AXIS)	
+	local yMin = mc.mcAxisGetSoftlimitMin(inst, mc.Y_AXIS)
+	local yMax = mc.mcAxisGetSoftlimitMax(inst, mc.Y_AXIS)
+	local yMiddle = yMin + ((yMax - yMin) / 2.0)
+	local xMiddle = xMin + ((xMax - xMin) / 2.0)
+	
+--	local currentX = mc.mcAxisGetMachinePos(inst, mc.X_AXIS)
+--	local currentY = mc.mcAxisGetMachinePos(inst, mc.Y_AXIS)
+	
+	local orientation = toolForkPosition.Orientation
+	if orientation == ToolForks.ToolForkOrientation.X_Plus then
+		-- Facing right; if we are at the right of the table we have to do an adjust
+		if toolForkPosition.X > xMiddle then
+			x = toolForkPosition.X - adjustAmount
+			y = toolForkPosition.Y
+			needed = true			
+		end
+	elseif orientation == ToolForks.ToolForkOrientation.X_Minus then
+		-- Facing left; if we are at the left of the table then we have to do an adjust
+		if toolForkPosition.X < xMiddle then
+			x = toolForkPosition.X + adjustAmount
+			y = toolForkPosition.Y
+			needed = true			
+		end
+	elseif orientation == ToolForks.ToolForkOrientation.Y_Plus then
+		-- facing back; if the fork is at the back of the table, then we have to adjust the position
+		if toolForkPosition.Y > yMiddle then			
+			x = toolForkPosition.X
+			y = toolForkPosition.Y - adjustAmount
+			needed = true			
+		end
+	elseif orientation == ToolForks.ToolForkOrientation.Y_Minus then
+		-- facing forward; if we are at the front of the table then we have to do the adjust
+		if toolForkPosition.Y < yMiddle then
+			x = toolForkPosition.X
+			y = toolForkPosition.Y + adjustAmount
+			needed = true			
+		end
+	else
+		assert("Unknown orientation: "..orientation)
+	end
+	
+	
+	return needed, x, y	
+	
+end
+
 -- returns true if it worked; false otherwise and should stop next stuff
 -- Post conditin: spindle left open!
 function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
@@ -171,6 +229,12 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 
 	-- Rapid to z0 so we are at a safe distance
 	MCCntlGcodeExecuteWait("G00 G90 G53 Z0.0")
+	
+	-- avoid hitting the fork if we have a tool
+	local intermidatePosNeeded, intX, intY = ToolChange.GetIntermediateMovePositionIfNeeded(toolForkPosition)
+	if intermidatePosNeeded then
+		MCCntlGcodeExecuteWait("G00 G53 X%.4f Y%.4f", intX, intY)
+	end
 
 	---------- Put the tool back in the fork
 	-- Go to the X/Y position for the slide in to start
