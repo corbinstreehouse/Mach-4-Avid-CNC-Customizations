@@ -37,7 +37,7 @@ Length=0
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=
+Desc=Haimer
 Pocket=0
 XOffset=0
 XOffsetWear=0
@@ -275,7 +275,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool23]
-Length=-1.54074
+Length=-1.50821
 LengthWear=0
 Diameter=0
 DiameterWear=0
