@@ -26,6 +26,8 @@
 + ---
 + Version 3
 +   Bumping internal version number as requested by Avid support.
++ Version 4
++ Corbin Dunn - 05/20/2023 added ATC support
 + =======================================
 
 
