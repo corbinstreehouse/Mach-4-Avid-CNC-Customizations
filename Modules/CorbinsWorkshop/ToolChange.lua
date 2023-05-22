@@ -306,6 +306,7 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
 
 	ToolChange.CloseDrawBar()
 
+	-- slight wait for the close to really happen
 	MCCntlGcodeExecuteWait("G04 P%.4f", 0.2)
 
 	-- Goes back down to zPos after being higher by the ToolForks.ZBump ...so we can slide out safely
@@ -315,6 +316,14 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
 
 	------ Move Z to home position ------
 	MCCntlGcodeExecuteWait("G00 G90 G53 Z0.0\n")
+	
+	-- avoid hitting the fork by going back to the intermediate position, if we have to.
+	-- we might want to just always do this..not sure.
+	local intermidatePosNeeded, intX, intY = ToolChange.GetIntermediateMovePositionIfNeeded(toolForkPosition)
+	if intermidatePosNeeded then
+		MCCntlGcodeExecuteWait("G00 G53 X%.4f Y%.4f", intX, intY)
+	end
+	
 end
 
 function ToolChange.GotoManualToolChangeLocation()
