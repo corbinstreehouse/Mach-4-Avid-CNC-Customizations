@@ -121,11 +121,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool9]
-Length=0
+Length=-2.42778
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=
+Desc=90 degree V-bit
 Pocket=0
 XOffset=0
 XOffsetWear=0
@@ -143,11 +143,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool11]
-Length=0
+Length=-1.2423
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=
+Desc=1/4 spiral up [1/4 Up] Amana 46399-K
 Pocket=0
 XOffset=0
 XOffsetWear=0
@@ -286,7 +286,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool24]
-Length=-2.12814
+Length=0
 LengthWear=0
 Diameter=0
 DiameterWear=0
