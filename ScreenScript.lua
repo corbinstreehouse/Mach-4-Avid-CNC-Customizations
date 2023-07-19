@@ -2903,14 +2903,28 @@ function btnSetTool_Clicked_Script(...)
 end
 function droGageBlockT_On_Modify_Script(...)
     local inst = mc.mcGetInstance()
-    local val = scr.GetProperty("droGageBlockT", "Value")
-    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlockT", string.format (val)) --Create a register and write to it
+    --local val = scr.GetProperty("droGageBlockT", "Value")
+    local val = select(1, ...)
+    if val == "" then
+    	val = 4.0
+    end
+    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlockT", tostring(val)) --Create a register and write to it
+    return val
+    
 end
 -- grpZOffset(1)-GlobalScript
 function droGageBlock_On_Modify_Script(...)
     local inst = mc.mcGetInstance()
-    local val = scr.GetProperty("droGageBlock", "Value")
-    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlock", string.format (val)) --Create a register and write to it
+    --local val = scr.GetProperty("droGageBlock", "Value")
+    
+    local val = select(1, ...)
+    if val == nil or val == "" then
+    	val = 4.0
+    end
+    
+    mc.mcProfileWriteString(inst, "PersistentDROs", "droGageBlock", tostring(val)) --Create a register and write to it
+    return val
+    
 end
 function btnSetZ_Clicked_Script(...)
     -- Set Z button
