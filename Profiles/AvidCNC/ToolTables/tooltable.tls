@@ -352,11 +352,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool30]
-Length=0
+Length=-1.92391
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=
+Desc=1/8" tapered downcut [1/8 Dwn]
 Pocket=0
 XOffset=0
 XOffsetWear=0
