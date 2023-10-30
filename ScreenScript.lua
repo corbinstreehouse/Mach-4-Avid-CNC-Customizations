@@ -821,6 +821,12 @@ end
 -- I kept starting the machine at a line I didn't want to after doing a manual Stop or eStop.
 function VerifyCanStart()
 	local inst = mc.mcGetInstance()
+	
+	-- If we are on feed hold, then return true without checking the line number
+	local inFeedHold, rc = mc.mcCntlFeedHoldState(inst)
+	if inFeedHold == 1 then
+		return true
+	end
 
 	lineNumber, rc = mc.mcCntlGetGcodeLineNbr(inst)
 	if rc == mc.MERROR_NOERROR then
