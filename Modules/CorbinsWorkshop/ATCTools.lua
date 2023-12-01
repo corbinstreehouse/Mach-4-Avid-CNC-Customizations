@@ -358,6 +358,7 @@ function ATCTools.SetMainScreenButtonTitles()
 		local ctrlName = string.format("btnFetchToolPocket%d", i)
 		local title = ""
 		local toolFork = ToolForks.GetToolForkNumber(toolForkNumber)
+		local ctrlTitle = ""
 		if toolFork ~= nil and toolFork.Tool > 0 then
 			local toolDesc = ToolForks.GetToolDescription(toolFork.Tool)
 			if toolDesc ~= "" then
@@ -370,11 +371,11 @@ function ATCTools.SetMainScreenButtonTitles()
 				end
 			end			
 			scr.SetProperty(ctrlName, "Enabled", "1")
+			ctrlTitle = string.format("%d - T%d\n%s", toolForkNumber, toolFork.Tool, title)
 		else
 			scr.SetProperty(ctrlName, "Enabled", "0")
+			ctrlTitle = string.format("%d\n%s", toolForkNumber, title)
 		end
-
-		local ctrlTitle = string.format("%d\n%s", toolForkNumber, title)
 		scr.SetProperty(ctrlName, "Label", ctrlTitle)
 	end
 end
