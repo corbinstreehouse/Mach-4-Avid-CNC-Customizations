@@ -220,11 +220,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool18]
-Length=-1.38377
+Length=-2.69423
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=1/4 down 2L 3 OL [1/4 Dwn]
+Desc=1/4 down 2L short [1/4 Dwn]
 Pocket=0
 XOffset=0
 XOffsetWear=0
@@ -286,7 +286,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool24]
-Length=0
+Length=-2.42794
 LengthWear=0
 Diameter=0
 DiameterWear=0
@@ -462,11 +462,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool40]
-Length=0
+Length=-2.28584
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=
+Desc=Dovetail Leigh#80-8 1/2" 8deg [8 Dve]
 Pocket=0
 XOffset=0
 XOffsetWear=0
@@ -1122,7 +1122,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool100]
-Length=-1.97185
+Length=-2.37685
 LengthWear=0
 Diameter=0
 DiameterWear=0
