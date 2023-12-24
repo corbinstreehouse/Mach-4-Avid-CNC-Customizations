@@ -8,7 +8,7 @@
 -- Software provided as-is. For redistribution rights, please contact me. 
 -- No warranty is made on this software working correctly.
 
---package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
+package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 local inifile = require 'inifile'
 
 local CWUtilities = {
@@ -22,6 +22,52 @@ local CWUtilities = {
 local CD_SIG_PRESSURIZED_AIR = mc.OSIG_OUTPUT7
 
 CWUtilities.inst = mc.mcGetInstance("CWUtilities")
+
+
+function CWUtilities.IsInG54() 
+	local currentOffset = mc.mcCntlGetPoundVar(inst, 4014)
+
+	if currentOffset == 54 then
+		return true
+	else
+		return false
+	end
+end
+
+function CWUtilities.CopyCurrentOffsetToG54() 
+	local inst = CWUtilities.inst
+	
+	-- This gets the offset in machine coordinates...we just want to know our current position and to copy it over
+--	local offsetX, rc = mc.mcCntlGetOffset(inst, mc.X_AXIS, mc.MC_OFFSET_FIXTURE)
+--	local offsetY, rc = mc.mcCntlGetOffset(inst, mc.Y_AXIS, mc.MC_OFFSET_FIXTURE)
+--	local offsetZ, rc = mc.mcCntlGetOffset(inst, mc.Z_AXIS, mc.MC_OFFSET_FIXTURE)
+
+	local currentX, rx = mc.mcAxisGetPos(inst, mc.X_AXIS)
+	local currentY, ry = mc.mcAxisGetPos(inst, mc.Y_AXIS)
+	local currentZ, rz = mc.mcAxisGetPos(inst, mc.Z_AXIS)
+	
+	local currentOffset = mc.mcCntlGetPoundVar(inst, 4014)
+	
+	if currentOffset ~= 54 then
+	-- go to g54 and assign them
+		local gcode = "G54"
+		rc = mc.mcCntlGcodeExecuteWait(inst, gcode)	
+		if (rc == mc.MERROR_NOERROR) then
+			
+	-- Comment out for speed; uncomment for more logging
+--			print(eventMessage)
+--			mc.mcCntlLog(inst, eventMessage, "", -1)
+				
+			mc.mcAxisSetPos(inst, mc.X_AXIS, currentX)
+			mc.mcAxisSetPos(inst, mc.Y_AXIS, currentY)
+			mc.mcAxisSetPos(inst, mc.Z_AXIS, currentZ)
+		else
+			mc.mcCntlSetLastError(inst, "Error running G54:"..rc)			
+		end
+	end
+	
+end
+
 
 function CWUtilities.GCodeStarted()
 	CWUtilities.startingTime = os.clock()
@@ -218,7 +264,7 @@ end
 
 
 if (mc.mcInEditor() == 1) then
-
+	CWUtilities.CopyCurrentOffsetToG54()
 
 end
 

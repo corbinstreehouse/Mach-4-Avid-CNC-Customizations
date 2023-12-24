@@ -2687,6 +2687,9 @@ function luaFixtureTable_Script(...)
     
     touFT.FixtureOffsets()
 end
+function btnAssignToG54_Left_Down_Script(...)
+    CWUtilities.CopyCurrentOffsetToG54()
+end
 -- nbpMachineConfig-GlobalScript
 function luaSelectTool_Script(...)
     --Load Select Tool module into parent panel
