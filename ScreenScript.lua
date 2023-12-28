@@ -2619,9 +2619,7 @@ function btnResumeCut_Left_Up_Script(...)
 end
 -- grpMTC-GlobalScript
 function btnGoToMTCLoc_Left_Up_Script(...)
-    -- Return To Position
-    ReturnToPosition() -- This runs the Return to Position Function that is in the screenload script.
-    
+    ToolChange.GotoMTCPosition()
 end
 function btnResumeGCode_Left_Up_Script(...)
     coResumeGCode = coroutine.create(ResumeGCode);
@@ -2972,9 +2970,7 @@ function btnSetMTCLoc_1__Clicked_Script(...)
     end
 end
 function btnGoToMTCLoc_1__Left_Up_Script(...)
-    -- Return To Position
-    ReturnToPosition() -- This runs the Return to Position Function that is in the screenload script.
-    
+    ToolChange.GotoMTCPosition()
 end
 function btnViewMTCLocation_1__Clicked_Script(...)
     -- View MTC Location

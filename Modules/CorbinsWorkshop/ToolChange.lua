@@ -35,6 +35,10 @@ local ToolChange = {
 package.path = package.path .. ";./Modules/CorbinsWorkshop/?.lua"
 local ToolForks = require 'ToolForks'
 
+if CWUtilities == nil then
+	CWUtilities= require 'CWUtilities'
+end
+
 -- must be the first thing called, and this file calls it.
 function ToolChange.internal.Initialize()
 	ToolChange.internal.inst = mc.mcGetInstance("ToolChange.lua")
@@ -69,6 +73,64 @@ function ToolChange.internal.CheckForNoError(rc, message)
 end
 
 ToolChange.internal.Initialize()
+
+function ToolChange.SaveMTCPosition() 
+	-- Based on Avid's ScreenScript; using the same code to avoid confusion in case the position was set somewhere else.
+    local Xpos = mc.mcAxisGetMachinePos(inst, mc.X_AXIS)
+    mc.mcProfileWriteString(inst, "RememberPos", "X", string.format (Xpos))
+    local Ypos = mc.mcAxisGetMachinePos(inst, mc.Y_AXIS) -- Get current Y (1) Machine Coordinates
+    mc.mcProfileWriteString(inst, "RememberPos", "Y", string.format (Ypos)) --Create a register and write the machine coordinates to it
+    local Zpos = mc.mcAxisGetMachinePos(inst, mc.Z_AXIS) -- Get current Z (2) Machine Coordinates
+    mc.mcProfileWriteString(inst, "RememberPos", "Z", string.format (Zpos)) --Create a register and write the machine coordinates to it
+    local PosUnits = mc.mcCntlGetUnitsCurrent(inst)
+    mc.mcProfileWriteInt(inst, "RememberPos", "PosUnits", PosUnits)
+	
+	return Xpos, Ypos, Zpos	
+end
+
+-- public entry for buttons to call
+function ToolChange.GotoMTCPosition()	
+	local result, errorMessage = pcall(ToolChange.internal.TryGotoMTCPosition)
+	if not result then
+		ToolForks.Error(errorMessage)
+	end
+end
+
+-- Can throw
+function ToolChange.internal.TryGotoMTCPosition()
+	if not CWUtilities.IsHomed() then
+		error("Machine is not homed; not safe to go to the MTC position")		
+	end
+	
+	-- Based on Avid's code but fixed, and I removed the unit conversion stuff 
+	-- (that is nice, but I'm not going to worry about it, as nothing else in this file does and assumes one unit)
+	local inst = mc.mcGetInstance("GotoMTCPosition()")
+	local m_CurAbsMode = mc.mcCntlGetPoundVar(inst, mc.SV_MOD_GROUP_3) -- G90/G91 modal
+	
+	local pos = {"X", "Y", "Z"}
+	local zOffset = -0.25
+	for i = 1, 3 do
+		local axis = pos[i]
+		local val = mc.mcProfileGetString(inst, "RememberPos", axis, "NotFound") -- Get the ini position value
+		if (val == "NotFound") then
+			error("MTC position not found.\nYou must set MTC location first.")
+		end
+		pos[axis] = val
+	end
+				
+	local xyPos = string.format("X%.4f Y%.4f", pos.X, pos.Y)
+	local zPos = string.format("Z%.4f", pos.Z)
+		
+	MCCntlGcodeExecuteWait("G90\n" .. -- G90: absolute (not incremental)
+		"G00 G53 Z0.0\n" .. -- Rapid to Z0 (the top) for safety
+		"G00 G53 " .. xyPos .. "\n" .. --Rapid to X/Y
+		-- ""G01 G53 " .. zPos .. "F50.0\n" -- Rapid to the Z pos not sure I want to do this....so I'm leaving it out		
+		"G" .. m_CurAbsMode -- Restore the mode (probably always G90, but this is safer)
+		)
+
+	
+end
+
 
 function ToolChange.VerifyAirPressure()
 	if ToolForks.GetShouldCheckAirPressure() then
@@ -436,6 +498,11 @@ function ToolChange._TryDoToolChangeFromTo(currentTool, selectedTool)
 		return 
 	end
 	
+	-- Make sure we are homed..
+	if not CWUtilities.IsHomed() then
+		error("Machine is not homed")
+	end	
+	
 	ToolChange.internal.TurnOffSpindle()
 	ToolChange.SaveCurrentLocation()
 
@@ -513,6 +580,7 @@ end
 
 if (mc.mcInEditor() == 1) then
 	--ToolChange.internal.TestToolChange()
+	ToolChange.GotoMTCPosition()
 end
 
 return ToolChange
