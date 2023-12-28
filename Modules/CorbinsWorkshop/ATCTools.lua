@@ -307,7 +307,7 @@ end
 
 function ATCTools.PutBackCurrentTool()
 	if not CWUtilities.IsHomed() then
-		wx.wxMessageBox("Machine is not homed, it is not safe\nto put back a tool.", "Automatic Tool Change")		
+		wx.wxMessageBox("Machine is not homed, it is not safe to put back a tool.", "Automatic Tool Change")		
 		return
 	end	
 	
