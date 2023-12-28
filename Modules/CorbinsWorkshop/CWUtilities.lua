@@ -264,7 +264,7 @@ end
 
 
 if (mc.mcInEditor() == 1) then
-	CWUtilities.CopyCurrentOffsetToG54()
+	--CWUtilities.CopyCurrentOffsetToG54()
 
 end
 
