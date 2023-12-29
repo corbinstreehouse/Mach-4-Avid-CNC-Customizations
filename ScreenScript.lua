@@ -87,6 +87,8 @@ machStateOld = -1
 machEnabled = 0
 machWasEnabled = 0
 
+keyboardWasEnabled = false -- for the MDI tab switch
+
 LastStateUnitsMode = mc.mcCntlGetUnitsCurrent(inst)
 LastStateConfigSettingsSaved = 0  -- config settings from Avid Machine Config
 LastStateOfTorchRelayRegister = -1;
@@ -2498,15 +2500,18 @@ end
 -- nbGCodeInput1-GlobalScript
 function nbGCodeInput1_On_Enter_Script(...)
     scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nGcode');
-    --DisableKeyboard()
+    
 end
 -- nbMDIInput-GlobalScript
 function nbMDIInput_On_Enter_Script(...)
     scr.SetProperty('btnCycleStart', 'Label', 'Cycle Start\nMDI');
+    keyboardWasEnabled = GetKeyboardInputsEnabled()
     DisableKeyboard()
 end
 function nbMDIInput_On_Exit_Script(...)
-    EnableKeyboard();
+    if keyboardWasEnabled == 1 then
+    	EnableKeyboard();
+    end
 end
 function btnRunFromHere_Left_Up_Script(...)
     -- Check if file is loaded before showing warning dialog
