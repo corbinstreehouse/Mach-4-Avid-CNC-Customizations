@@ -77,11 +77,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool5]
-Length=0
+Length=-1.71891
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=
+Desc=1/8" drill bit
 Pocket=0
 XOffset=0
 XOffsetWear=0
@@ -220,7 +220,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool18]
-Length=-2.69423
+Length=-2.67367
 LengthWear=0
 Diameter=0
 DiameterWear=0
@@ -231,11 +231,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool19]
-Length=0
+Length=-1.88931
 LengthWear=0
-Diameter=0
+Diameter=0.25
 DiameterWear=0
-Desc=
+Desc=1/4" compression SpeTool
 Pocket=0
 XOffset=0
 XOffsetWear=0
