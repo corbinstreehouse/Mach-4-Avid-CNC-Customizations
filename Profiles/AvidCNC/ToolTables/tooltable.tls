@@ -77,7 +77,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool5]
-Length=-1.71891
+Length=0
 LengthWear=0
 Diameter=0
 DiameterWear=0
@@ -165,7 +165,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool13]
-Length=0
+Length=-1.50362
 LengthWear=0
 Diameter=0
 DiameterWear=0
@@ -174,7 +174,7 @@ XOffset=0
 XOffsetWear=0
 YOffset=0
 YOffsetWear=0
-Desc=
+Desc=1/4 spiral up cut RIP [1/4 Up]
 [Tool14]
 Length=-1.53528
 LengthWear=0
