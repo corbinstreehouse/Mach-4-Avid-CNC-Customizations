@@ -705,6 +705,11 @@ function CycleStop()
 	mc.mcCntlCycleStop(inst);
 	mc.mcSpindleSetDirection(inst, 0);
 	mc.mcCntlSetLastError(inst, "Cycle Stopped");
+	
+	-- turn the spindle air off, if it is on
+	if ToolForks.GetShouldUseCasePressurization() then
+		CWUtilities.SetAirPressure(0)
+	end
 		
 	local hEssHcZ_DRO_Force_Sync_With_Aux = mc.mcRegGetHandle(inst, "ESS/HC/Z_DRO_Force_Sync_With_Aux")
 	if (hEssHcZ_DRO_Force_Sync_With_Aux == 0) then
