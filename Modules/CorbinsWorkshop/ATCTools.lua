@@ -244,8 +244,11 @@ function ATCTools.ToolForkForUIItem(ctrlName)
 	local toolForkNumber = string.match(ctrlName, "%d+")
 	assert(toolForkNumber ~= nil, "Bad UI setup for tool forks, ctrlName:"..ctrlName)
 
-	-- Add in the offset
-	toolForkNumber = toolForkNumber + ATCTools.CurrentOffset
+	-- Add in the offset, but only if we are on that tab! Otherwise, we are on the main page only showing the first 10 items.
+	-- Yeah, this is a bit hokey for how to do it..
+	if ATCTools.Visible then
+		toolForkNumber = toolForkNumber + ATCTools.CurrentOffset
+	end
 
 	local tf = ToolForks.GetToolForkNumber(toolForkNumber)
 	return tf -- may be nil
