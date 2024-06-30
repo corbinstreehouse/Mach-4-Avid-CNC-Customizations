@@ -179,6 +179,7 @@ function ToolChange.internal.ManualToolChangeInstallByUser(tool)
 	end	
 end
 
+-- TODO: remove this method, I'm not using it anymore'
 function ToolChange.DoManualToolChangeWithMessage(message)
 	local rc = mc.mcCntlCycleStop(ToolChange.internal.inst) 
 	ToolChange.internal.CheckForNoError(rc, "CycleStop")
@@ -348,6 +349,9 @@ function ToolChange.PutToolBackInForkAtPosition(toolForkPosition)
 	local ZClearanceWithNoTool = ToolForks.GetZClearanceWithNoTool()
 
 	MCCntlGcodeExecuteWait("G00 G90 G53 Z%.4f", ZClearanceWithNoTool)
+	
+	-- Make sure we have no tool set internally, in case the user stops or an error happens 
+	mc.mcToolSetCurrent(ToolChange.internal.inst, 0)	
 end
 
 -- Post condition: spindle closed, but only on success (returning true)
@@ -410,6 +414,8 @@ function ToolChange.LoadToolAtForkPosition(toolForkPosition, toolWasDroppedOff)
 		MCCntlGcodeExecuteWait("G00 G53 X%.4f Y%.4f", intX, intY)
 	end
 	
+	-- Make sure it is set early at this point
+	mc.mcToolSetCurrent(ToolChange.internal.inst, toolForkPosition.Tool)
 end
 
 
