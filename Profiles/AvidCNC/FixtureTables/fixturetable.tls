@@ -1,7 +1,7 @@
 [Fixture_1]
-X_Offset=14.587
-Y_Offset=15.1127
-Z_Offset=-10.8769
+X_Offset=3.78418
+Y_Offset=20.744
+Z_Offset=-10.2473
 A_Offset=0
 B_Offset=0
 C_Offset=0
@@ -22,7 +22,7 @@ C_Offset=0
 [Fixture_4]
 X_Offset=3.7842
 Y_Offset=20.744
-Z_Offset=-10.2602
+Z_Offset=-10.2473
 A_Offset=0
 B_Offset=0
 C_Offset=0
