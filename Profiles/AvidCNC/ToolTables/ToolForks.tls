@@ -19,7 +19,7 @@ Tool=20.0
 X=6.98189
 Number=2
 Orientation=2
-Tool=13.0
+Tool=11.0
 Z=-12.7247
 Y=96.8638
 
@@ -40,7 +40,7 @@ Y=96.8638
 Z=-12.7247
 
 [ToolFork5]
-Tool=15.0
+Tool=40.0
 Number=5
 Orientation=2
 X=22.24596
@@ -48,7 +48,7 @@ Y=96.8638
 Z=-12.7247
 
 [ToolFork6]
-Tool=6.0
+Tool=24.0
 Number=6
 Orientation=2
 X=27.32268
@@ -56,7 +56,7 @@ Y=96.8638
 Z=-12.7247
 
 [ToolFork8]
-Tool=16.0
+Tool=21.0
 Orientation=2
 Y=97.02232
 Z=-12.72692
@@ -80,7 +80,7 @@ Number=7
 X=32.3836
 
 [ToolFork9]
-Tool=11.0
+Tool=19.0
 Orientation=2
 Y=97.02232
 Z=-12.72692
