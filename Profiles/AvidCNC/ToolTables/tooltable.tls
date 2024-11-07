@@ -55,7 +55,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool3]
-Length=-2.46395
+Length=-2.48605
 LengthWear=0
 Diameter=2
 DiameterWear=0
@@ -198,7 +198,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool16]
-Length=-1.41121
+Length=-1.67094
 LengthWear=0
 Diameter=0.25
 DiameterWear=0
@@ -264,11 +264,11 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool22]
-Length=0
+Length=-1.6886
 LengthWear=0
 Diameter=0
 DiameterWear=0
-Desc=
+Desc=1/16 tapered ball Frued [1/16TP]
 Pocket=0
 XOffset=0
 XOffsetWear=0
@@ -462,7 +462,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool40]
-Length=-2.24725
+Length=0
 LengthWear=0
 Diameter=0
 DiameterWear=0
@@ -1122,7 +1122,7 @@ XOffsetWear=0
 YOffset=0
 YOffsetWear=0
 [Tool100]
-Length=-1.75059
+Length=-0.68856
 LengthWear=0
 Diameter=0
 DiameterWear=0
